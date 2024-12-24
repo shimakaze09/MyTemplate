@@ -2,11 +2,13 @@
 // Created by Admin on 24/12/2024.
 //
 
-#include <MyTemplate/EBCO.h>
-#include <MyTemplate/Num.h>
 #include <array>
 #include <iostream>
 #include <type_traits>
+
+#include <MyTemplate/List/TypeList.h>
+#include <MyTemplate/Num.h>
+#include <MyTemplate/SI.h>
 
 using namespace std;
 using namespace My;
@@ -24,6 +26,10 @@ struct IArray : Base, array<T, Num::value> {
 
 template <typename Base, typename Impl, typename T, typename Num>
 struct IAdd : Base {
+ private:
+  using VBCs = SIVBCs<typename Base::IArray>;
+
+ public:
   using Base::Base;
 
   const Impl operator+(const Impl& y) const {
@@ -38,6 +44,10 @@ struct IAdd : Base {
 
 template <typename Base, typename Impl, typename T, typename Num>
 struct IIn : Base {
+ private:
+  using VBCs = SIVBCs<typename Base::IArray>;
+
+ public:
   using Base::Base;
 
   friend istream& operator>>(istream& is, Impl& x) {
@@ -46,10 +56,17 @@ struct IIn : Base {
       is >> x[i];
     return is;
   }
+
+ private:
+  using Dependencies = TypeList<typename Base::IArray>;
 };
 
 template <typename Base, typename Impl, typename T, typename Num>
 struct IOut : Base {
+ private:
+  using VBCs = SIVBCs<typename Base::IArray>;
+
+ public:
   using Base::Base;
 
   friend ostream& operator<<(ostream& os, const Impl& x) {
@@ -59,16 +76,31 @@ struct IOut : Base {
     os << x[Num::value - 1];
     return os;
   }
+
+ private:
+  using Dependencies = TypeList<typename Base::IArray>;
 };
 
 template <typename Base, typename Impl, typename T, typename Num>
-struct IInOut : EBCOI<IIn, IOut>::type<Base, Impl, T, Num> {
-  using EBCOI<IIn, IOut>::type<Base, Impl, T, Num>::type;
+struct IInOut : SIT<IIn, IOut>::type<Base, Impl, T, Num> {
+  using SIT<IIn, IOut>::type<Base, Impl, T, Num>::type;
 };
 
+#if 1  // OK
+template <typename Base, typename Impl, typename T, typename Num>
+struct IVal : SIT<IAdd, IInOut, IArray>::type<Base, Impl, T, Num> {
+  using SIT<IAdd, IInOut, IArray>::type<Base, Impl, T, Num>::type;
+};
+#else  // ERROR
+template <typename Base, typename Impl, typename T, typename Num>
+struct IVal : SIT<IArray, IAdd, IInOut>::type<Base, Impl, T, Num> {
+  using SIT<IArray, IAdd, IInOut>::type<Base, Impl, T, Num>::type;
+};
+#endif
+
 template <typename T, unsigned N>
-struct Vec : EBCOI<IArray, IAdd, IInOut>::type<EBCONil, Vec<T, N>, T, Num<N>> {
-  using EBCOI<IArray, IAdd, IInOut>::type<EBCONil, Vec<T, N>, T, Num<N>>::type;
+struct Vec : SIT<IVal>::type<SINil, Vec<T, N>, T, Num<N>> {
+  using SIT<IVal>::type<SINil, Vec<T, N>, T, Num<N>>::type;
 };
 
 using Vecf3 = Vec<float, 3>;
