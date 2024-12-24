@@ -4,13 +4,15 @@
 
 #pragma once
 
+#include <type_traits>
+
 namespace My {
 /* [ Interface ]
  *
  *  T    Front<List>
- *  List PushFront<List, T>
+ *  List PushFront<List, Ts...>
  *  List PopFront<List, T>
- *  bool IsEmpty<List>
+ *  bool IsEmpty<List>::value
  *
  *  List Clear<List>
  *  T    At<List, size_t>
@@ -20,15 +22,25 @@ namespace My {
  *  List PushBack<List, T>
  *  List Transform<List, <T> Op>
  *  List Select<List, size...>
+ *  bool Contain<List, T>::value
  */
 
-// [ Basic ]
+// [ Require ]
 template <typename List>
 struct FrontT;
-template <typename List, typename T>
-struct PushFrontT;
+template <typename List>
+using Front = typename FrontT<List>::type;
+
 template <typename List>
 struct PopFrontT;
+template <typename List>
+using PopFront = typename PopFrontT<List>::type;
+
+/*
+	*  PushFrontT<List, T>
+	*  // PushFront is already declared
+	*  // but it needs definition of PushFrontT<List, T> for impl List
+	*/
 
 template <typename List>
 struct IsEmpty {
@@ -37,14 +49,26 @@ struct IsEmpty {
 template <typename List>
 struct Length;
 
-template <typename List>
-using Front = typename FrontT<List>::type;
-template <typename List, typename T>
-using PushFront = typename PushFrontT<List, T>::type;
-template <typename List>
-using PopFront = typename PopFrontT<List>::type;
-
 // [ Algorithm ]
+
+// PushFront
+template <typename List, typename... Ts>
+struct PushFrontT;
+
+template <typename List, typename... Ts>
+using PushFront = typename PushFrontT<List, Ts...>::type;
+
+template <typename List, typename T>
+using PushAFrontT = PushFrontT<List, T>;  // push a type at front of list
+
+template <typename List>
+struct PushFrontT<List> {
+  using type = List;
+};
+
+template <typename List, typename THead, typename... TTail>
+struct PushFrontT<List, THead, TTail...>
+    : PushFrontT<PushFront<List, THead>, TTail...> {};
 
 // Clear
 template <typename List, bool = IsEmpty<List>::value>
@@ -77,6 +101,7 @@ struct AtT<List, 0> {
 template <typename List, template <typename I, typename X> class Op, typename I,
           bool = IsEmpty<List>::value>
 struct AccumulateT;
+
 template <typename List, template <typename I, typename X> class Op, typename I>
 using Accumulate = typename AccumulateT<List, Op, I>::type;
 
@@ -88,11 +113,13 @@ template <typename List, template <typename X, typename Y> class Op, typename I>
 struct AccumulateT<List, Op, I, true> {
   using type = I;
 };
+
 // Accumulate : integer sequence
 template <typename List,
           template <typename I, typename List, size_t Num> class Op, typename I,
           size_t... Nums>
 struct AccumulateIST;
+
 template <typename List,
           template <typename I, typename List, size_t Num> class Op, typename I,
           size_t... Nums>
@@ -113,9 +140,10 @@ struct AccumulateIST<List, Op, I, NumHead, NumTail...>
 
 // Reverse
 template <typename List>
-using ReverseT = AccumulateT<List, PushFrontT, Clear<List>>;
+using ReverseT = AccumulateT<List, PushAFrontT, Clear<List>>;
 template <typename List>
 using Reverse = typename ReverseT<List>::type;
+
 // PushBack
 template <typename List, typename T>
 using PushBackT = ReverseT<PushFront<Reverse<List>, T>>;
@@ -132,6 +160,7 @@ struct TransformT {
  public:
   using type = Reverse<Accumulate<List, ToIT, Clear<List>>>;
 };
+
 template <typename List, template <typename> class Op>
 using Transform = typename TransformT<List, Op>::type;
 
@@ -148,4 +177,26 @@ struct SelectT {
 
 template <typename List, size_t... Indices>
 using Select = typename SelectT<List, Indices...>::type;
+
+// Contain
+template <typename List, typename T, bool found = false,
+          bool = IsEmpty<List>::value>
+struct ContainRec;
+
+template <typename List, typename T>
+struct ContainRec<List, T, false, true> {
+  static constexpr bool value = false;
+};
+
+template <typename List, typename T, bool isEmpty>
+struct ContainRec<List, T, true, isEmpty> {
+  static constexpr bool value = true;
+};
+
+template <typename List, typename T>
+struct ContainRec<List, T, false, false>
+    : ContainRec<PopFront<List>, T, std::is_same<Front<List>, T>::value> {};
+
+template <typename List, typename T>
+using Contain = ContainRec<List, T>;
 }  // namespace My
