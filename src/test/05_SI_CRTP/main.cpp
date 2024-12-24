@@ -82,6 +82,8 @@ struct Vec : SIIPro<TemplateList<IVal, IInOut, IOut, IIn, IAdd, IArray>,
 using Vecf3 = Vec<float, 3>;
 using Vecf100 = Vec<float, 100>;
 
+struct Rst : Vecf3 {};
+
 int main() {
   cout << sizeof(Vecf3) << endl;
   Vecf3 vs[4];
