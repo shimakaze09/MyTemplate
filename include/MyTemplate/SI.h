@@ -14,6 +14,8 @@ struct SI_Nil {
 
 template <typename Base, typename... Ts>
 struct SI_TNil : Base {
+  using Base::Base;
+
   using TVBs = TemplateList<>;
   using AllVBs = TypeList<>;
 };
@@ -49,6 +51,9 @@ struct SI_TNBList<TemplateList<THead, TTail...>> {
                                                                     Ts...>;
 
    public:
+    using THead<typename SI_TNBList<TemplateList<TTail...>>::template Ttype<
+                    Base, Ts...>,
+                Ts...>::THead;
     using AllVBs = std::enable_if_t<
         TCanGeneralizeFromList_v<typename B::TVBs, typename BB::AllVBs>,
         typename BB::AllVBs>;
@@ -63,6 +68,7 @@ template <typename TVBList>
 struct SI<TVBList, TemplateList<>> {
   template <typename Base, typename... Ts>
   struct Ttype : Base {
+    using Base::Base;
     using TVBs = TVBList;
   };
 
@@ -76,10 +82,15 @@ template <typename TVBList, typename TNBList>
 struct SI {
   template <typename Base, typename... Ts>
   struct Ttype : SI_TNBList<TNBList>::template Ttype<Base, Ts...> {
+    using SI_TNBList<TNBList>::template Ttype<Base, Ts...>::SI_TNBList;
     using TVBs = TVBList;
   };
 };
 
+template <template <typename...> class... TVBases>
+using SIV = SI<TemplateList<TVBases...>>;
+
+namespace detail {
 template <typename BList>
 struct SII;
 
@@ -102,11 +113,17 @@ struct SII<TemplateList<THead, TTail...>> {
     using BB = typename SII<TemplateList<TTail...>>::template Ttype<Ts...>;
 
    public:
+    using THead<typename SII<TemplateList<TTail...>>::template Ttype<Ts...>,
+                Ts...>::THead;
     using AllVBs = std::enable_if_t<
         TCanGeneralizeFromList_v<typename B::TVBs, typename BB::AllVBs>,
         PushFront_t<typename BB::AllVBs, B>>;
   };
 };
+}  // namespace detail
+
+template <template <typename...> class... TBases>
+using SII = detail::SII<TemplateList<TBases...>>;
 
 template <template <typename...> class To, typename From>
 SearchInstance_t<typename From::AllVBs, To>* SI_Cast(From* from) {
