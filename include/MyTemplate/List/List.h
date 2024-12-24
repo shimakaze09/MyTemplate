@@ -34,6 +34,8 @@ template <typename List>
 struct IsEmpty {
   static constexpr bool value = false;
 };
+template <typename List>
+struct Length;
 
 template <typename List>
 using Front = typename FrontT<List>::type;
