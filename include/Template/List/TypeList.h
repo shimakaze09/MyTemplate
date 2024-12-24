@@ -5,13 +5,13 @@
 #pragma once
 
 #include "List.h"
-#include "Name.h"
+#include "../Name.h"
 
 namespace My {
 template <typename... Ts>
 struct TypeList {};
 
-// [ name ]
+// [ Name ]
 template <typename... Ts>
 struct Name<TypeList<Ts...>> {
   friend std::ostream& operator<<(std::ostream& os, Name<TypeList<Ts...>>) {
@@ -21,7 +21,7 @@ struct Name<TypeList<Ts...>> {
 };
 
 // [ List ]
-// basic
+// Basic
 template <>
 struct IsEmpty<TypeList<>> {
   static constexpr bool value = true;
@@ -42,7 +42,7 @@ struct PopFrontT<TypeList<Head, Tail...>> {
   using type = TypeList<Tail...>;
 };
 
-// optimized
+// Optimized
 template <typename... Ts>
 struct ClearT<TypeList<Ts...>, false> {
   using type = TypeList<>;
