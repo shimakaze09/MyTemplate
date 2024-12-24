@@ -7,7 +7,7 @@
 #include "../List/TypeList.h"
 #include "../Num/Bool.h"
 
-namespace My{
+namespace My {
 /* [ Interface ] // T is template
  *  bool TIsEmpty<List>
  *  T    TFront<List>
@@ -21,196 +21,217 @@ namespace My{
  *  List TConcat_t<List0, List1>
  *  List TTransform_t<List, <T> Op>
  *  List TSelect_t<List, size...>
- *  bool TContain_v<List, T>
- *  bool TContainList_v<List0, List1>
+ *  bool TInstantiable_v<List, T>
+ *  bool TInstantiableList_v<List0, List1>
  */
 
-template<typename ArgList, template<typename...> class T>
-	struct TInstance;
-	template<typename ArgList, template<typename...> class T>
-	using TInstance_t = typename TInstance<ArgList, T>::type;
+template <template <typename...> class... Ts>
+struct TemplateList {};
 
-	template<typename _ArgList, template<typename...> class... Ts>
-	struct TemplateList {
-		using ArgList = _ArgList;
-	private:
-		using Valid = TypeList<TInstance_t<ArgList, Ts>...>;
-	};
+// [ List ]
 
-	template<template<typename...> class T, typename... Ts>
-	struct TInstance<TypeList<Ts...>, T> {
-		using type = T<Ts...>;
-	};
+// Empty
+template <typename List>
+struct TIsEmpty {
+  static constexpr bool value = false;
+};
 
-	// [ List ]
+template <>
+struct TIsEmpty<TemplateList<>> {
+  static constexpr bool value = true;
+};
 
-	// Empty
-	template<typename List>
-	struct TIsEmpty { static constexpr bool value = false; };
+template <typename List>
+constexpr bool TIsEmpty_v = TIsEmpty<List>::value;
 
-	template<typename ArgList>
-	struct TIsEmpty<TemplateList<ArgList>> {
-		static constexpr bool value = true;
-	};
+// TFront
+template <typename List>
+struct TFront;
 
-	template<typename List>
-	constexpr bool TIsEmpty_v = TIsEmpty<List>::value;
+template <template <typename...> class Head,
+          template <typename...> class... Tail>
+struct TFront<TemplateList<Head, Tail...>> {
+  template <typename... Ts>
+  using Ttype = Head<Ts...>;
+};
 
-	// TFront
-	template<typename List>
-	struct TFront;
+// TPushFront
+template <typename List, template <typename...> class Ts>
+struct TPushFront;
 
-	template<typename ArgList, template<typename...> class Head, template<typename...> class... Tail>
-	struct TFront<TemplateList<ArgList, Head, Tail...>> {
-		template<typename... Ts>
-		using Ttype = Head<Ts...>;
-	};
+template <template <typename...> class T, template <typename...> class... Ts>
+struct TPushFront<TemplateList<Ts...>, T> {
+  using type = TemplateList<T, Ts...>;
+};
 
-	// TPushFront
-	template<typename List, template<typename...> class Ts>
-	struct TPushFront;
+template <typename List, template <typename...> class... Ts>
+using TPushFront_t = typename TPushFront<List, Ts...>::type;
 
-	template<typename ArgList, template<typename...> class T, template<typename...> class... Ts>
-	struct TPushFront<TemplateList<ArgList, Ts...>, T> {
-		using type = TemplateList<ArgList, T, Ts...>;
-	};
+// TPopFront
+template <typename List>
+struct TPopFront;
 
-	template<typename List, template<typename...> class... Ts>
-	using TPushFront_t = typename TPushFront<List, Ts...>::type;
+template <typename List>
+using TPopFront_t = typename TPopFront<List>::type;
 
-	// TPopFront
-	template<typename List>
-	struct TPopFront;
+template <template <typename...> class Head,
+          template <typename...> class... Tail>
+struct TPopFront<TemplateList<Head, Tail...>> {
+  using type = TemplateList<Tail...>;
+};
 
-	template<typename List>
-	using TPopFront_t = typename TPopFront<List>::type;
+// TAt
+template <typename List, size_t N>
+struct TAt;
 
-	template<typename ArgList, template<typename...> class Head, template<typename...> class... Tail>
-	struct TPopFront<TemplateList<ArgList, Head, Tail...>> {
-		using type = TemplateList<ArgList, Tail...>;
-	};
+template <typename List>
+struct TAt<List, 0> {
+  template <typename... Ts>
+  using Ttype = typename TFront<List>::template Ttype<Ts...>;
+};
 
-	// TAt
-	template<typename List, size_t N>
-	struct TAt;
+template <typename List, size_t N>
+struct TAt : TAt<TPopFront_t<List>, N - 1> {};
 
-	template<typename List>
-	struct TAt<List, 0> {
-		template<typename... Ts>
-		using Ttype = typename TFront<List>::template Ttype<Ts...>;
-	};
+// TAccumulate : list
+template <typename List,
+          template <typename I, template <typename...> class X> class Op,
+          typename I, bool = TIsEmpty_v<List>>
+struct TAccumulate;
 
-	template<typename List, size_t N>
-	struct TAt : TAt<TPopFront_t<List>, N - 1> { };
+template <typename List,
+          template <typename I, template <typename...> class X> class Op,
+          typename I>
+struct TAccumulate<List, Op, I, false>
+    : TAccumulate<TPopFront_t<List>, Op,
+                  typename Op<I, TFront<List>::template Ttype>::type> {};
 
-	// TAccumulate : list
-	template<typename List, template <typename I, template<typename...> class X> class Op, typename I, bool = TIsEmpty_v<List>>
-	struct TAccumulate;
+template <typename List,
+          template <typename I, template <typename...> class X> class Op,
+          typename I>
+struct TAccumulate<List, Op, I, true> {
+  using type = I;
+};
 
-	template<typename List, template <typename I, template<typename...> class X> class Op, typename I>
-	struct TAccumulate<List, Op, I, false> : TAccumulate<TPopFront_t<List>, Op, typename Op<I, TFront<List>::template Ttype>::type> { };
+template <typename List,
+          template <typename I, template <typename...> class X> class Op,
+          typename I>
+using TAccumulate_t = typename TAccumulate<List, Op, I>::type;
 
-	template<typename List, template <typename I, template<typename...> class X> class Op, typename I>
-	struct TAccumulate<List, Op, I, true> {
-		using type = I;
-	};
+// TAccumulateIS : TAccumulate by integer sequence
+template <typename List,
+          template <typename I, typename List, size_t Num> class Op, typename I,
+          size_t... Nums>
+struct TAccumulateIS;
 
-	template<typename List, template <typename I, template<typename...> class X> class Op, typename I>
-	using TAccumulate_t = typename TAccumulate<List, Op, I>::type;
+template <typename List,
+          template <typename I, typename List, size_t Num> class Op, typename I>
+struct TAccumulateIS<List, Op, I> {
+  using type = I;
+};
 
-	// TAccumulateIS : TAccumulate by integer sequence
-	template<typename List, template<typename I, typename List, size_t Num> class Op, typename I, size_t... Nums>
-	struct TAccumulateIS;
+template <typename List,
+          template <typename I, typename List, size_t Num> class Op, typename I,
+          size_t NumHead, size_t... NumTail>
+struct TAccumulateIS<List, Op, I, NumHead, NumTail...>
+    : TAccumulateIS<List, Op, typename Op<I, List, NumHead>::type, NumTail...> {
+};
 
-	template<typename List, template<typename I, typename List, size_t Num> class Op, typename I>
-	struct TAccumulateIS<List, Op, I> {
-		using type = I;
-	};
+template <typename List,
+          template <typename I, typename List, size_t Num> class Op, typename I,
+          size_t... Nums>
+using TAccumulateIS_t = typename TAccumulateIS<List, Op, I, Nums...>::type;
 
-	template<typename List, template<typename I, typename List, size_t Num> class Op, typename I,
-		size_t NumHead, size_t... NumTail>
-		struct TAccumulateIS<List, Op, I, NumHead, NumTail...>
-		: TAccumulateIS<List, Op, typename Op<I, List, NumHead>::type, NumTail...> { };
+// TReverse
+template <typename List>
+using TReverse = TAccumulate<List, TPushFront, TemplateList<>>;
 
-	template<typename List, template<typename I, typename List, size_t Num> class Op, typename I, size_t... Nums>
-	using TAccumulateIS_t = typename TAccumulateIS<List, Op, I, Nums...>::type;
+template <typename List>
+using TReverse_t = typename TReverse<List>::type;
 
-	// TReverse
-	template<typename List>
-	using TReverse = TAccumulate<List, TPushFront, TemplateList<typename List::ArgList>>;
+// TPushBack
+template <typename List, template <typename...> class T>
+using TPushBack = TReverse<TPushFront_t<TReverse_t<List>, T>>;
+template <typename List, template <typename...> class T>
+using TPushBack_t = typename TPushBack<List, T>::type;
 
-	template<typename List>
-	using TReverse_t = typename TReverse<List>::type;
+// TConcat
+template <typename List0, typename List1>
+using TConcat = TAccumulate<TReverse_t<List0>, TPushFront, List1>;
 
-	// TPushBack
-	template<typename List, template<typename...> class T>
-	using TPushBack = TReverse<TPushFront_t<TReverse_t<List>, T>>;
-	template<typename List, template<typename...> class T>
-	using TPushBack_t = typename TPushBack<List, T>::type;
+template <typename List0, typename List1>
+using TConcat_t = typename TConcat<List0, List1>::type;
 
-	// TConcat
-	template<typename List0, typename List1>
-	using TConcat = TAccumulate<TReverse_t<List0>, TPushFront, List1>;
+// TTransform
+template <typename List, template <template <typename...> class T> class Op>
+struct TTransform;
 
-	template<typename List0, typename List1>
-	using TConcat_t = typename TConcat<List0, List1>::type;
+template <template <template <typename...> class T> class Op,
+          template <typename...> class... Ts>
+struct TTransform<TemplateList<Ts...>, Op> {
+  using type = TemplateList<Op<Ts>::template Ttype...>;
+};
 
-	// TTransform
-	template<typename List, template<template<typename...> class T> class Op>
-	struct TTransform;
+template <typename List, template <template <typename...> class T> class Op>
+using TTransform_t = typename TTransform<List, Op>::type;
 
-	template<typename ArgList, template<template<typename...> class T> class Op, template<typename...> class... Ts>
-	struct TTransform<TemplateList<ArgList, Ts...>, Op> {
-		using type = TemplateList<ArgList, Op<Ts>::template Ttype...>;
-	};
+// TSelect
+template <typename List, size_t... Indices>
+struct TSelect {
+  using type = TemplateList<TAt<List, Indices>::template Ttype...>;
+};
 
-	template<typename List, template<template<typename...> class T> class Op>
-	using TTransform_t = typename TTransform<List, Op>::type;
+template <typename List, size_t... Indices>
+using TSelect_t = typename TSelect<List, Indices...>::type;
 
-	// TSelect
-	template<typename List, size_t... Indices>
-	struct TSelect {
-		using type = TemplateList<typename List::ArgList, TAt<List, Indices>::template Ttype...>;
-	};
+// TInstantiable
+template <typename List, typename Instance, bool found,
+          bool isEmpty = TIsEmpty_v<List>>
+struct TInstantiableRec;
 
-	template<typename List, size_t... Indices>
-	using TSelect_t = typename TSelect<List, Indices...>::type;
+template <typename List, typename Instance, bool isEmpty>
+struct TInstantiableRec<List, Instance, true, isEmpty> {
+  static constexpr bool value = true;
+};
 
-	// TContain
-	template<typename List, template<typename...> class T, bool found = false, bool = TIsEmpty<List>::value>
-	struct TContainRec;
+template <typename List, typename Instance>
+struct TInstantiableRec<List, Instance, false, true> {
+  static constexpr bool value = false;
+};
 
-	template<typename List, template<typename...> class T>
-	struct TContainRec<List, T, false, true> {
-		static constexpr bool value = false;
-	};
+template <typename List, typename Instance>
+struct TInstantiableRec<List, Instance, false, false>
+    : TInstantiableRec<
+          TPopFront_t<List>, Instance,
+          is_instance_of_v<Instance, TFront<List>::template Ttype>> {};
 
-	template<typename List, template<typename...> class T, bool isEmpty>
-	struct TContainRec<List, T, true, isEmpty> {
-		static constexpr bool value = true;
-	};
+template <typename List, typename Instance>
+using TInstantiable = TInstantiableRec<List, Instance, false>;
 
-	template<typename List, template<typename...> class T>
-	struct TContainRec<List, T, false, false> :
-		TContainRec<TPopFront_t<List>, T,
-		std::is_same<
-		TInstance_t<typename List::ArgList, TFront<List>::template Ttype>,
-		TInstance_t<typename List::ArgList, T>
-		>::value> {};
+template <typename List, typename Instance>
+constexpr bool TInstantiable_v = TInstantiable<List, Instance>::value;
 
-	template<typename List, template<typename...> class T>
-	using TContain = TContainRec<List, T>;
+// InstanceList
+template <typename TList, typename ArgList>
+struct TInstanceList;
 
-	template<typename List, template<typename...> class T>
-	constexpr bool TContain_v = TContain<List, T>::value;
+template <typename ArgList, template <typename...> class... Ts>
+struct TInstanceList<TemplateList<Ts...>, ArgList> {
+  using type = TypeList<Instance_t<ArgList, Ts>...>;
+};
 
-	// TContainList
-	template<typename List0, typename List1>
-	struct TContainList;
+template <typename TList, typename ArgList>
+using TInstanceList_t = typename TInstanceList<TList, ArgList>::type;
 
-	template<typename List, template<typename...> class... Ts>
-	struct TContainList<List, TemplateList<typename List::ArgList, Ts...>> : Conjunction<Bool<TContain_v<List, Ts>>...> {};
+// TInstantiableList
+template <typename List, typename InstanceList>
+struct TInstantiableList;
 
-	template<typename List0, typename List1>
-	constexpr bool TContainList_v = TContainList<List0, List1>::type::value;
-}
+template <typename List, typename... Instances>
+struct TInstantiableList<List, TypeList<Instances...>>
+    : Conjunction<Bool<TInstantiable_v<List, Instances>>...> {};
+
+template <typename List, typename InstanceList>
+constexpr bool TInstantiableList_v =
+    TInstantiableList<List, InstanceList>::type::value;
+}  // namespace My
