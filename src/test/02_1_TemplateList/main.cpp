@@ -120,15 +120,17 @@ int main() {
        << "\t" << TInstantiable_v<list0, B<>> << endl;
   cout << "TInstantiable<list0, D>" << endl
        << "\t" << TInstantiable_v<list0, D<>> << endl;
-  cout << "TInstantiableList_v<list0, TemplateList<TypeList<void>, A, B>>"
+  cout << "TCanInstantiateToList_v<list0, TemplateList<TypeList<void>, A, B>>"
        << endl
        << "\t"
-       << TInstantiableList_v<list0, TInstanceList_t<TemplateList<A, B>,
-                                                     TypeList<void>>> << endl;
-  cout << "TInstantiableList_v<list0, TemplateList<TypeList<void>, D, B>>"
+       << TCanInstantiateToList_v<
+              list0,
+              TInstanceList_t<TemplateList<A, B>, TypeList<void>>> << endl;
+  cout << "TCanInstantiateToList_v<list0, TemplateList<TypeList<void>, D, B>>"
        << endl
        << "\t"
-       << TInstantiableList_v<list0, TInstanceList_t<TemplateList<D, B>,
-                                                     TypeList<void>>> << endl;
+       << TCanInstantiateToList_v<
+              list0,
+              TInstanceList_t<TemplateList<D, B>, TypeList<void>>> << endl;
   return 0;
 }
