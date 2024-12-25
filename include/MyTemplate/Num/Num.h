@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "../Basic.h"
 #include "../Name.h"
 
 namespace My {
@@ -31,9 +32,9 @@ using Int = Num<int, N>;
 template <long N>
 using Long = Num<long, N>;
 
-// std::size_t == decltype(sizeof(void*)
-template <decltype(sizeof(void*)) N>
-using Size = Num<decltype(sizeof(void*)), N>;
+// std::size_t == decltype(sizeof(void*))
+template <size_t N>
+using Size = Num<size_t, N>;
 
 template <typename T, T N>
 struct Name<Num<T, N>> {
@@ -50,4 +51,8 @@ struct Name<Num<bool, b>> {
     return os;
   }
 };
+
+template <typename N>
+using MakeSequence =
+    make_sequence<typename N::type, static_cast<size_t>(N::value)>;
 }  // namespace My

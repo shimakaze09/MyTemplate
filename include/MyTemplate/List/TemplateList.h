@@ -49,7 +49,7 @@ struct TLength;
 
 template <template <typename...> class... Ts>
 struct TLength<TemplateList<Ts...>> {
-  static constexpr decltype(sizeof(void*)) value = sizeof...(Ts);
+  static constexpr size_t value = sizeof...(Ts);
 };
 
 // TFront will introduce new template
