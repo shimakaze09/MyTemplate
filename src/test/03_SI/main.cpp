@@ -22,48 +22,48 @@ struct IPeople : Base {
 
 template <typename Base>
 struct ISing : SIV<Base, IPeople> {
-  using SIV<Base, IPeople>::Ttype;
+  using SIV<Base, IPeople>::SIV;
 
   void Sing() { cout << "Sing"; }
 };
 
 template <typename Base>
 struct IJump : SIV<Base, ISing> {
-  using SIV<Base, ISing>::Ttype;
+  using SIV<Base, ISing>::SIV;
 
   void Jump() { cout << "Jump"; }
 };
 
 template <typename Base>
 struct IRap : SIV<Base, IJump> {
-  using SIV<Base, IJump>::Ttype;
+  using SIV<Base, IJump>::SIV;
 
   void Rap() { cout << "Rap"; }
 };
 
 template <typename Base>
-struct IBasketball : SIV<Base, IRap> {
-  using SIV<Base, IRap>::Ttype;
+struct IBasketball : SIV<Base, IPeople> {
+  using SIV<Base, IPeople>::SIV;
 
   void Basketball() { cout << "Basketball"; }
 };
 
-struct Performer : SII<IBasketball> {
-  Performer() : Ttype("KK") {}
+struct CXK : SII<IBasketball, IRap> {
+  CXK() : SI("CXK") {}
 };
 
 int main() {
-  Performer performer;
-  cout << "Hello everyone, I'm " << performer.name
+  CXK cxk;
+  cout << "Hello everyone, I'm " << cxk.name
        << ", a trainee with 2.5 years of experience\n"
        << "I like ";
-  performer.Sing();
+  cxk.Sing();
   cout << ", ";
-  performer.Jump();
+  cxk.Jump();
   cout << ", ";
-  performer.Rap();
+  cxk.Rap();
   cout << ", ";
-  performer.Basketball();
+  cxk.Basketball();
   cout << "!";
 
   return 0;
