@@ -39,19 +39,19 @@ INCLUDE(FETCHCONTENT)
 FETCHCONTENT_DECLARE(
         MyCMake
         GIT_REPOSITORY https://github.com/shimakaze09/mycmake
-        GIT_TAG main
+        GIT_TAG 064dc615de52236e549b3a5cb2376ae808982cee
 )
 FETCHCONTENT_MAKEAVAILABLE(MyCMake)
 
 INCLUDE_DIRECTORIES(
-    ${PROJECT_SOURCE_DIR}/include
-	# $ENV{XXX_INCLUDE_PATH}
-	# ...
+        ${PROJECT_SOURCE_DIR}/include
+        # $ENV{XXX_INCLUDE_PATH}
+        # ...
 )
 LINK_DIRECTORIES(
-    ${PROJECT_BINARY_DIR}/lib
-    # $ENV{XXX_LIB_PATH}
-    # ...
+        ${PROJECT_BINARY_DIR}/lib
+        # $ENV{XXX_LIB_PATH}
+        # ...
 )
 
 ADD_SUBDIRECTORY(src)
