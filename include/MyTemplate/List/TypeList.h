@@ -25,7 +25,9 @@ namespace My {
  *  bool Contain_t<List, T>::value
  */
 template <typename... Ts>
-struct TypeList {};
+struct TypeList {
+  static constexpr size_t size() noexcept { return sizeof...(Ts); }
+};
 
 // [ Name ]
 template <typename... Ts>
