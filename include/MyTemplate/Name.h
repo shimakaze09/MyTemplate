@@ -61,6 +61,7 @@ template <>
 struct NameTraits<std::nullptr_t> {
   static constexpr const char* text = "nullptr_t";
 };
+
 template <typename T, bool isUnsigned = std::is_unsigned<T>::value &&
                                         !std::is_same<T, bool>::value>
 struct BasicName;
@@ -88,6 +89,7 @@ struct BasicName<T, false> {
     return os;
   }
 };
+
 template <typename... Ts>
 struct Name;
 

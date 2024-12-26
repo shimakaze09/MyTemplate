@@ -54,16 +54,15 @@ struct TLength<TemplateList<Ts...>> {
   static constexpr size_t value = sizeof...(Ts);
 };
 
-// TFront will introduce new template
-// template <typename List>
-// struct TFront;
-//
-// template <template <typename...> class Head,
-//           template <typename...> class... Tail>
-// struct TFront<TemplateList<Head, Tail...>> {
-//   template <typename... Ts>
-//   using Ttype = Head<Ts...>;
-// };
+// TFront // TFront will introduce new template
+/*template<typename List>
+	struct TFront;
+
+	template<template<typename...> class Head, template<typename...> class... Tail>
+	struct TFront<TemplateList<Head, Tail...>> {
+		template<typename... Ts>
+		using Ttype = Head<Ts...>;
+	};*/
 
 // TPushFront
 template <typename List, template <typename...> class Ts>
@@ -127,20 +126,27 @@ template <typename List,
 using TAccumulate_t = typename TAccumulate<List, Op, I>::type;
 
 // TAccumulateIS : TAccumulate by integer sequence
-// template<typename List, template<typename I, typename List, size_t Num> class Op, typename I, size_t... Nums>
+// template <typename List,
+//           template <typename I, typename List, size_t Num> class Op, typename I,
+//           size_t... Nums>
 // struct TAccumulateIS;
 //
-// template<typename List, template<typename I, typename List, size_t Num> class Op, typename I>
+// template <typename List,
+//           template <typename I, typename List, size_t Num> class Op, typename I>
 // struct TAccumulateIS<List, Op, I> {
-// 	using type = I;
+//   using type = I;
 // };
 //
-// template<typename List, template<typename I, typename List, size_t Num> class Op, typename I,
-// 	size_t NumHead, size_t... NumTail>
-// 	struct TAccumulateIS<List, Op, I, NumHead, NumTail...>
-// 	: TAccumulateIS<List, Op, typename Op<I, List, NumHead>::type, NumTail...> { };
+// template <typename List,
+//           template <typename I, typename List, size_t Num> class Op, typename I,
+//           size_t NumHead, size_t... NumTail>
+// struct TAccumulateIS<List, Op, I, NumHead, NumTail...>
+//     : TAccumulateIS<List, Op, typename Op<I, List, NumHead>::type, NumTail...> {
+// };
 //
-// template<typename List, template<typename I, typename List, size_t Num> class Op, typename I, size_t... Nums>
+// template <typename List,
+//           template <typename I, typename List, size_t Num> class Op, typename I,
+//           size_t... Nums>
 // using TAccumulateIS_t = typename TAccumulateIS<List, Op, I, Nums...>::type;
 
 // TReverse
@@ -187,12 +193,12 @@ template <typename List, template <template <typename...> class T> class Op>
 using TTransform_t = typename TTransform<List, Op>::type;
 
 // TSelect
-// template<typename List, size_t... Indices>
+// template <typename List, size_t... Indices>
 // struct TSelect {
-// 	using type = TemplateList<TAt<List, Indices>::template Ttype...>;
+//   using type = TemplateList<TAt<List, Indices>::template Ttype...>;
 // };
 //
-// template<typename List, size_t... Indices>
+// template <typename List, size_t... Indices>
 // using TSelect_t = typename TSelect<List, Indices...>::type;
 
 // TInstantiable
