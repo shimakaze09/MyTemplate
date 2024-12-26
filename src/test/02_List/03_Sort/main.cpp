@@ -4,9 +4,9 @@
 
 #include <iostream>
 
-#include <MyTemplate/List/Typelist.h>
 #include <MyTemplate/Name.h>
-#include <MyTemplate/TypeID/TypeID.h>
+#include <MyTemplate/TypeID.h>
+#include <MyTemplate/Typelist.h>
 
 using namespace std;
 using namespace My;
