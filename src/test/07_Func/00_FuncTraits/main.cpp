@@ -2,7 +2,7 @@
 // Created by Admin on 26/12/2024.
 //
 
-#include <MyTemplate/FuncTraits.h>
+#include <MyTemplate/Func.h>
 #include <iostream>
 
 using namespace My;
