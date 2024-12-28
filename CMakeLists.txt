@@ -36,27 +36,27 @@ SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE "${PROJECT_SOURCE_DIR}/lib")
 SET_PROPERTY(GLOBAL PROPERTY USE_FOLDERS ON)
 
 INCLUDE(FETCHCONTENT)
-FETCHCONTENT_DECLARE(
-        MyGit
-        GIT_REPOSITORY https://github.com/shimakaze09/MyGit.git
-        GIT_TAG 41f06151c569012d5849ca4baa5dea0859a5e96f
-)
-FETCHCONTENT_MAKEAVAILABLE(MyGit)
-
-INIT_GIT()
-
-LIST(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/external/MyCMake/cmake")
-INCLUDE(Tools)
+FIND_PACKAGE(MyCMake QUIET)
+IF (${MyCMake_FOUND})
+    MESSAGE(STATUS "MyCMake found")
+ELSE ()
+    MESSAGE(STATUS "MyCMake not found, fetching ...")
+    FETCHCONTENT_DECLARE(
+            MyCMake
+            GIT_REPOSITORY https://github.com/shimakaze09/MyCMake.git
+            GIT_TAG main
+    )
+    FETCHCONTENT_MAKEAVAILABLE(MyCMake)
+ENDIF ()
 
 INCLUDE_DIRECTORIES(
         ${PROJECT_SOURCE_DIR}/include
-        # $ENV{XXX_INCLUDE_PATH}
-        # ...
 )
+
 LINK_DIRECTORIES(
         ${PROJECT_SOURCE_DIR}/lib
-        # $ENV{XXX_LIB_PATH}
-        # ...
 )
 
 ADD_SUB_DIRS(src)
+
+EXPORT_TARGETS()
