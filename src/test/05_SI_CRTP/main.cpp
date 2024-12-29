@@ -6,9 +6,9 @@
 #include <iostream>
 #include <type_traits>
 
-#include <MyTemplate/TypeList.h>
 #include <MyTemplate/Num.h>
 #include <MyTemplate/SI.h>
+#include <MyTemplate/TypeList.h>
 
 using namespace std;
 using namespace My;

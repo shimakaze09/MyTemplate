@@ -5,6 +5,7 @@
 #pragma once
 
 #include "Basic.h"
+#include "Name.h"
 
 namespace My {
 // type, value

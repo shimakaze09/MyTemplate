@@ -50,11 +50,11 @@ ELSE ()
 ENDIF ()
 
 INCLUDE_DIRECTORIES(
-        ${PROJECT_SOURCE_DIR}/include
+        # ${PROJECT_SOURCE_DIR}/include
 )
 
 LINK_DIRECTORIES(
-        ${PROJECT_SOURCE_DIR}/lib
+        # ${PROJECT_SOURCE_DIR}/lib
 )
 
 ADD_SUB_DIRS(src)
