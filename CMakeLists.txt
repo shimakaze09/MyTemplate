@@ -40,7 +40,7 @@ INCLUDE(FETCHCONTENT)
 MESSAGE(STATUS "Looking for: MyCMake v0.3.0")
 FIND_PACKAGE(MyCMake 0.3.0 QUIET)
 IF (${MyCMake_FOUND})
-    MESSAGE(STATUS "MyCMake v${PACKAGE_VERSION} found")
+    MESSAGE(STATUS "MyCMake v${MyCMake_VERSION} found")
 ELSE ()
     SET(ADDRESS "https://github.com/shimakaze09/MyCMake.git")
     MESSAGE(STATUS "MyCMake v0.3.0 not found\n"
