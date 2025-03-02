@@ -4,7 +4,8 @@
 
 #pragma once
 
-#include "TypeList.h"
+#include "Concept.h"
+#include "Typelist.h"
 
 #include <tuple>
 #include <utility>
@@ -21,6 +22,8 @@ template <typename T>
 using FuncTraits_ArgList = typename FuncTraits<T>::ArgList;
 template <typename T>
 using FuncTraits_Ret = typename FuncTraits<T>::Ret;
+template <typename T>
+using FuncTraits_Obj = typename FuncTraits<T>::Obj;
 
 // NewFunc == Ret(Args...)
 // static Ret(Args...) run(Func);
@@ -29,8 +32,19 @@ using FuncTraits_Ret = typename FuncTraits<T>::Ret;
 template <typename NewFunc>
 struct FuncExpand;
 
+// run()
 template <typename Func>
 struct MemFuncOf;
+
+template <typename Func>
+struct IsConstFunc;
+template <typename Func>
+constexpr bool IsConstFunc_v = IsConstFunc<Func>::value;
+
+template <typename Func>
+struct RemoveFuncConst;
+template <typename Func>
+using RemoveFuncConst_t = typename RemoveFuncConst<Func>::type;
 }  // namespace My
 
 //============================================================
@@ -162,10 +176,35 @@ struct FuncExpand<Ret(Args...)> {
 
 // =========================
 
+namespace detail::Func_ {
+template <typename Func, typename>
+struct IsConstFuncHelper : std::true_type {};
+
+template <typename Func>
+struct IsConstFuncHelper<Func, std::void_t<Func*>> : std::false_type {};
+}  // namespace detail::Func_
+
+template <typename Func>
+struct IsConstFunc : detail::Func_::IsConstFuncHelper<Func, void> {};
+
+template <typename Func>
+struct RemoveFuncConst : IType<Func> {};
+
+template <typename Ret, typename... Args>
+struct RemoveFuncConst<Ret(Args...) const> : IType<Ret(Args...)> {};
+
+template <typename Obj, typename Ret, typename... Args>
+struct RemoveFuncConst<Ret (Obj::*)(Args...) const>
+    : IType<Ret (Obj::*)(Args...)> {};
+
 template <typename Func>
 struct MemFuncOf {
   template <typename Obj>
   static constexpr auto run(Func Obj::* func) noexcept {
+    return func;
+  }
+
+  static constexpr auto run(RemoveFuncConst_t<Func> func) noexcept {
     return func;
   }
 };
