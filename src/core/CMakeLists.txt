@@ -1,1 +1,4 @@
-ADD_TARGET(MODE "HEAD"  INTERFACE_INC ON)
+ADD_TARGET(
+        MODE HEAD
+        INC include
+)
