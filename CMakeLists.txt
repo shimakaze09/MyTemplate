@@ -8,9 +8,9 @@ INCLUDE(FETCHCONTENT)
 MESSAGE(STATUS "Looking for: MyCMake 0.5.0")
 FIND_PACKAGE(MyCMake 0.5.0 QUIET)
 IF (NOT MyCMake_FOUND)
-    MESSAGE(STATUS "MyCMake 0.5.0 not found\n")
-    MESSAGE(STATUS "Fetching ${ADDRESS} with tag 0.5.0")
     SET(ADDRESS "https://github.com/shimakaze09/MyCMake.git")
+    MESSAGE(STATUS "MyCMake 0.5.0 not found\n")
+    MESSAGE(STATUS "Fetching from ${ADDRESS} with tag 0.5.0")
     FETCHCONTENT_DECLARE(
             MyCMake
             GIT_REPOSITORY ${ADDRESS}
