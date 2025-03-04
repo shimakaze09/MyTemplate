@@ -92,10 +92,7 @@ constexpr bool TCanGeneralizeFromList_v =
     TCanGeneralizeFromList<TList, InstanceList>::value;
 }  // namespace My
 
-namespace My::detail::TemplateList_ {
-template <typename TList, typename Instance, bool found = false>
-struct TExistGenericity;
-}
+// ===================================================================================================
 
 namespace My {
 template <template <typename...> class... Ts>
@@ -104,14 +101,13 @@ struct TLength<TemplateList<Ts...>> : IValue<size_t, sizeof...(Ts)> {};
 template <typename TList>
 struct TIsEmpty : IValue<bool, TLength_v<TList> == 0> {};
 
-/*
-	// TFront will introduce new template
-	template<template<typename...> class Head, template<typename...> class... Tail>
-	struct TFront<TemplateList<Head, Tail...>> {
-		template<typename... Ts>
-		using Ttype = Head<Ts...>;
-	};
-	*/
+// TFront will introduce new template
+// template <template <typename...> class Head,
+//           template <typename...> class... Tail>
+// struct TFront<TemplateList<Head, Tail...>> {
+//   template <typename... Ts>
+//   using Ttype = Head<Ts...>;
+// };
 
 template <template <typename...> class T, template <typename...> class... Ts>
 struct TPushFront<TemplateList<Ts...>, T> : IType<TemplateList<T, Ts...>> {};
@@ -123,17 +119,15 @@ template <template <typename...> class Head,
           template <typename...> class... Tail>
 struct TPopFront<TemplateList<Head, Tail...>> : IType<TemplateList<Tail...>> {};
 
-/*
-	// TAt will introduce new template
-	template<typename TList>
-	struct TAt<TList, 0> {
-		template<typename... Ts>
-		using Ttype = typename TFront<TList>::template Ttype<Ts...>;
-	};
+// TAt will introduce new template
+// template <typename TList>
+// struct TAt<TList, 0> {
+//   template <typename... Ts>
+//   using Ttype = typename TFront<TList>::template Ttype<Ts...>;
+// };
 
-	template<typename TList, size_t N>
-	struct TAt : TAt<TPopFront_t<TList>, N - 1> { };
-	*/
+// template <typename TList, size_t N>
+// struct TAt : TAt<TPopFront_t<TList>, N - 1> {};
 
 template <template <typename I, template <typename...> class X> class Op,
           typename I>
@@ -160,9 +154,9 @@ struct TTransform<TemplateList<Ts...>, Op>
 // template<typename TList, size_t... Indices>
 // struct TSelect : IType<TemplateList<TAt<TList, Indices>::template Ttype...>> {};
 
-template <typename TList, typename Instance>
-struct TExistGenericity
-    : detail::TemplateList_::TExistGenericity<TList, Instance> {};
+template <template <typename...> class... Ts, typename Instance>
+struct TExistGenericity<TemplateList<Ts...>, Instance>
+    : IValue<bool, (is_instance_of_v<Instance, Ts> || ...)> {};
 
 template <typename ArgList, template <typename...> class... Ts>
 struct TInstance<TemplateList<Ts...>, ArgList>
@@ -176,17 +170,3 @@ template <typename InstanceList, template <typename...> class... Ts>
 struct TCanGeneralizeFromList<TemplateList<Ts...>, InstanceList>
     : IValue<bool, (ExistInstance_v<InstanceList, Ts> && ...)> {};
 }  // namespace My
-
-namespace My::detail::TemplateList_ {
-template <typename TList, typename Instance>
-struct TExistGenericity<TList, Instance, true> : std::true_type {};
-
-template <typename Instance>
-struct TExistGenericity<TemplateList<>, Instance, false> : std::false_type {};
-
-template <typename Instance, template <typename...> class THead,
-          template <typename...> class... TTail>
-struct TExistGenericity<TemplateList<THead, TTail...>, Instance, false>
-    : TExistGenericity<TemplateList<TTail...>, Instance,
-                       is_instance_of_v<Instance, THead>> {};
-}  // namespace My::detail::TemplateList_
