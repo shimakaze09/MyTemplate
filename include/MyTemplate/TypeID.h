@@ -1,44 +1,27 @@
+//
+// Created by Admin on 26/12/2024.
+//
+
 #pragma once
 
 // ref: https://github.com/skypjack/entt
 
+#include "../_deps/nameof.hpp"
+
 #include <cstdint>
 #include <type_traits>
 
-#if defined _MSC_VER
-#define MY_PRETTY_FUNCTION __FUNCSIG__
-//#define MY_PRETTY_FUNCTION_CONSTEXPR ENTT_PRETTY_FUNCTION
-#elif defined __clang__ || (defined __GNUC__ && __GNUC__ > 8)
-#define MY_PRETTY_FUNCTION __PRETTY_FUNCTION__
-//#define MY_PRETTY_FUNCTION_CONSTEXPR ENTT_PRETTY_FUNCTION
-#elif defined __GNUC__
-#define MY_PRETTY_FUNCTION __PRETTY_FUNCTION__
-#endif
+//#if defined _MSC_VER
+//	#define MY_PRETTY_FUNCTION __FUNCSIG__
+//	//#define MY_PRETTY_FUNCTION_CONSTEXPR ENTT_PRETTY_FUNCTION
+//#elif defined __clang__ || (defined __GNUC__ && __GNUC__ > 8)
+//	#define MY_PRETTY_FUNCTION __PRETTY_FUNCTION__
+//	//#define MY_PRETTY_FUNCTION_CONSTEXPR ENTT_PRETTY_FUNCTION
+//#elif defined __GNUC__
+//	#define MY_PRETTY_FUNCTION __PRETTY_FUNCTION__
+//#endif
 
-namespace My::detail::TypeID {
-template <typename T>
-struct TypeID;
-}
-
-namespace My {
-template <typename T>
-constexpr size_t TypeID = detail::TypeID::TypeID<T>::id();
-
-template <typename X, typename Y>
-struct TypeID_Less;
-template <typename X, typename Y>
-constexpr bool TypeID_Less_v = TypeID_Less<X, Y>::value;
-}  // namespace My
-
-namespace My {
-template <typename X, typename Y>
-struct TypeID_Less {
-  static constexpr bool value = TypeID<X> < TypeID<Y>;
-  static_assert(std::is_same_v<X, Y> || TypeID<X> != TypeID<Y>);
-};
-}  // namespace My
-
-namespace My::detail::TypeID {
+namespace My::detail::TypeID_ {
 template <typename>
 struct fnv1a_traits;
 
@@ -66,7 +49,7 @@ class hashed_string {
     const char* str;
   };
 
-  // Fowler CNoll CVo hash function v. 1a - the good
+  // Fowler¨CNoll¨CVo hash function v. 1a - the good
   static constexpr size_t helper(const char* curr) noexcept {
     auto value = traits_type::offset;
 
@@ -74,6 +57,17 @@ class hashed_string {
       value = (value ^ static_cast<traits_type::type>(*(curr++))) *
               traits_type::prime;
     }
+
+    return value;
+  }
+
+  // Fowler¨CNoll¨CVo hash function v. 1a - the good
+  static constexpr size_t helper(const char* str, size_t n) noexcept {
+    auto value = traits_type::offset;
+
+    for (size_t i = 0; i < n; i++)
+      value =
+          (value ^ static_cast<traits_type::type>(str[i])) * traits_type::prime;
 
     return value;
   }
@@ -102,6 +96,10 @@ class hashed_string {
   template <size_t N>
   static constexpr hash_type value(const value_type (&str)[N]) noexcept {
     return helper(str);
+  }
+
+  static constexpr hash_type value(std::string_view str) noexcept {
+    return helper(str.data(), str.size());
   }
 
   /**
@@ -198,8 +196,30 @@ struct TypeID {
          * @return The numeric representation of the given type.
          */
   static constexpr size_t id() noexcept {
-    constexpr auto value = hashed_string::value(MY_PRETTY_FUNCTION);
+    constexpr auto value = hashed_string::value(nameof::nameof_type<T>());
     return value;
   }
 };
-}  // namespace My::detail::TypeID
+}  // namespace My::detail::TypeID_
+
+namespace My {
+template <typename T>
+constexpr size_t TypeID = detail::TypeID_::TypeID<T>::id();
+
+constexpr size_t RuntimeTypeID(std::string_view str) {
+  return detail::TypeID_::hashed_string::value(str);
+}
+
+template <typename X, typename Y>
+struct TypeID_Less;
+template <typename X, typename Y>
+constexpr bool TypeID_Less_v = TypeID_Less<X, Y>::value;
+}  // namespace My
+
+namespace My {
+template <typename X, typename Y>
+struct TypeID_Less {
+  static constexpr bool value = TypeID<X> < TypeID<Y>;
+  static_assert(std::is_same_v<X, Y> || TypeID<X> != TypeID<Y>);
+};
+}  // namespace My

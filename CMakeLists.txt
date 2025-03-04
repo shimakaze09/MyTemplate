@@ -20,6 +20,7 @@ IF (NOT MyCMake_FOUND)
     MESSAGE(STATUS "MyCMake 0.5.0 built")
 ENDIF ()
 
+ADD_SUB_DIRS_REC(include)
 ADD_SUB_DIRS_REC(src)
 
 EXPORT_TARGETS(DIRECTORIES "include")
