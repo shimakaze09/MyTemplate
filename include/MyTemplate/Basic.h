@@ -6,6 +6,8 @@
 
 #include <type_traits>
 
+#include "Concept.h"
+
 namespace My {
 template <typename T>
 struct IType {
@@ -46,9 +48,15 @@ struct is_derived_constructible;
 template <typename T, typename... Args>
 constexpr bool is_derived_constructible_v =
     is_derived_constructible<T, Args...>::value;
+
+template <typename T, typename... Args>
+struct is_list_initializable;
+template <typename T, typename... Args>
+static constexpr bool is_list_initializable_v =
+    is_list_initializable<T, Args...>::value;
 }  // namespace My
 
-namespace My::detail::Basic {
+namespace My::detail::Basic_ {
 template <template <typename...> typename T, typename AlwaysVoid,
           typename... Ts>
 struct is_instantiable;
@@ -56,16 +64,19 @@ struct is_instantiable;
 template <template <typename...> class T, template <typename...> class U,
           bool instantiable, typename... Args>
 struct is_same_template;
-}  // namespace My::detail::Basic
+
+template <typename T, typename Enabler /*=void*/, typename... Args>
+struct is_list_initializable;
+}  // namespace My::detail::Basic_
 
 namespace My {
 template <template <typename...> typename T, typename... Ts>
-struct is_instantiable : detail::Basic::is_instantiable<T, void, Ts...> {};
+struct is_instantiable : detail::Basic_::is_instantiable<T, void, Ts...> {};
 
 template <template <typename...> class T, template <typename...> class U,
           typename... Args>
 struct is_same_template
-    : detail::Basic::is_same_template<
+    : detail::Basic_::is_same_template<
           T, U, is_instantiable_v<T, Args...> && is_instantiable_v<U, Args...>,
           Args...> {};
 
@@ -126,9 +137,15 @@ struct is_derived_constructible {
  public:
   static constexpr bool value = test<T>::value;
 };
+
+// =================================================
+
+template <typename T, typename... Args>
+struct is_list_initializable
+    : detail::Basic_::is_list_initializable<T, void, Args...> {};
 }  // namespace My
 
-namespace My::detail::Basic {
+namespace My::detail::Basic_ {
 template <template <typename...> typename T, typename AlwaysVoid,
           typename... Ts>
 struct is_instantiable : std::false_type {};
@@ -146,4 +163,12 @@ template <template <typename...> class T, template <typename...> class U,
           typename... Args>
 struct is_same_template<T, U, true, Args...>
     : IValue<bool, std::is_same_v<T<Args...>, U<Args...>>> {};
-}  // namespace My::detail::Basic
+
+template <typename T, typename Enabler, typename... Args>
+struct is_list_initializable : std::false_type {};
+
+template <typename T, typename... Args>
+struct is_list_initializable<
+    T, std::void_t<decltype(T{std::declval<Args>()...})>, Args...>
+    : std::true_type {};
+}  // namespace My::detail::Basic_

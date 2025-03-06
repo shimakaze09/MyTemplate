@@ -1,23 +1,24 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.20 FATAL_ERROR)
 
-PROJECT(MyTemplate VERSION 0.4.3 LANGUAGES CXX)
+PROJECT(MyTemplate VERSION 0.4.4 LANGUAGES CXX)
 MESSAGE(STATUS "Project: ${PROJECT_NAME} ${PROJECT_VERSION}")
 
 INCLUDE(FETCHCONTENT)
 
-MESSAGE(STATUS "Looking for: MyCMake 0.5.3")
-FIND_PACKAGE(MyCMake 0.5.3 QUIET)
+SET(MyCMake_VERSION 0.5.4)
+MESSAGE(STATUS "Looking for: MyCMake ${MyCMake_VERSION}")
+FIND_PACKAGE(MyCMake ${MyCMake_VERSION} QUIET)
 IF (NOT MyCMake_FOUND)
     SET(ADDRESS "https://github.com/shimakaze09/MyCMake.git")
-    MESSAGE(STATUS "MyCMake 0.5.3 not found\n")
-    MESSAGE(STATUS "Fetching from ${ADDRESS} with tag 0.5.3")
+    MESSAGE(STATUS "MyCMake ${MyCMake_VERSION} not found\n")
+    MESSAGE(STATUS "Fetching from ${ADDRESS} with tag ${MyCMake_VERSION}")
     FETCHCONTENT_DECLARE(
             MyCMake
             GIT_REPOSITORY ${ADDRESS}
-            GIT_TAG "0.5.3"
+            GIT_TAG ${MyCMake_VERSION}
     )
     FETCHCONTENT_MAKEAVAILABLE(MyCMake)
-    MESSAGE(STATUS "MyCMake 0.5.3 built")
+    MESSAGE(STATUS "MyCMake ${MyCMake_VERSION} built")
 ENDIF ()
 
 INIT_PROJECT()
