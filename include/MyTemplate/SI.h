@@ -17,6 +17,13 @@
   struct My::InterfaceTraits<Interface>            \
       : My::detail::SI_::IListBase<__VA_ARGS__>
 
+#define CombineInterface(Interface, ...)  \
+  template <typename Base, typename Impl> \
+  struct Interface : Base {               \
+    using Base::Base;                     \
+  };                                      \
+  InterfaceTraits_Regist(Interface, __VA_ARGS__)
+
 #define ImplTraits_Regist(Impl, ...)         \
   template <>                                \
   struct My::ImplTraits<Impl> {              \
