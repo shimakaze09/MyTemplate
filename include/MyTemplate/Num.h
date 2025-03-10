@@ -5,7 +5,6 @@
 #pragma once
 
 #include "Basic.h"
-#include "Name.h"
 
 namespace My {
 // type, value
@@ -40,20 +39,4 @@ struct Num {
 
 template <typename... Ts>
 struct Name;
-
-template <typename T, T N>
-struct Name<Num<T, N>> {
-  friend std::ostream& operator<<(std::ostream& os, Name<Num<T, N>>) {
-    os << "Num<" << Name<T>() << ", " << N << ">";
-    return os;
-  }
-};
-
-template <bool b>
-struct Name<Num<bool, b>> {
-  friend std::ostream& operator<<(std::ostream& os, Name<Num<bool, b>>) {
-    os << "Num<" << Name<bool>() << ", " << (b ? "true" : "false") << ">";
-    return os;
-  }
-};
 }  // namespace My

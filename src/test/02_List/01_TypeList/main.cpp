@@ -5,7 +5,6 @@
 #include <iostream>
 #include <type_traits>
 
-#include <MyTemplate/Name.h>
 #include <MyTemplate/TypeList.h>
 
 using namespace std;
@@ -13,8 +12,6 @@ using namespace My;
 
 int main() {
   using list = TypeList<int, float, bool>;
-
-  cout << "list: " << Name<list>() << endl;
 
   static_assert(IsTypeList_v<list>);
   static_assert(!IsTypeList_v<float>);

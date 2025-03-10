@@ -1,5 +1,7 @@
 ADD_TARGET(
-        MODE HEAD
-        INC include
-        C_OPTION /permissive-
+        MODE INTERFACE
+        INC
+        "${PROJECT_SOURCE_DIR}/include"
+        C_OPTION
+        "/permissive-"
 )
