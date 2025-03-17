@@ -114,30 +114,33 @@ struct CheckCompatibleArguments<TypeList<ToArgHead, ToArgTail...>,
 }  // namespace My::detail::Func_
 
 namespace My {
+template <typename Func>
+struct FuncTraitsBase;
+
 template <typename _Ret, typename... Args>
-struct FuncTraits<_Ret(Args...)> {
+struct FuncTraitsBase<_Ret(Args...)> {
   using ArgList = TypeList<Args...>;
   using Ret = _Ret;
+};
+
+template <typename Ret, typename... Args>
+struct FuncTraitsBase<Ret(Args...) const> : FuncTraitsBase<Ret(Args...)> {};
+
+template <typename Ret, typename... Args>
+struct FuncTraits<Ret(Args...)> : FuncTraitsBase<Ret(Args...)> {
+  using Obj = void;
   static constexpr bool is_member = false;
   static constexpr bool is_const = false;
 };
 
-template <typename T, typename _Ret, typename... Args>
-struct FuncTraits<_Ret (T::*)(Args...)> {
-  using ArgList = TypeList<Args...>;
-  using Ret = _Ret;
-  using Obj = T;
-  static constexpr bool is_member = true;
-  static constexpr bool is_const = false;
-};
+template <typename Func>
+struct FuncTraits<Func*> : FuncTraits<Func> {};
 
-template <typename T, typename _Ret, typename... Args>
-struct FuncTraits<_Ret (T::*)(Args...) const> {
-  using ArgList = TypeList<Args...>;
-  using Ret = _Ret;
+template <typename T, typename Func>
+struct FuncTraits<Func T::*> : FuncTraitsBase<Func> {
   using Obj = T;
-  static constexpr bool is_member = true;
-  static constexpr bool is_const = true;
+  static constexpr bool is_member = false;
+  static constexpr bool is_const = false;
 };
 
 template <typename T>
