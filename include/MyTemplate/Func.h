@@ -14,6 +14,7 @@ namespace My {
 // type ArgList : TypeList<Args...>
 // type Ret
 // type Obj
+// type Signature
 // bool is_member
 // bool is_const
 template <typename T>
@@ -24,6 +25,8 @@ template <typename T>
 using FuncTraits_Ret = typename FuncTraits<T>::Ret;
 template <typename T>
 using FuncTraits_Obj = typename FuncTraits<T>::Obj;
+template <typename T>
+using FuncTraits_Signature = typename FuncTraits<T>::Signature;
 
 // NewFunc == Ret(Args...)
 // static Ret(Args...) run(Func);
@@ -45,6 +48,9 @@ template <typename Func>
 struct RemoveFuncConst;
 template <typename Func>
 using RemoveFuncConst_t = typename RemoveFuncConst<Func>::type;
+
+template <typename Lambda>
+constexpr auto DecayLambda(Lambda&& lambda);
 }  // namespace My
 
 //============================================================
@@ -121,6 +127,7 @@ template <typename _Ret, typename... Args>
 struct FuncTraitsBase<_Ret(Args...)> {
   using ArgList = TypeList<Args...>;
   using Ret = _Ret;
+  using Signature = Ret(Args...);
 };
 
 template <typename Ret, typename... Args>
@@ -211,4 +218,12 @@ struct MemFuncOf {
     return func;
   }
 };
+
+// =================================================================
+
+template <typename Lambda>
+constexpr auto DecayLambda(Lambda&& lambda) {
+  return static_cast<std::add_pointer_t<
+      FuncTraits_Signature<std::remove_reference_t<Lambda>>>>(lambda);
+}
 }  // namespace My
