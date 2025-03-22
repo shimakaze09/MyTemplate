@@ -4,8 +4,6 @@
 
 #pragma once
 
-#include <iostream>
-
 #include "Basic.h"
 
 namespace My {
@@ -171,19 +169,6 @@ struct IsSet;
 }  // namespace My::detail::TypeList_
 
 namespace My {
-template <typename... Ts>
-struct Name;
-
-template <typename... Ts>
-struct Name<TypeList<Ts...>> {
-  friend std::ostream& operator<<(std::ostream& os, Name<TypeList<Ts...>>) {
-    os << "[" << Name<Ts...>() << "]";
-    return os;
-  }
-};
-
-// =================================================
-
 template <template <typename...> class OtherListTemplate, typename... Ts>
 struct ToTypeList<OtherListTemplate, OtherListTemplate<Ts...>>
     : IType<TypeList<Ts...>> {};

@@ -36,7 +36,4 @@ struct Num {
   using type = T;
   static constexpr unsigned value = N;
 };
-
-template <typename... Ts>
-struct Name;
 }  // namespace My

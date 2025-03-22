@@ -6,15 +6,15 @@
 
 #include "TemplateList.h"
 
-#define InterfaceTraits_Regist(Interface, ...) \
-  template <>                                  \
-  struct My::InterfaceTraits<Interface> {      \
-    using IList = TemplateList<__VA_ARGS__>;   \
+#define InterfaceTraits_Register(Interface, ...) \
+  template <>                                    \
+  struct My::InterfaceTraits<Interface> {        \
+    using IList = TemplateList<__VA_ARGS__>;     \
   }
 
-#define InterfaceTraits_Regist_Pro(Interface, ...) \
-  template <>                                      \
-  struct My::InterfaceTraits<Interface>            \
+#define InterfaceTraits_Register_Pro(Interface, ...) \
+  template <>                                        \
+  struct My::InterfaceTraits<Interface>              \
       : My::detail::SI_::IListBase<__VA_ARGS__>
 
 #define CombineInterface(Interface, ...)  \
@@ -22,16 +22,16 @@
   struct Interface : Base {               \
     using Base::Base;                     \
   };                                      \
-  InterfaceTraits_Regist(Interface, __VA_ARGS__)
+  InterfaceTraits_Register(Interface, __VA_ARGS__)
 
-#define ImplTraits_Regist(Impl, ...)         \
+#define ImplTraits_Register(Impl, ...)       \
   template <>                                \
   struct My::ImplTraits<Impl> {              \
     using IList = TemplateList<__VA_ARGS__>; \
   }
 
-#define ImplTraits_Regist_Pro(Impl, ...) \
-  template <>                            \
+#define ImplTraits_Register_Pro(Impl, ...) \
+  template <>                              \
   struct My::ImplTraits<Impl> : My::detail::SI_::IListBase<__VA_ARGS__>
 
 namespace My::detail::SI_ {
@@ -51,24 +51,24 @@ template <template <typename...> class Interface>
 struct InterfaceTraits {};
 
 // template<template<typename, typename>class Interface>
-// static constexpr bool IsContain() noexcept;
+// static constexpr bool Contains() noexcept;
 template <typename Impl>
 using SI = detail::SI_::SI_t<Impl>;
 
 template <typename T, template <typename...> class Interface>
-struct SI_IsContain;
+struct SI_Contains;
 template <typename T, template <typename...> class Interface>
-static constexpr bool SI_IsContain_v = SI_IsContain<T, Interface>::value;
+static constexpr bool SI_Contains_v = SI_Contains<T, Interface>::value;
 }  // namespace My
 
 namespace My::detail::SI_ {
 template <typename Enabler, typename T, template <typename...> class Interface>
-struct SI_IsContain_Helper;
+struct SI_Contains_Helper;
 }
 
 namespace My {
 template <typename T, template <typename...> class Interface>
-struct SI_IsContain : detail::SI_::SI_IsContain_Helper<void, T, Interface> {};
+struct SI_Contains : detail::SI_::SI_Contains_Helper<void, T, Interface> {};
 }  // namespace My
 
 namespace My::detail::SI_ {
@@ -157,10 +157,10 @@ struct Nil {
   void operator&(SI_ERROR) = delete;
   template <typename SI_ERROR, typename = typename SI_ERROR::SI_ERROR>
   void operator|(SI_ERROR) = delete;
-  // template <typename SI_ERROR, typename = typename SI_ERROR::SI_ERROR>
-  // void operator~() = delete;
-  // template <typename SI_ERROR, typename = typename SI_ERROR::SI_ERROR>
-  // void operator!() = delete;
+  /*template<typename SI_ERROR, typename = typename SI_ERROR::SI_ERROR>
+		void operator~() = delete;
+		template<typename SI_ERROR, typename = typename SI_ERROR::SI_ERROR>
+		void operator!() = delete;*/
   template <typename SI_ERROR, typename = typename SI_ERROR::SI_ERROR>
   void operator=(SI_ERROR) = delete;
   template <typename SI_ERROR, typename = typename SI_ERROR::SI_ERROR>
@@ -211,15 +211,15 @@ struct Nil {
   void operator,(SI_ERROR) = delete;
   template <typename SI_ERROR, typename = typename SI_ERROR::SI_ERROR>
   void operator->*(SI_ERROR) = delete;
-  // template <typename SI_ERROR, typename = typename SI_ERROR::SI_ERROR>
-  // void operator->() = delete;
+  /*template<typename SI_ERROR, typename = typename SI_ERROR::SI_ERROR>
+		void operator->() = delete;*/
   template <typename SI_ERROR, typename = typename SI_ERROR::SI_ERROR>
   void operator()(SI_ERROR) = delete;
   template <typename SI_ERROR, typename = typename SI_ERROR::SI_ERROR>
   void operator[](SI_ERROR) = delete;
 
   template <template <typename, typename> class Interface>
-  static constexpr bool IsContain() noexcept {
+  static constexpr bool Contains() noexcept {
     using IList = detail::SI_::TopoSort_t<detail::SI_::ImplTrait_IList_t<Impl>>;
     return TContain_v<IList, Interface>;
   }
@@ -243,13 +243,13 @@ struct SI_Helper<TemplateList<IHead, ITail...>, Impl>
 
 // [is contain]
 template <typename Enabler, typename T, template <typename...> class Interface>
-struct SI_IsContain_Helper : std::false_type {};
+struct SI_Contains_Helper : std::false_type {};
 
 template <typename T, template <typename...> class Interface>
-struct SI_IsContain_Helper<std::enable_if_t<std::is_base_of_v<Nil<T>, T>>, T,
-                           Interface>
-    : IValue<bool, T::template IsContain<Interface>()> {};
+struct SI_Contains_Helper<std::enable_if_t<std::is_base_of_v<Nil<T>, T>>, T,
+                          Interface>
+    : IValue<bool, T::template Contains<Interface>()> {};
 
 template <typename T, template <typename...> class Interface>
-struct SI_IsContain : SI_IsContain_Helper<void, T, Interface> {};
+struct SI_Contains : SI_Contains_Helper<void, T, Interface> {};
 }  // namespace My::detail::SI_
