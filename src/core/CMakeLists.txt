@@ -4,6 +4,4 @@ ADD_TARGET(
         "${PROJECT_SOURCE_DIR}/include"
         C_OPTION
         "/permissive-"
-        LIB
-        nameof::nameof
 )

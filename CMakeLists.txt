@@ -1,6 +1,6 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.20 FATAL_ERROR)
 
-PROJECT(MyTemplate VERSION 0.4.9)
+PROJECT(MyTemplate VERSION 0.5.0)
 MESSAGE(STATUS "Project: ${PROJECT_NAME} ${PROJECT_VERSION}")
 
 INCLUDE(cmake/InitMyCMake.cmake)
@@ -8,16 +8,10 @@ INIT_MYCMAKE()
 
 INIT_PROJECT()
 
-CPMAddPackage(
-        NAME nameof
-        GITHUB_REPOSITORY Neargye/nameof
-        GIT_TAG 0e8bec0
-)
 ADD_SUB_DIRS_REC(src)
 
 EXPORT_TARGETS(
         TARGET
-        CPM
         DIRECTORIES
         "include"
 )
