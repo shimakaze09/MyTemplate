@@ -4,8 +4,6 @@
 
 #include <MyTemplate/Func.h>
 
-#include <nameof.hpp>
-
 #include <iostream>
 
 using namespace My;
