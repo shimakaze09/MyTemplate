@@ -4,6 +4,9 @@
 
 #pragma once
 
+// u?int{8|16|32|64}
+ #define MY_NAME_X_INT
+
 namespace My {
 template <auto V>
 constexpr auto constexpr_name() noexcept;

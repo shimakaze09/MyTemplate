@@ -363,6 +363,35 @@ constexpr auto My::type_name() noexcept {
       static_assert("not support");
   } else if constexpr (IsIValue_v<T>)
     return constexpr_name<T::value>();
+#ifdef MY_NAME_X_INT
+  else if constexpr (std::is_integral_v<T>) {
+    if constexpr (std::is_signed_v<T>) {
+      constexpr size_t size = sizeof(T);
+      if constexpr (size == 1)
+        return TSTR("int8");
+      else if constexpr (size == 2)
+        return TSTR("int16");
+      else if constexpr (size == 4)
+        return TSTR("int32");
+      else if constexpr (size == 8)
+        return TSTR("int64");
+      else
+        static_assert("not support");
+    } else {
+      constexpr size_t size = sizeof(T);
+      if constexpr (size == 1)
+        return TSTR("uint8");
+      else if constexpr (size == 2)
+        return TSTR("uint16");
+      else if constexpr (size == 4)
+        return TSTR("uint32");
+      else if constexpr (size == 8)
+        return TSTR("uint64");
+      else
+        static_assert("not support");
+    }
+  }
+#endif  // MY_NAME_X_INT
   else {
     using U = to_typename_template_type_t<T>;
     if constexpr (is_typename_template_type_v<U>)

@@ -3,4 +3,6 @@ ADD_TARGET(
         MODE EXE
         SOURCE
         "${PROJECT_SOURCE_DIR}/include/MyTemplate"
+        LIB
+        My::MyTemplate_core
 )
