@@ -101,6 +101,11 @@ constexpr size_t string_hash(const char (&str)[N]) noexcept {
 }
 
 constexpr size_t string_hash(const char* str) noexcept;
+
+template <typename T>
+struct is_function_pointer;
+template <typename T>
+constexpr bool is_function_pointer_v = is_function_pointer<T>::value;
 }  // namespace My
 
 #include "details/ToTTType.inl"
