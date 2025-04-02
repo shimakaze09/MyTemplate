@@ -12,7 +12,6 @@
 #define MY_TSTR
 
 #include <string_view>
-#include <utility>
 
 namespace My {
 template <typename Char, Char... chars>
