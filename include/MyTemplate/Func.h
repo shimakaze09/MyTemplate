@@ -39,6 +39,12 @@ constexpr ReferenceMode FuncTraits_ref = FuncTraits<T>::ref;
 template <typename T>
 constexpr bool FuncTraits_is_noexcept = FuncTraits<T>::is_noexcept;
 
+template <typename Func>
+struct MemFuncOf;
+
+template <typename Func>
+struct StaticMemFuncOf;
+
 // NewFunc == Ret(Args...)
 // static Ret(Args...) run(Func);
 // - { Func's arguments, ... } == { Args... }
@@ -292,4 +298,17 @@ constexpr auto DecayLambda(Lambda&& lambda) {
   return static_cast<std::add_pointer_t<
       FuncTraits_Signature<std::remove_reference_t<Lambda>>>>(lambda);
 }
+
+template <typename Func>
+struct MemFuncOf {
+  template <typename Obj>
+  static constexpr auto run(Func Obj::* func) noexcept {
+    return func;
+  }
+};
+
+template <typename Func>
+struct StaticMemFuncOf {
+  static constexpr auto run(Func* func) noexcept { return func; }
+};
 }  // namespace My
