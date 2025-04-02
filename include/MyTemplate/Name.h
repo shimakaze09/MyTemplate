@@ -2,14 +2,10 @@
 // Created by Admin on 2/04/2025.
 //
 
-#ifndef MY_MYXNAME_HPP
-#define MY_MYXNAME_HPP
+#pragma once
 
 #include "Func.h"
-
-#define MYXNAME_VERSION_MAJOR 0
-#define MYXNAME_VERSION_MINOR 0
-#define MYXNAME_VERSION_PATCH 1
+#include "TSTR.h"
 
 #include <array>
 #include <cassert>
@@ -18,32 +14,10 @@
 #include <iosfwd>
 #include <iterator>
 #include <limits>
-#include <tuple>
-#include <type_traits>
-#include <utility>
-
-#if !defined(MYXNAME_USING_ALIAS_STRING)
-#include <string>
-#endif
-#if !defined(MYXNAME_USING_ALIAS_STRING_VIEW)
-#include <string_view>
-#endif
 
 #if __has_include(<cxxabi.h>)
 #include <cxxabi.h>
 #include <cstdlib>
-#endif
-
-#if defined(__clang__)
-#pragma clang diagnostic push
-#elif defined(__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored \
-    "-Wstringop-overflow"  // Missing terminating nul 'enum_name_v'.
-#elif defined(_MSC_VER)
-#pragma warning(push)
-#pragma warning( \
-    disable : 26495)  // Variable 'cstring<N>::chars_' is uninitialized.
 #endif
 
 // Checks MyXName_type compiler compatibility.
@@ -88,105 +62,6 @@
 #define MYXNAME_ENUM_SUPPORTED_ALIASES 1
 #endif
 
-// Enum value must be greater or equals than MYXNAME_ENUM_RANGE_MIN. By default MYXNAME_ENUM_RANGE_MIN = -128.
-// If need another min range for all enum types by default, redefine the macro MYXNAME_ENUM_RANGE_MIN.
-#if !defined(MYXNAME_ENUM_RANGE_MIN)
-#define MYXNAME_ENUM_RANGE_MIN -128
-#endif
-
-// Enum value must be less or equals than MYXNAME_ENUM_RANGE_MAX. By default MYXNAME_ENUM_RANGE_MAX = 128.
-// If need another max range for all enum types by default, redefine the macro MYXNAME_ENUM_RANGE_MAX.
-#if !defined(MYXNAME_ENUM_RANGE_MAX)
-#define MYXNAME_ENUM_RANGE_MAX 128
-#endif
-
-#ifndef UBPA_TSTR
-#define UBPA_TSTR
-
-#include <string_view>
-#include <utility>
-
-namespace My {
-template <typename Char, Char... chars>
-struct TStr;
-}
-
-namespace My::details {
-template <typename STR>
-struct TSTRSizeof;
-
-template <typename Char>
-struct TSTRSizeof<std::basic_string_view<Char>> {
-  static constexpr size_t get(
-      const std::basic_string_view<Char>& str) noexcept {
-    return str.size();
-  }
-};
-
-template <typename Char>
-struct TSTRSizeof<const std::basic_string_view<Char>&>
-    : TSTRSizeof<std::basic_string_view<Char>> {};
-
-template <typename Char>
-struct TSTRSizeof<const std::basic_string_view<Char>>
-    : TSTRSizeof<std::basic_string_view<Char>> {};
-
-template <typename Char, size_t N>
-struct TSTRSizeof<const Char (&)[N]> {
-  static constexpr size_t get(const Char (&str)[N]) noexcept { return N - 1; }
-};
-
-template <typename Char, typename T, size_t... N>
-constexpr decltype(auto) TSTRHelperImpl(std::index_sequence<N...>) {
-  return TStr<Char, T::get()[N]...>{};
-}
-
-template <typename T>
-constexpr decltype(auto) TSTRHelper(T) {
-  using Char = std::decay_t<decltype(T::get()[0])>;
-  return TSTRHelperImpl<Char, T>(
-      std::make_index_sequence<TSTRSizeof<decltype(T::get())>::get(
-          T::get())>());
-}
-}  // namespace My::details
-
-// [C-style string type (value)]
-// in C++20, we can easily put a string into template parameter list
-// but in C++17, we just can use this disgusting trick
-#define TSTR(s)                               \
-  (My::details::TSTRHelper([] {               \
-    struct tmp {                              \
-      static constexpr decltype(auto) get() { \
-        return (s);                           \
-      }                                       \
-    };                                        \
-    return tmp{};                             \
-  }()))
-
-namespace My {
-template <typename Char_, Char_... chars>
-struct TStr {
-  using Tag = TStr;
-  using Char = Char_;
-
-  template <typename T>
-  static constexpr bool NameIs(T = {}) noexcept {
-    return std::is_same_v<T, Tag>;
-  }
-
-  static constexpr char name_data[]{chars..., Char(0)};
-  static constexpr std::basic_string_view<Char> name{name_data};
-};
-
-template <typename T>
-struct IsTStr : std::false_type {};
-
-template <typename Char, Char... chars>
-struct IsTStr<TStr<Char, chars...>> : std::true_type {};
-}  // namespace My
-
-#endif  // UBPA_TSTR
-
 namespace My::details {
 #if defined(_MSC_VER)
 template <typename T>
@@ -212,224 +87,6 @@ constexpr auto func_signature_impl() noexcept {
 template <typename T>
 constexpr auto func_signature() noexcept {
   return TSTR(func_signature_impl<identity<T>>());
-}
-
-//
-// TStr Utils
-///////////////
-
-template <typename Str0, typename Str1>
-struct concat_helper;
-template <typename Str0, typename Str1>
-using concat_helper_t = typename concat_helper<Str0, Str1>::type;
-
-template <typename Char, Char... c0, Char... c1>
-struct concat_helper<TStr<Char, c0...>, TStr<Char, c1...>> {
-  using type = TStr<Char, c0..., c1...>;
-};
-
-template <typename Str0, typename Str1>
-constexpr auto concat(Str0 = {}, Str1 = {}) noexcept {
-  return typename concat_helper<Str0, Str1>::type{};
-}
-
-template <typename... Strs>
-struct concat_seq_helper;
-template <typename... Strs>
-using concat_seq_helper_t = typename concat_seq_helper<Strs...>::type;
-
-template <typename Str>
-struct concat_seq_helper<Str> {
-  using type = Str;
-};
-
-template <typename Str, typename... Strs>
-struct concat_seq_helper<Str, Strs...> {
-  using type = concat_helper_t<Str, concat_seq_helper_t<Strs...>>;
-};
-
-template <typename... Strs>
-constexpr auto concat_seq(Strs...) noexcept {
-  return concat_seq_helper_t<Strs...>{};
-}
-
-template <typename Seperator, typename... Strs>
-struct concat_seq_seperator_helper;
-template <typename Seperator, typename... Strs>
-using concat_seq_seperator_helper_t =
-    typename concat_seq_seperator_helper<Seperator, Strs...>::type;
-
-template <typename Seperator>
-struct concat_seq_seperator_helper<Seperator> {
-  using type = TStr<typename Seperator::Char>;
-};
-
-template <typename Seperator, typename Str>
-struct concat_seq_seperator_helper<Seperator, Str> {
-  using type = Str;
-};
-
-template <typename Seperator, typename Str, typename... Strs>
-struct concat_seq_seperator_helper<Seperator, Str, Strs...> {
-  using type =
-      concat_helper_t<concat_helper_t<Str, Seperator>,
-                      concat_seq_seperator_helper_t<Seperator, Strs...>>;
-};
-
-template <typename Seperator, typename... Strs>
-constexpr auto concat_seq_seperator(Seperator, Strs...) noexcept {
-  return concat_seq_seperator_helper_t<Seperator, Strs...>{};
-}
-
-template <typename Str, typename X>
-constexpr size_t find(Str = {}, X = {}) noexcept {
-  static_assert(IsTStr<Str>::value && IsTStr<X>::value);
-  if constexpr (Str::name.size() >= X::name.size()) {
-    for (size_t i = 0; i < Str::name.size() - X::name.size() + 1; i++) {
-      bool flag = true;
-      for (size_t k = 0; k < X::name.size(); k++) {
-        if (Str::name[i + k] != X::name[k]) {
-          flag = false;
-          break;
-        }
-      }
-      if (flag)
-        return i;
-    }
-  }
-  return static_cast<size_t>(-1);
-}
-
-template <typename Str, typename X>
-constexpr size_t find_last(Str = {}, X = {}) noexcept {
-  static_assert(IsTStr<Str>::value && IsTStr<X>::value);
-  if constexpr (Str::name.size() >= X::name.size()) {
-    for (size_t i = 0; i < Str::name.size() - X::name.size() + 1; i++) {
-      size_t idx = Str::name.size() - X::name.size() - i;
-      bool flag = true;
-      for (size_t k = 0; k < X::name.size(); k++) {
-        if (Str::name[idx + k] != X::name[k]) {
-          flag = false;
-          break;
-        }
-      }
-      if (flag)
-        return idx;
-    }
-  }
-  return static_cast<size_t>(-1);
-}
-
-template <typename Str, typename X>
-constexpr bool starts_with(Str = {}, X = {}) noexcept {
-  static_assert(IsTStr<Str>::value && IsTStr<X>::value);
-  if (Str::name.size() < X::name.size())
-    return false;
-  for (size_t i = 0; i < X::name.size(); i++) {
-    if (Str::name[i] != X::name[i])
-      return false;
-  }
-  return true;
-}
-
-template <typename Str, typename X>
-constexpr bool ends_with(Str = {}, X = {}) noexcept {
-  static_assert(IsTStr<Str>::value && IsTStr<X>::value);
-  if (Str::name.size() < X::name.size())
-    return false;
-  for (size_t i = 0; i < X::name.size(); i++) {
-    if (Str::name[Str::name.size() - X::name.size() + i] != X::name[i])
-      return false;
-  }
-  return true;
-}
-
-template <size_t N, typename Str>
-constexpr auto remove_prefix(Str = {}) {
-  static_assert(IsTStr<Str>::value);
-  if constexpr (Str::name.size() >= N)
-    return TSTR(decltype(Str::name){Str::name.data() + N});
-  else
-    return TSTR("");
-}
-
-template <typename Str, typename X>
-constexpr auto remove_prefix(Str = {}, X = {}) {
-  static_assert(IsTStr<Str>::value);
-  static_assert(IsTStr<X>::value);
-  if constexpr (starts_with<Str, X>())
-    return remove_prefix<X::name.size(), Str>();
-  else
-    return Str{};
-}
-
-template <size_t N, typename Str>
-constexpr auto remove_suffix(Str = {}) {
-  static_assert(IsTStr<Str>::value);
-  if constexpr (Str::name.size() >= N)
-    return TSTR((decltype(Str::name){Str::name.data(), Str::name.size() - N}));
-  else
-    return TSTR("");
-}
-
-template <typename Str, typename X>
-constexpr auto remove_suffix(Str = {}, X = {}) {
-  static_assert(IsTStr<Str>::value);
-  if constexpr (ends_with<Str, X>())
-    return remove_suffix<X::name.size(), Str>();
-  else
-    return Str{};
-}
-
-template <size_t N, typename Str>
-constexpr auto get_prefix(Str = {}) {
-  static_assert(IsTStr<Str>::value);
-  if constexpr (Str::name.size() >= N)
-    return TSTR((decltype(Str::name){Str::name.data(), N}));
-  else
-    return Str{};
-}
-
-template <size_t N, typename Str>
-constexpr auto get_suffix(Str = {}) {
-  static_assert(IsTStr<Str>::value);
-  if constexpr (Str::name.size() >= N)
-    return TSTR(decltype(Str::name){Str::name.data() + Str::name.size() - N});
-  else
-    return Str{};
-}
-
-// [Left, Right)
-template <size_t Idx, size_t Cnt, typename Str, typename X>
-constexpr auto replace(Str = {}, X = {}) {
-  static_assert(IsTStr<Str>::value);
-  static_assert(IsTStr<X>::value);
-  constexpr auto prefix = remove_suffix<Str::name.size() - Idx>(Str{});
-  constexpr auto suffix = remove_prefix<Idx + Cnt>(Str{});
-
-  return concat(concat(prefix, X{}), suffix);
-}
-
-template <typename Str, typename From, typename To>
-constexpr auto replace(Str = {}, From = {}, To = {}) {
-  static_assert(IsTStr<Str>::value);
-  static_assert(IsTStr<From>::value);
-  static_assert(IsTStr<To>::value);
-  constexpr size_t idx = find(Str{}, From{});
-  if constexpr (idx != static_cast<size_t>(-1))
-    return replace(replace<idx, From::name.size()>(Str{}, To{}), From{}, To{});
-  else
-    return Str{};
-}
-
-template <typename Str, typename X>
-constexpr auto remove(Str = {}, X = {}) {
-  return replace(Str{}, X{}, TSTR(""));
-}
-
-template <size_t Idx, size_t Cnt, typename Str>
-constexpr auto substr(Str = {}) {
-  return get_prefix<Cnt>(remove_prefix<Idx, Str>());
 }
 
 //
@@ -510,12 +167,11 @@ constexpr auto raw_type_name() noexcept {
   constexpr auto sig = details::func_signature<T>();
 #if defined(MYXNAME_TYPE_SUPPORTED) && MYXNAME_TYPE_SUPPORTED
 #if defined(__clang__)
-  return details::remove_suffix<1>(details::remove_prefix<39>(sig));
+  return remove_suffix<1>(remove_prefix<39>(sig));
 #elif defined(__GNUC__)
-  return details::remove_suffix<1>(details::remove_prefix<54>(sig));
+  return remove_suffix<1>(remove_prefix<54>(sig));
 #elif defined(_MSC_VER)
-  return details::remove_suffix(
-      details::remove_suffix<17>(details::remove_prefix<79>(sig)), TSTR(" "));
+  return remove_suffix(remove_suffix<17>(remove_prefix<79>(sig)), TSTR(" "));
 #endif
 #else
   return TSTR("");  // Unsupported compiler.
@@ -533,9 +189,9 @@ template <typename T>
 constexpr auto kernel_type_name() noexcept {
   constexpr auto name =
       details::remove_template(details::remove_class_key(raw_type_name<T>()));
-  constexpr auto idx = details::find_last(name, TSTR(":"));
+  constexpr auto idx = find_last(name, TSTR(":"));
   if constexpr (idx != static_cast<size_t>(-1))
-    return details::remove_prefix<idx + 1>(name);
+    return remove_prefix<idx + 1>(name);
   else
     return name;
 }
@@ -549,7 +205,7 @@ struct template_args_name_impl;
 template <template <typename...> class T, typename... Ts>
 struct template_args_name_impl<T<Ts...>> {
   constexpr static auto get() noexcept {
-    return details::concat_seq_seperator(TSTR(","), type_name<Ts>()...);
+    return concat_seq_seperator(TSTR(","), type_name<Ts>()...);
   }
 };
 
@@ -564,7 +220,7 @@ struct function_args_name_impl;
 template <typename... Ts>
 struct function_args_name_impl<TypeList<Ts...>> {
   constexpr static auto get() noexcept {
-    return details::concat_seq_seperator(TSTR(","), type_name<Ts>()...);
+    return concat_seq_seperator(TSTR(","), type_name<Ts>()...);
   }
 };
 
@@ -591,60 +247,50 @@ struct member_pointer_to_value<T U::*> {
 template <typename T>
 constexpr auto type_name() noexcept {
   if constexpr (std::is_lvalue_reference_v<T>)
-    return details::concat_seq(
-        TSTR("&{"), type_name<std::remove_reference_t<T>>(), TSTR("}"));
+    return concat_seq(TSTR("&{"), type_name<std::remove_reference_t<T>>(),
+                      TSTR("}"));
   else if constexpr (std::is_rvalue_reference_v<T>)
-    return details::concat_seq(
-        TSTR("&&{"), type_name<std::remove_reference_t<T>>(), TSTR("}"));
+    return concat_seq(TSTR("&&{"), type_name<std::remove_reference_t<T>>(),
+                      TSTR("}"));
   else if constexpr (std::is_const_v<T>)
-    return details::concat_seq(TSTR("const{"),
-                               type_name<std::remove_const_t<T>>(), TSTR("}"));
+    return concat_seq(TSTR("const{"), type_name<std::remove_const_t<T>>(),
+                      TSTR("}"));
   else if constexpr (std::is_volatile_v<T>)
-    return details::concat_seq(
-        TSTR("volatile{"), type_name<std::remove_volatile_t<T>>(), TSTR("}"));
+    return concat_seq(TSTR("volatile{"), type_name<std::remove_volatile_t<T>>(),
+                      TSTR("}"));
   else if constexpr (std::is_member_pointer_v<T>) {
     using Obj = typename member_pointer_to_object<T>::type;
     using Value = typename member_pointer_to_value<T>::type;
-    return details::concat_seq(TSTR("{"), type_name<Obj>(), TSTR("}::*{"),
-                               type_name<Value>());
+    return concat_seq(TSTR("{"), type_name<Obj>(), TSTR("}::*{"),
+                      type_name<Value>());
   } else if constexpr (std::is_pointer_v<T>)
-    return details::concat_seq(
-        TSTR("*{"), type_name<std::remove_pointer_t<T>>(), TSTR("}"));
+    return concat_seq(TSTR("*{"), type_name<std::remove_pointer_t<T>>(),
+                      TSTR("}"));
   else if constexpr (std::is_array_v<T>) {
     constexpr auto r = std::rank_v<T>;
     constexpr auto ex = std::extent_v<T, 0>;
     if constexpr (ex == 0)
-      return details::concat_seq(
-          TSTR("[]{"), type_name<std::remove_extent_t<T>>(), TSTR("}"));
+      return concat_seq(TSTR("[]{"), type_name<std::remove_extent_t<T>>(),
+                        TSTR("}"));
     else
-      return details::concat_seq(TSTR("["), TSTR("CONSTANT"), TSTR("]{"),
-                                 type_name<std::remove_extent_t<T>>(),
-                                 TSTR("}"));  // TODO
+      return concat_seq(TSTR("["), TSTR("CONSTANT"), TSTR("]{"),
+                        type_name<std::remove_extent_t<T>>(),
+                        TSTR("}"));  // TODO
   } else if constexpr (std::is_function_v<T>) {
     // const volatile &/&& noexcept
     using Ret = FuncTraits_Ret<T>;
     using ArgList = FuncTraits_ArgList<T>;
-    return details::concat_seq(TSTR("("), function_args_name<ArgList>(),
-                               TSTR(")->"), type_name<Ret>());
+    return concat_seq(TSTR("("), function_args_name<ArgList>(), TSTR(")->"),
+                      type_name<Ret>());
   } else if constexpr (details::is_integral_constant<T>::value)
     return TSTR("CONSTANT");
   else {
     using U = details::to_typename_template_type_t<T>;
     if constexpr (details::is_template_type_v<U>)
-      return details::concat_seq(no_template_type_name<T>(), TSTR("<"),
-                                 template_args_name<U>(), TSTR(">"));
+      return concat_seq(no_template_type_name<T>(), TSTR("<"),
+                        template_args_name<U>(), TSTR(">"));
     else
       return details::remove_class_key(raw_type_name<T>());
   }
 }
 }  // namespace My
-
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#elif defined(__GNUC__)
-#pragma GCC diagnostic pop
-#elif defined(_MSC_VER)
-#pragma warning(pop)
-#endif
-
-#endif  // MY_MYXNAME_HPP

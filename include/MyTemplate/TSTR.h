@@ -1,0 +1,317 @@
+//
+// Created by Admin on 2/04/2025.
+//
+
+#pragma once
+
+// marco
+// - MY_TSTR
+// - MY_TSTR_UTIL
+
+#ifndef MY_TSTR
+#define MY_TSTR
+
+#include <string_view>
+#include <utility>
+
+namespace My {
+template <typename Char, Char... chars>
+struct TStr;
+}
+
+namespace My::details {
+template <typename STR>
+struct TSTRSizeof;
+
+template <typename Char>
+struct TSTRSizeof<std::basic_string_view<Char>> {
+  static constexpr size_t get(
+      const std::basic_string_view<Char>& str) noexcept {
+    return str.size();
+  }
+};
+
+template <typename Char>
+struct TSTRSizeof<const std::basic_string_view<Char>&>
+    : TSTRSizeof<std::basic_string_view<Char>> {};
+
+template <typename Char>
+struct TSTRSizeof<const std::basic_string_view<Char>>
+    : TSTRSizeof<std::basic_string_view<Char>> {};
+
+template <typename Char, size_t N>
+struct TSTRSizeof<const Char (&)[N]> {
+  static constexpr size_t get(const Char (&str)[N]) noexcept { return N - 1; }
+};
+
+template <typename Char, typename T, size_t... N>
+constexpr decltype(auto) TSTRHelperImpl(std::index_sequence<N...>) {
+  return TStr<Char, T::get()[N]...>{};
+}
+
+template <typename T>
+constexpr decltype(auto) TSTRHelper(T) {
+  using Char = std::decay_t<decltype(T::get()[0])>;
+  return TSTRHelperImpl<Char, T>(
+      std::make_index_sequence<TSTRSizeof<decltype(T::get())>::get(
+          T::get())>());
+}
+}  // namespace My::details
+
+// [C-style string type (value)]
+// in C++20, we can easily put a string into template parameter list
+// but in C++17, we just can use this disgusting trick
+#define TSTR(s)                               \
+  (My::details::TSTRHelper([] {               \
+    struct tmp {                              \
+      static constexpr decltype(auto) get() { \
+        return (s);                           \
+      }                                       \
+    };                                        \
+    return tmp{};                             \
+  }()))
+
+namespace My {
+template <typename Char_, Char_... chars>
+struct TStr {
+  using Tag = TStr;
+  using Char = Char_;
+
+  template <typename T>
+  static constexpr bool NameIs(T = {}) noexcept {
+    return std::is_same_v<T, Tag>;
+  }
+
+  static constexpr char name_data[]{chars..., Char(0)};
+  static constexpr std::basic_string_view<Char> name{name_data};
+};
+
+template <typename T>
+struct IsTStr : std::false_type {};
+
+template <typename Char, Char... chars>
+struct IsTStr<TStr<Char, chars...>> : std::true_type {};
+}  // namespace My
+
+#endif  // MY_TSTR
+
+#ifndef MY_TSTR_UTIL
+#define MY_TSTR_UTIL
+
+namespace My {
+template <typename Str0, typename Str1>
+struct concat_helper;
+template <typename Str0, typename Str1>
+using concat_helper_t = typename concat_helper<Str0, Str1>::type;
+
+template <typename Char, Char... c0, Char... c1>
+struct concat_helper<TStr<Char, c0...>, TStr<Char, c1...>> {
+  using type = TStr<Char, c0..., c1...>;
+};
+
+template <typename Str0, typename Str1>
+constexpr auto concat(Str0 = {}, Str1 = {}) noexcept {
+  return typename concat_helper<Str0, Str1>::type{};
+}
+
+template <typename... Strs>
+struct concat_seq_helper;
+template <typename... Strs>
+using concat_seq_helper_t = typename concat_seq_helper<Strs...>::type;
+
+template <typename Str>
+struct concat_seq_helper<Str> {
+  using type = Str;
+};
+
+template <typename Str, typename... Strs>
+struct concat_seq_helper<Str, Strs...> {
+  using type = concat_helper_t<Str, concat_seq_helper_t<Strs...>>;
+};
+
+template <typename... Strs>
+constexpr auto concat_seq(Strs...) noexcept {
+  return concat_seq_helper_t<Strs...>{};
+}
+
+template <typename Seperator, typename... Strs>
+struct concat_seq_seperator_helper;
+template <typename Seperator, typename... Strs>
+using concat_seq_seperator_helper_t =
+    typename concat_seq_seperator_helper<Seperator, Strs...>::type;
+
+template <typename Seperator>
+struct concat_seq_seperator_helper<Seperator> {
+  using type = TStr<typename Seperator::Char>;
+};
+
+template <typename Seperator, typename Str>
+struct concat_seq_seperator_helper<Seperator, Str> {
+  using type = Str;
+};
+
+template <typename Seperator, typename Str, typename... Strs>
+struct concat_seq_seperator_helper<Seperator, Str, Strs...> {
+  using type =
+      concat_helper_t<concat_helper_t<Str, Seperator>,
+                      concat_seq_seperator_helper_t<Seperator, Strs...>>;
+};
+
+template <typename Seperator, typename... Strs>
+constexpr auto concat_seq_seperator(Seperator, Strs...) noexcept {
+  return concat_seq_seperator_helper_t<Seperator, Strs...>{};
+}
+
+template <typename Str, typename X>
+constexpr size_t find(Str = {}, X = {}) noexcept {
+  static_assert(IsTStr<Str>::value && IsTStr<X>::value);
+  if constexpr (Str::name.size() >= X::name.size()) {
+    for (size_t i = 0; i < Str::name.size() - X::name.size() + 1; i++) {
+      bool flag = true;
+      for (size_t k = 0; k < X::name.size(); k++) {
+        if (Str::name[i + k] != X::name[k]) {
+          flag = false;
+          break;
+        }
+      }
+      if (flag)
+        return i;
+    }
+  }
+  return static_cast<size_t>(-1);
+}
+
+template <typename Str, typename X>
+constexpr size_t find_last(Str = {}, X = {}) noexcept {
+  static_assert(IsTStr<Str>::value && IsTStr<X>::value);
+  if constexpr (Str::name.size() >= X::name.size()) {
+    for (size_t i = 0; i < Str::name.size() - X::name.size() + 1; i++) {
+      size_t idx = Str::name.size() - X::name.size() - i;
+      bool flag = true;
+      for (size_t k = 0; k < X::name.size(); k++) {
+        if (Str::name[idx + k] != X::name[k]) {
+          flag = false;
+          break;
+        }
+      }
+      if (flag)
+        return idx;
+    }
+  }
+  return static_cast<size_t>(-1);
+}
+
+template <typename Str, typename X>
+constexpr bool starts_with(Str = {}, X = {}) noexcept {
+  static_assert(IsTStr<Str>::value && IsTStr<X>::value);
+  if (Str::name.size() < X::name.size())
+    return false;
+  for (size_t i = 0; i < X::name.size(); i++) {
+    if (Str::name[i] != X::name[i])
+      return false;
+  }
+  return true;
+}
+
+template <typename Str, typename X>
+constexpr bool ends_with(Str = {}, X = {}) noexcept {
+  static_assert(IsTStr<Str>::value && IsTStr<X>::value);
+  if (Str::name.size() < X::name.size())
+    return false;
+  for (size_t i = 0; i < X::name.size(); i++) {
+    if (Str::name[Str::name.size() - X::name.size() + i] != X::name[i])
+      return false;
+  }
+  return true;
+}
+
+template <size_t N, typename Str>
+constexpr auto remove_prefix(Str = {}) {
+  static_assert(IsTStr<Str>::value);
+  if constexpr (Str::name.size() >= N)
+    return TSTR(decltype(Str::name){Str::name.data() + N});
+  else
+    return TSTR("");
+}
+
+template <typename Str, typename X>
+constexpr auto remove_prefix(Str = {}, X = {}) {
+  static_assert(IsTStr<Str>::value);
+  static_assert(IsTStr<X>::value);
+  if constexpr (starts_with<Str, X>())
+    return remove_prefix<X::name.size(), Str>();
+  else
+    return Str{};
+}
+
+template <size_t N, typename Str>
+constexpr auto remove_suffix(Str = {}) {
+  static_assert(IsTStr<Str>::value);
+  if constexpr (Str::name.size() >= N)
+    return TSTR((decltype(Str::name){Str::name.data(), Str::name.size() - N}));
+  else
+    return TSTR("");
+}
+
+template <typename Str, typename X>
+constexpr auto remove_suffix(Str = {}, X = {}) {
+  static_assert(IsTStr<Str>::value);
+  if constexpr (ends_with<Str, X>())
+    return remove_suffix<X::name.size(), Str>();
+  else
+    return Str{};
+}
+
+template <size_t N, typename Str>
+constexpr auto get_prefix(Str = {}) {
+  static_assert(IsTStr<Str>::value);
+  if constexpr (Str::name.size() >= N)
+    return TSTR((decltype(Str::name){Str::name.data(), N}));
+  else
+    return Str{};
+}
+
+template <size_t N, typename Str>
+constexpr auto get_suffix(Str = {}) {
+  static_assert(IsTStr<Str>::value);
+  if constexpr (Str::name.size() >= N)
+    return TSTR(decltype(Str::name){Str::name.data() + Str::name.size() - N});
+  else
+    return Str{};
+}
+
+// [Left, Right)
+template <size_t Idx, size_t Cnt, typename Str, typename X>
+constexpr auto replace(Str = {}, X = {}) {
+  static_assert(IsTStr<Str>::value);
+  static_assert(IsTStr<X>::value);
+  constexpr auto prefix = remove_suffix<Str::name.size() - Idx>(Str{});
+  constexpr auto suffix = remove_prefix<Idx + Cnt>(Str{});
+
+  return concat(concat(prefix, X{}), suffix);
+}
+
+template <typename Str, typename From, typename To>
+constexpr auto replace(Str = {}, From = {}, To = {}) {
+  static_assert(IsTStr<Str>::value);
+  static_assert(IsTStr<From>::value);
+  static_assert(IsTStr<To>::value);
+  constexpr size_t idx = find(Str{}, From{});
+  if constexpr (idx != static_cast<size_t>(-1))
+    return replace(replace<idx, From::name.size()>(Str{}, To{}), From{}, To{});
+  else
+    return Str{};
+}
+
+template <typename Str, typename X>
+constexpr auto remove(Str = {}, X = {}) {
+  return replace(Str{}, X{}, TSTR(""));
+}
+
+template <size_t Idx, size_t Cnt, typename Str>
+constexpr auto substr(Str = {}) {
+  return get_prefix<Cnt>(remove_prefix<Idx, Str>());
+}
+}  // namespace My
+
+#endif  // !MY_TSTR_UTIL
