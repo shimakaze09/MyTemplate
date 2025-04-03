@@ -665,6 +665,7 @@ constexpr std::string_view My::type_name_remove_reference(
 
 constexpr std::string_view My::type_name_remove_pointer(
     std::string_view name) noexcept {
+  name = type_name_remove_cvref(name);
   if (!details::is_start_with(name, "*"))
     return name;
 

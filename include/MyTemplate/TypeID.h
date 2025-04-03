@@ -17,8 +17,10 @@ class StrID {
 
   explicit constexpr StrID(size_t value) noexcept : value{value} {}
 
-  explicit constexpr StrID(std::string_view str) noexcept
-      : value{string_hash(str)} {}
+  constexpr StrID(std::string_view str) noexcept : value{string_hash(str)} {}
+
+  template <size_t N>
+  constexpr StrID(const char (&str)[N]) noexcept : value{string_hash(str)} {}
 
   constexpr size_t GetValue() const noexcept { return value; }
 
@@ -71,6 +73,13 @@ class TypeID : private StrID {
   using StrID::Valid;
   using StrID::operator size_t;
   using StrID::operator bool;
+
+  using StrID::Is;
+
+  template <typename T>
+  constexpr bool Is() const noexcept {
+    return operator==(TypeID::of<T>);
+  }
 
   template <typename T>
   static constexpr TypeID of = TypeID{type_name<T>().value};

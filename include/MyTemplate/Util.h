@@ -97,7 +97,7 @@ constexpr size_t string_hash(std::string_view str) noexcept {
 
 template <size_t N>
 constexpr size_t string_hash(const char (&str)[N]) noexcept {
-  return string_hash(str, N);
+  return string_hash(str, N - 1);
 }
 
 constexpr size_t string_hash(const char* str) noexcept;
