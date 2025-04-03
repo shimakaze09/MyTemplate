@@ -73,7 +73,7 @@ class TypeID : private StrID {
   using StrID::operator bool;
 
   template <typename T>
-  static constexpr TypeID of = TypeID{type_name<T>().name};
+  static constexpr TypeID of = TypeID{type_name<T>().value};
 
   constexpr bool operator<(const TypeID& rhs) const noexcept {
     return StrID::operator<(rhs);
