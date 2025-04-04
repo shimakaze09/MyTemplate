@@ -92,6 +92,17 @@ constexpr std::string_view type_name_remove_extent(
 constexpr std::string_view type_name_remove_all_extents(
     std::string_view name) noexcept;
 
+// modification (add, hash)
+
+constexpr size_t type_name_add_const_hash(std::string_view name) noexcept;
+constexpr size_t type_name_add_volatile_hash(std::string_view name) noexcept;
+constexpr size_t type_name_add_cv_hash(std::string_view name) noexcept;
+constexpr size_t type_name_add_lvalue_reference_hash(
+    std::string_view name) noexcept;
+constexpr size_t type_name_add_rvalue_reference_hash(
+    std::string_view name) noexcept;
+constexpr size_t type_name_add_pointer_hash(std::string_view name) noexcept;
+
 // composite
 
 constexpr bool type_name_is_arithmetic(std::string_view name) noexcept;
