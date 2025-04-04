@@ -525,6 +525,12 @@ constexpr bool My::type_name_is_cv(std::string_view name) noexcept {
   return details::is_start_with(name, "const volatile");
 }
 
+constexpr bool My::type_name_is_reference(std::string_view name) noexcept {
+  if (name.empty())
+    return false;
+  return name.front() == '&';
+}
+
 constexpr bool My::type_name_is_signed(std::string_view name) noexcept {
   return !type_name_is_unsigned(name);
 }

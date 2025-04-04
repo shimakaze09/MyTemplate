@@ -22,9 +22,13 @@ int main() {
 #endif  // MY_NAME_X_INT
 
   cout << TypeID::of<float>.GetValue() << endl;
+#ifdef MY_NAME_X_FLOAT
+  cout << TypeID("float32").GetValue() << endl;
+#else
   cout << TypeID("float").GetValue() << endl;
-  cout << TypeID::of<A>.GetValue() << endl;
-  cout << TypeID("A").GetValue() << endl;
+#endif
+  cout << TypeID::of<const A>.GetValue() << endl;
+  cout << TypeID("const{A}").GetValue() << endl;
   cout << TypeID::of<AA>.GetValue() << endl;
   cout << TypeID("AA").GetValue() << endl;
 }

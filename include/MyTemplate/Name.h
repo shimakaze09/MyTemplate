@@ -60,6 +60,7 @@ constexpr bool type_name_is_member_pointer(std::string_view name) noexcept;
 constexpr bool type_name_is_const(std::string_view name) noexcept;
 constexpr bool type_name_is_volatile(std::string_view name) noexcept;
 constexpr bool type_name_is_cv(std::string_view name) noexcept;
+constexpr bool type_name_is_reference(std::string_view name) noexcept;
 constexpr bool type_name_is_signed(std::string_view name) noexcept;
 constexpr bool type_name_is_unsigned(std::string_view name) noexcept;
 constexpr bool type_name_is_bounded_array(std::string_view name) noexcept;
