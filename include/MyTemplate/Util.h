@@ -89,6 +89,16 @@ struct is_defined;
 template <typename T>
 static constexpr bool is_defined_v = is_defined<T>::value;
 
+template <typename T>
+struct has_virtual_base;
+template <typename T>
+constexpr bool has_virtual_base_v = has_virtual_base<T>::value;
+
+template <typename Base, typename Derived>
+struct is_virtual_base_of;
+template <typename Base, typename Derived>
+constexpr bool is_virtual_base_of_v = is_virtual_base_of<Base, Derived>::value;
+
 constexpr size_t string_hash(const char* str, size_t N) noexcept;
 
 constexpr size_t string_hash(std::string_view str) noexcept {

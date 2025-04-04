@@ -52,6 +52,26 @@ struct is_function_pointer<
     std::enable_if_t<std::is_pointer_v<T> &&
                      std::is_function_v<std::remove_pointer_t<T>>>,
     T> : std::true_type {};
+
+struct has_virtual_base_void {};
+
+template <typename Void, typename Obj>
+struct has_virtual_base_helper : std::true_type {};
+
+template <typename Obj>
+struct has_virtual_base_helper<
+    std::void_t<decltype(reinterpret_cast<
+                         has_virtual_base_void has_virtual_base_void::*>(
+        std::declval<has_virtual_base_void Obj::*>()))>,
+    Obj> : std::false_type {};
+
+template <typename Void, typename Base, typename Derived>
+struct is_virtual_base_of_helper : std::is_base_of<Base, Derived> {};
+
+template <typename Base, typename Derived>
+struct is_virtual_base_of_helper<
+    std::void_t<decltype(static_cast<Derived*>(std::declval<Base*>()))>, Base,
+    Derived> : std::false_type {};
 }  // namespace My::details
 
 template <template <typename...> typename T, typename... Ts>
@@ -141,3 +161,10 @@ constexpr size_t My::string_hash(const char* curr) noexcept {
 
 template <typename T>
 struct My::is_function_pointer : My::details::is_function_pointer<void, T> {};
+
+template <typename T>
+struct My::has_virtual_base : My::details::has_virtual_base_helper<void, T> {};
+
+template <typename Base, typename Derived>
+struct My::is_virtual_base_of
+    : My::details::is_virtual_base_of_helper<void, Base, Derived> {};

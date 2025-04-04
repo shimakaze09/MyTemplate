@@ -7,7 +7,7 @@
 namespace My::details {
 //
 // SI_ImplTraits_IList
-/////////////////////
+////////////////////////
 
 template <typename Enabler, typename Impl>
 struct SI_ImplTraits_IList_Helper : IType<TemplateList<>> {};
@@ -25,7 +25,7 @@ using SI_ImplTraits_IList_t = typename SI_ImplTraits_IList<Impl>::type;
 
 //
 // SI_InterfaceTraits_IList
-//////////////////////////
+/////////////////////////////
 
 template <typename Void,
           template <typename Base, typename Impl> class Interface>
@@ -88,6 +88,8 @@ using ITopoSort_t = typename ITopoSort<IList>::type;
 
 template <typename Impl>
 struct Nil {
+  // for using Base::operatorXX in Interface
+
   template <typename SI_ERROR, typename = typename SI_ERROR::SI_ERROR>
   void operator+(SI_ERROR) = delete;
   template <typename SI_ERROR, typename = typename SI_ERROR::SI_ERROR>

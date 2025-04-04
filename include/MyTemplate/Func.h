@@ -15,6 +15,7 @@ enum class ReferenceMode { NONE, LEFT, RIGHT };
 // type ArgList : TypeList<Args...>
 // type Return
 // type Signature : Ret(Args...)
+// type Function : Ret(Args...) const? volatile? &/&&? noexcept
 // bool is_const
 // bool is_volatile
 // ReferenceMode ref
@@ -30,6 +31,8 @@ template <typename T>
 using FuncTraits_Return = typename FuncTraits<T>::Return;
 template <typename T>
 using FuncTraits_Signature = typename FuncTraits<T>::Signature;
+template <typename T>
+using FuncTraits_Function = typename FuncTraits<T>::Function;
 template <typename T>
 constexpr bool FuncTraits_is_const = FuncTraits<T>::is_const;
 template <typename T>
