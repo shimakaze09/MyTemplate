@@ -33,7 +33,8 @@ constexpr auto TSTRHelper(T) {
 }
 }  // namespace My::details
 
-#ifdef __GNUC__
+#if (defined(__GNUC__) || defined(__GNUG__)) && !defined(__clang__)
+// 2^8 == 256
 #define USE_DECODE_TSTR 8
 #include "details/DecodeTStr.inl"
 // [C-style string type (value)]
