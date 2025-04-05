@@ -243,12 +243,12 @@ struct My::FuncExpand<Ret(Args...)> {
     static_assert(std::is_void_v<Ret> ||
                       std::is_convertible_v<FuncTraits_Return<Func>, Ret>,
                   "Func's return can't convert to Ret");
-    constexpr size_t N = Length_v<typename FuncTraits<Func>::ArgList>;
+    constexpr std::size_t N = Length_v<typename FuncTraits<Func>::ArgList>;
     return get(std::forward<Func>(func), std::make_index_sequence<N>{});
   }
 
  private:
-  template <typename Func, size_t... Ns>
+  template <typename Func, std::size_t... Ns>
   static auto get(Func&& func, std::index_sequence<Ns...>) {
     using FromArgList = typename FuncTraits<Func>::ArgList;
     using ToArgList = TypeList<Args...>;

@@ -144,20 +144,21 @@ struct My::IsIValue : std::false_type {};
 template <typename T, T v>
 struct My::IsIValue<My::IValue<T, v>> : std::true_type {};
 
-constexpr size_t My::string_hash_seed(size_t seed, const char* str,
-                                      size_t N) noexcept {
-  using Traits = details::fnv1a_traits<size_t>;
-  size_t value = seed;
+constexpr std::size_t My::string_hash_seed(std::size_t seed, const char* str,
+                                           std::size_t N) noexcept {
+  using Traits = details::fnv1a_traits<std::size_t>;
+  std::size_t value = seed;
 
-  for (size_t i = 0; i < N; i++)
+  for (std::size_t i = 0; i < N; i++)
     value = (value ^ static_cast<Traits::type>(str[i])) * Traits::prime;
 
   return value;
 }
 
-constexpr size_t My::string_hash_seed(size_t seed, const char* curr) noexcept {
-  using Traits = details::fnv1a_traits<size_t>;
-  size_t value = seed;
+constexpr std::size_t My::string_hash_seed(std::size_t seed,
+                                           const char* curr) noexcept {
+  using Traits = details::fnv1a_traits<std::size_t>;
+  std::size_t value = seed;
 
   while (*curr) {
     value = (value ^ static_cast<Traits::type>(*(curr++))) * Traits::prime;
@@ -166,13 +167,13 @@ constexpr size_t My::string_hash_seed(size_t seed, const char* curr) noexcept {
   return value;
 }
 
-constexpr size_t My::string_hash(const char* str, size_t N) noexcept {
-  using Traits = details::fnv1a_traits<size_t>;
+constexpr std::size_t My::string_hash(const char* str, std::size_t N) noexcept {
+  using Traits = details::fnv1a_traits<std::size_t>;
   return string_hash_seed(Traits::offset, str, N);
 }
 
-constexpr size_t My::string_hash(const char* str) noexcept {
-  using Traits = details::fnv1a_traits<size_t>;
+constexpr std::size_t My::string_hash(const char* str) noexcept {
+  using Traits = details::fnv1a_traits<std::size_t>;
   return string_hash_seed(Traits::offset, str);
 }
 

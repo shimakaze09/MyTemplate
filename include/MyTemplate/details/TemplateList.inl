@@ -6,7 +6,7 @@
 
 namespace My {
 template <template <typename...> class... Ts>
-struct TLength<TemplateList<Ts...>> : IValue<size_t, sizeof...(Ts)> {};
+struct TLength<TemplateList<Ts...>> : IValue<std::size_t, sizeof...(Ts)> {};
 
 template <typename TList>
 struct TIsEmpty : IValue<bool, TLength_v<TList> == 0> {};
@@ -38,7 +38,7 @@ struct TPopFront<TemplateList<Head, Tail...>> : IType<TemplateList<Tail...>> {};
 		using Ttype = typename TFront<TList>::template Ttype<Ts...>;
 	};
 
-	template<typename TList, size_t N>
+	template<typename TList, std::size_t N>
 	struct TAt : TAt<TPopFront_t<TList>, N - 1> { };
 	*/
 
@@ -64,7 +64,7 @@ struct TTransform<TemplateList<Ts...>, Op>
     : IType<TemplateList<Op<Ts>::template Ttype...>> {};
 
 // TSelect
-// template<typename TList, size_t... Indices>
+// template<typename TList, std::size_t... Indices>
 // struct TSelect : IType<TemplateList<TAt<TList, Indices>::template Ttype...>> {};
 
 template <template <typename...> class... Ts, typename Instance>

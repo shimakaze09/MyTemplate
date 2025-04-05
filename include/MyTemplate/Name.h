@@ -66,8 +66,9 @@ constexpr bool type_name_is_unsigned(std::string_view name) noexcept;
 constexpr bool type_name_is_bounded_array(std::string_view name) noexcept;
 constexpr bool type_name_is_unbounded_array(std::string_view name) noexcept;
 
-constexpr size_t type_name_rank(std::string_view name) noexcept;
-constexpr size_t type_name_extent(std::string_view name, size_t N = 0) noexcept;
+constexpr std::size_t type_name_rank(std::string_view name) noexcept;
+constexpr std::size_t type_name_extent(std::string_view name,
+                                       std::size_t N = 0) noexcept;
 
 // modification (clip)
 
@@ -94,14 +95,16 @@ constexpr std::string_view type_name_remove_all_extents(
 
 // modification (add, hash)
 
-constexpr size_t type_name_add_const_hash(std::string_view name) noexcept;
-constexpr size_t type_name_add_volatile_hash(std::string_view name) noexcept;
-constexpr size_t type_name_add_cv_hash(std::string_view name) noexcept;
-constexpr size_t type_name_add_lvalue_reference_hash(
+constexpr std::size_t type_name_add_const_hash(std::string_view name) noexcept;
+constexpr std::size_t type_name_add_volatile_hash(
     std::string_view name) noexcept;
-constexpr size_t type_name_add_rvalue_reference_hash(
+constexpr std::size_t type_name_add_cv_hash(std::string_view name) noexcept;
+constexpr std::size_t type_name_add_lvalue_reference_hash(
     std::string_view name) noexcept;
-constexpr size_t type_name_add_pointer_hash(std::string_view name) noexcept;
+constexpr std::size_t type_name_add_rvalue_reference_hash(
+    std::string_view name) noexcept;
+constexpr std::size_t type_name_add_pointer_hash(
+    std::string_view name) noexcept;
 
 // composite
 
