@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-#include <MyTemplate/TSTR.h>
+#include <MyTemplate/TStr.h>
 
 using namespace std;
 using namespace My;

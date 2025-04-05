@@ -5,7 +5,7 @@
 #pragma once
 
 #include "../Func.h"
-#include "../TSTR.h"
+#include "../TStr.h"
 
 #include <cassert>
 
