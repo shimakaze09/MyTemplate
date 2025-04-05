@@ -19,6 +19,9 @@ struct IValue {
 };
 
 template <typename T>
+constexpr bool always_false = false;
+
+template <typename T>
 struct IsIValue;
 template <typename T>
 constexpr bool IsIValue_v = IsIValue<T>::value;
@@ -135,6 +138,9 @@ template <template <class...> class Op, class... Args>
 struct is_valid;
 template <template <class...> class Op, class... Args>
 constexpr bool is_valid_v = is_valid<Op, Args...>::value;
+
+template <typename V1, typename Obj1, typename V2, typename Obj2>
+constexpr bool member_pointer_equal(V1 Obj1::* p1, V2 Obj2::* p2) noexcept;
 }  // namespace My
 
 #include "details/ToTTType.inl"

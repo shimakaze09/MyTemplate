@@ -55,25 +55,29 @@ using ITopoSort_Helper_t = typename ITopoSort_Helper<IList, SortedIList>::type;
 template <typename SortedIList>
 struct ITopoSort_Helper<TemplateList<>, SortedIList> : IType<SortedIList> {};
 
+template <bool NeedRecuresion, typename SortedIList,
+          template <typename Base, typename Impl> class IHead>
+struct ITopoSort_Recursion;
+
+template <typename SortedIList,
+          template <typename Base, typename Impl> class IHead>
+struct ITopoSort_Recursion<true, SortedIList, IHead> : IType<SortedIList> {};
+
+template <typename SortedIList,
+          template <typename Base, typename Impl> class IHead>
+struct ITopoSort_Recursion<false, SortedIList, IHead>
+    : IType<TPushFront_t<
+          ITopoSort_Helper_t<SI_InterfaceTraits_IList_t<IHead>, SortedIList>,
+          IHead>> {};
+
 template <template <typename Base, typename Impl> class IHead,
           template <typename Base, typename Impl> class... ITail,
           typename SortedIList>
 struct ITopoSort_Helper<TemplateList<IHead, ITail...>, SortedIList> {
-  template <bool>
-  struct Recursion;
-
-  template <>
-  struct Recursion<true> : IType<SortedIList> {};
-
-  template <>
-  struct Recursion<false>
-      : IType<TPushFront_t<
-            ITopoSort_Helper_t<SI_InterfaceTraits_IList_t<IHead>, SortedIList>,
-            IHead>> {};
-
   using type = ITopoSort_Helper_t<
       TemplateList<ITail...>,
-      typename Recursion<TContain_v<SortedIList, IHead>>::type>;
+      typename ITopoSort_Recursion<TContain_v<SortedIList, IHead>, SortedIList,
+                                   IHead>::type>;
 };
 
 template <typename IList>

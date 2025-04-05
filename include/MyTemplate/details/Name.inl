@@ -9,12 +9,12 @@
 
 #include <cassert>
 
-// Checks MY_NAME_type compiler compatibility.
+// Checks UBPA_NAME_type compiler compatibility.
 #if defined(__clang__) && __clang_major__ >= 5 || \
     defined(__GNUC__) && __GNUC__ >= 7 ||         \
     defined(_MSC_VER) && _MSC_VER >= 1910
-#undef MY_NAME_TYPE_SUPPORTED
-#define MY_NAME_TYPE_SUPPORTED 1
+#undef UBPA_NAME_TYPE_SUPPORTED
+#define UBPA_NAME_TYPE_SUPPORTED 1
 #endif
 
 namespace My::details {
@@ -52,14 +52,11 @@ constexpr auto func_signature() noexcept {
 // custom
 ///////////
 
-template <typename Obj, typename T, T Obj::* MemPtr>
+template <auto MemPtr>
 struct member_pointer_name;
 
 template <auto MemPtr>
-constexpr auto member_pointer_name_v =
-    member_pointer_name<member_pointer_traits_object<decltype(MemPtr)>,
-                        member_pointer_traits_value<decltype(MemPtr)>,
-                        MemPtr>::get();
+constexpr auto member_pointer_name_v = member_pointer_name<MemPtr>::get();
 
 template <typename T>
 struct type_namespace_name;
@@ -118,11 +115,11 @@ constexpr auto remove_template(Str = {}) {
 template <typename T>
 constexpr auto raw_type_name() noexcept {
   constexpr auto sig = func_signature<T>();
-#if defined(MY_NAME_TYPE_SUPPORTED) && MY_NAME_TYPE_SUPPORTED
+#if defined(UBPA_NAME_TYPE_SUPPORTED) && UBPA_NAME_TYPE_SUPPORTED
 #if defined(__clang__)
   return remove_suffix<1>(remove_prefix<39>(sig));
 #elif defined(__GNUC__)
-  return remove_suffix<1>(remove_prefix<54>(sig));
+  return remove_suffix<1>(remove_prefix<62>(sig));
 #elif defined(_MSC_VER)
   return remove_suffix(remove_suffix<17>(remove_prefix<79>(sig)), TSTR(" "));
 #endif
@@ -221,8 +218,7 @@ constexpr auto My::constexpr_name() noexcept {
     else {
       using Object = member_pointer_traits_object<T>;
       using Value = member_pointer_traits_value<T>;
-      if constexpr (is_defined_v<
-                        details::member_pointer_name<Object, Value, V>>) {
+      if constexpr (is_defined_v<details::member_pointer_name<V>>) {
         return concat_seq(TSTR("&"), type_name<Object>(), TSTR("::"),
                           details::member_pointer_name_v<V>);
       } else
@@ -394,7 +390,7 @@ constexpr auto My::type_name() noexcept {
       static_assert("not support");
   } else if constexpr (IsIValue_v<T>)
     return constexpr_name<T::value>();
-#ifdef MY_NAME_X_INT
+#ifdef UBPA_NAME_X_INT
   else if constexpr (std::is_integral_v<T>) {
     static_assert(sizeof(T) <= 8);
     constexpr auto BitName = constexpr_name<8 * sizeof(T)>();
@@ -403,11 +399,11 @@ constexpr auto My::type_name() noexcept {
     else
       return concat(TSTR("uint"), BitName);
   }
-#endif  // MY_NAME_X_INT
-#ifdef MY_NAME_X_FLOAT
+#endif  // UBPA_NAME_X_INT
+#ifdef UBPA_NAME_X_FLOAT
   else if constexpr (std::is_floating_point_v<T>)
     return concat(TSTR("float"), constexpr_name<8 * sizeof(T)>());
-#endif  // MY_NAME_X_FLOAT
+#endif  // UBPA_NAME_X_FLOAT
   else {
     using U = to_typename_template_type_t<T>;
     if constexpr (is_typename_template_type_v<U>)

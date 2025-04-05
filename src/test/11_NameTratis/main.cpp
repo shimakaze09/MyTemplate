@@ -9,7 +9,7 @@ using namespace My;
 struct A {
   int data;
 
-  int f(int, int) const noexcept {}
+  int f(int, int) const noexcept { return 0; }
 };
 
 int main() {
