@@ -118,7 +118,7 @@ constexpr auto raw_type_name() noexcept {
   constexpr auto sig = func_signature<T>();
 #if defined(MY_NAME_TYPE_SUPPORTED) && MY_NAME_TYPE_SUPPORTED
 #if defined(__clang__)
-  return remove_suffix<1>(remove_prefix<39>(sig));
+  return remove_suffix<1>(remove_prefix<47>(sig));
 #elif defined(__GNUC__)
   return remove_suffix<1>(remove_prefix<62>(sig));
 #elif defined(_MSC_VER)
