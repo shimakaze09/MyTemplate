@@ -24,7 +24,7 @@ constexpr auto constexpr_name() noexcept;
 // - int : u?int{8|16|32|64}
 // - float : float{32|64}
 // - template : name<{arg_1_type_name}, ..., {arg_n_type_name}>
-// - basic : namespace_name::kernal_name
+// - basic : namespace_name::kernel_name
 // [custom]
 // - member_pointer_name
 // - type_namespace_name
@@ -105,6 +105,34 @@ constexpr std::size_t type_name_add_rvalue_reference_hash(
     std::string_view name) noexcept;
 constexpr std::size_t type_name_add_pointer_hash(
     std::string_view name) noexcept;
+constexpr std::size_t type_name_add_const_lvalue_reference_hash(
+    std::string_view name) noexcept;
+
+// modification (add, alloc)
+
+// if no change, result's data is same with input (no allocate)
+// else allocate (no end character '\0')
+
+template <typename Alloc>
+constexpr std::string_view type_name_add_const(std::string_view name,
+                                               Alloc alloc);
+template <typename Alloc>
+constexpr std::string_view type_name_add_volatile(std::string_view name,
+                                                  Alloc alloc);
+template <typename Alloc>
+constexpr std::string_view type_name_add_cv(std::string_view name, Alloc alloc);
+template <typename Alloc>
+constexpr std::string_view type_name_add_lvalue_reference(std::string_view name,
+                                                          Alloc alloc);
+template <typename Alloc>
+constexpr std::string_view type_name_add_rvalue_reference(std::string_view name,
+                                                          Alloc alloc);
+template <typename Alloc>
+constexpr std::string_view type_name_add_pointer(std::string_view name,
+                                                 Alloc alloc);
+template <typename Alloc>
+constexpr std::string_view type_name_add_const_lvalue_reference(
+    std::string_view name, Alloc alloc);
 
 // composite
 

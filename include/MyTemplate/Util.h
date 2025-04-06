@@ -95,6 +95,9 @@ struct is_virtual_base_of;
 template <typename Base, typename Derived>
 constexpr bool is_virtual_base_of_v = is_virtual_base_of<Base, Derived>::value;
 
+template <size_t N>
+constexpr std::size_t lengthof(const char (&str)[N]) noexcept;
+
 constexpr std::size_t string_hash_seed(std::size_t seed, const char* str,
                                        std::size_t N) noexcept;
 

@@ -83,14 +83,14 @@ constexpr auto remove_class_key(Str = {}) {
 }
 
 template <typename Str>
-constexpr size_t get_template_idx(Str = {}) {
+constexpr std::size_t get_template_idx(Str = {}) {
   if constexpr (Str::value.size() == 0)
-    return static_cast<size_t>(-1);
+    return static_cast<std::size_t>(-1);
   else if constexpr (Str::value.back() != '>')
-    return static_cast<size_t>(-1);
+    return static_cast<std::size_t>(-1);
   else {
-    size_t k = 0;
-    size_t i = Str::value.size();
+    std::size_t k = 0;
+    std::size_t i = Str::value.size();
     while (i > 0) {
       --i;
       if (Str::value[i] == '<') {
@@ -100,14 +100,14 @@ constexpr size_t get_template_idx(Str = {}) {
       } else if (Str::value[i] == '>')
         k++;
     }
-    return static_cast<size_t>(-1);
+    return static_cast<std::size_t>(-1);
   }
 }
 
 template <typename Str>
 constexpr auto remove_template(Str = {}) {
   constexpr auto idx = get_template_idx<Str>();
-  if constexpr (idx != static_cast<size_t>(-1))
+  if constexpr (idx != static_cast<std::size_t>(-1))
     return substr<0, idx, Str>();
   else
     return Str{};
@@ -135,7 +135,7 @@ constexpr auto no_template_type_name() noexcept {
   constexpr auto name1 = remove_class_key(name0);
   constexpr auto name2 = remove_template(name1);
   constexpr auto idx = find_last(name2, TStr_of<':'>);
-  if constexpr (idx != static_cast<size_t>(-1) &&
+  if constexpr (idx != static_cast<std::size_t>(-1) &&
                 is_defined_v<type_namespace_name<T>>)
     return concat_seq(type_namespace_name_v<T>, TStrC_of<':', ':'>,
                       remove_prefix<idx + 1>(name2));
@@ -182,7 +182,7 @@ constexpr bool is_start_with(std::string_view str,
   if (str.size() < prefix.size())
     return false;
 
-  for (size_t i = 0; i < prefix.size(); i++) {
+  for (std::size_t i = 0; i < prefix.size(); i++) {
     if (str[i] != prefix[i])
       return false;
   }
@@ -190,13 +190,13 @@ constexpr bool is_start_with(std::string_view str,
   return true;
 }
 
-template <size_t N>
+template <std::size_t N>
 constexpr bool is_start_with(std::string_view str,
                              const char (&prefix)[N]) noexcept {
   if (str.size() < N - 1)
     return false;
 
-  for (size_t i = 0; i < N - 1; i++) {
+  for (std::size_t i = 0; i < N - 1; i++) {
     if (str[i] != prefix[i])
       return false;
   }
@@ -423,7 +423,7 @@ constexpr auto My::type_name() noexcept {
       constexpr auto name =
           details::remove_class_key(details::raw_type_name<T>());
       constexpr auto idx = find_last(name, TStr_of<':'>);
-      if constexpr (idx != static_cast<size_t>(-1) &&
+      if constexpr (idx != static_cast<std::size_t>(-1) &&
                     is_defined_v<details::type_namespace_name<T>>)
         return concat_seq(details::type_namespace_name_v<T>, TStrC_of<':', ':'>,
                           remove_prefix<idx + 1>(name));
@@ -442,7 +442,7 @@ constexpr bool My::constexpr_name_is_integral(std::string_view name) noexcept {
   if (name.empty())
     return false;
 
-  for (size_t i = name.front() == '-' ? 1 : 0; i < name.size(); i++) {
+  for (std::size_t i = name.front() == '-' ? 1 : 0; i < name.size(); i++) {
     if (name[i] < '0' || name[i] > '9')
       return false;
   }
@@ -565,9 +565,9 @@ constexpr bool My::type_name_is_unbounded_array(
   return details::is_start_with(name, "[]");
 }
 
-constexpr size_t My::type_name_rank(std::string_view name) noexcept {
-  size_t rank = 0;
-  size_t idx = 0;
+constexpr std::size_t My::type_name_rank(std::string_view name) noexcept {
+  std::size_t rank = 0;
+  std::size_t idx = 0;
   bool flag = false;
   while (idx < name.size()) {
     if (!flag) {
@@ -585,9 +585,9 @@ constexpr size_t My::type_name_rank(std::string_view name) noexcept {
   return rank;
 }
 
-constexpr size_t My::type_name_extent(std::string_view name,
-                                      size_t N) noexcept {
-  size_t idx = 0;
+constexpr std::size_t My::type_name_extent(std::string_view name,
+                                           std::size_t N) noexcept {
+  std::size_t idx = 0;
   while (N != 0) {
     if (name[idx] != '[')
       return false;
@@ -602,7 +602,7 @@ constexpr size_t My::type_name_extent(std::string_view name,
   if (name[idx] != '[')
     return 0;
 
-  size_t extent = 0;
+  std::size_t extent = 0;
   while (name[++idx] != ']') {
     assert(idx < name.size());
     extent = 10 * extent + name[idx] - '0';
@@ -692,7 +692,7 @@ constexpr std::string_view My::type_name_remove_cvref(
 
 constexpr std::string_view My::type_name_remove_extent(
     std::string_view name) noexcept {
-  size_t idx = 0;
+  std::size_t idx = 0;
 
   if (name.empty())
     return name;
@@ -722,11 +722,9 @@ constexpr std::string_view My::type_name_remove_all_extents(
   return type_name_remove_all_extents(type_name_remove_extent(name));
 }
 
-constexpr size_t My::type_name_add_const_hash(std::string_view name) noexcept {
-  if (type_name_is_reference(name))
-    return string_hash(name);
-
-  if (type_name_is_const(name))
+constexpr std::size_t My::type_name_add_const_hash(
+    std::string_view name) noexcept {
+  if (type_name_is_reference(name) || type_name_is_const(name))
     return string_hash(name);
 
   if (type_name_is_volatile(name))
@@ -735,12 +733,9 @@ constexpr size_t My::type_name_add_const_hash(std::string_view name) noexcept {
     return string_hash_seed(string_hash_seed(string_hash("const{"), name), "}");
 }
 
-constexpr size_t My::type_name_add_volatile_hash(
+constexpr std::size_t My::type_name_add_volatile_hash(
     std::string_view name) noexcept {
-  if (type_name_is_reference(name))
-    return string_hash(name);
-
-  if (type_name_is_volatile(name))
+  if (type_name_is_reference(name) || type_name_is_volatile(name))
     return string_hash(name);
 
   if (type_name_is_const(name)) {
@@ -751,7 +746,8 @@ constexpr size_t My::type_name_add_volatile_hash(
                             "}");
 }
 
-constexpr size_t My::type_name_add_cv_hash(std::string_view name) noexcept {
+constexpr std::size_t My::type_name_add_cv_hash(
+    std::string_view name) noexcept {
   if (type_name_is_reference(name))
     return string_hash(name);
 
@@ -768,7 +764,7 @@ constexpr size_t My::type_name_add_cv_hash(std::string_view name) noexcept {
         string_hash_seed(string_hash("const volatile{"), name), "}");
 }
 
-constexpr size_t My::type_name_add_lvalue_reference_hash(
+constexpr std::size_t My::type_name_add_lvalue_reference_hash(
     std::string_view name) noexcept {
   if (type_name_is_lvalue_reference(name))
     return string_hash(name);
@@ -780,7 +776,7 @@ constexpr size_t My::type_name_add_lvalue_reference_hash(
     return string_hash_seed(string_hash_seed(string_hash("&{"), name), "}");
 }
 
-constexpr size_t My::type_name_add_rvalue_reference_hash(
+constexpr std::size_t My::type_name_add_rvalue_reference_hash(
     std::string_view name) noexcept {
   if (type_name_is_reference(name))
     return string_hash(name);
@@ -788,16 +784,177 @@ constexpr size_t My::type_name_add_rvalue_reference_hash(
   return string_hash_seed(string_hash_seed(string_hash("&&{"), name), "}");
 }
 
-constexpr size_t My::type_name_add_pointer_hash(
+constexpr std::size_t My::type_name_add_pointer_hash(
     std::string_view name) noexcept {
   if (type_name_is_reference(name))
-    return string_hash_seed(
-        string_hash_seed(string_hash("*{"), type_name_remove_reference(name)),
-        "}");
+    name = type_name_remove_reference(name);
 
-  return string_hash_seed(
-      string_hash_seed(string_hash("*{"), type_name_remove_reference(name)),
-      "}");
+  return string_hash_seed(string_hash_seed(string_hash("*{"), name), "}");
+}
+
+constexpr std::size_t My::type_name_add_const_lvalue_reference_hash(
+    std::string_view name) noexcept {
+  if (type_name_is_reference(name) || type_name_is_const(name))
+    return type_name_add_lvalue_reference_hash(name);
+
+  if (type_name_is_volatile(name))
+    return string_hash_seed(string_hash_seed(string_hash("&{const "), name),
+                            "}");
+  else
+    return string_hash_seed(string_hash_seed(string_hash("&{const{"), name),
+                            "}}");
+}
+
+template <typename Alloc>
+constexpr std::string_view My::type_name_add_const(std::string_view name,
+                                                   Alloc alloc) {
+  if (type_name_is_reference(name) || type_name_is_const(name))
+    return name;
+
+  if (type_name_is_volatile(name)) {
+    const std::size_t length = lengthof("const ") + name.size();
+    char* buffer = alloc.allocate(length);
+    std::memcpy(buffer, "const ", lengthof("const "));
+    std::memcpy(buffer + lengthof("const "), name.data(), name.size());
+    return {buffer, length};
+  } else {
+    const std::size_t length = lengthof("const{") + name.size() + lengthof("}");
+    char* buffer = alloc.allocate(length);
+    std::memcpy(buffer, "const{", lengthof("const{"));
+    std::memcpy(buffer + lengthof("const{"), name.data(), name.size());
+    buffer[length - 1] = '}';
+    return {buffer, length};
+  }
+}
+
+template <typename Alloc>
+constexpr std::string_view My::type_name_add_volatile(std::string_view name,
+                                                      Alloc alloc) {
+  if (type_name_is_reference(name) || type_name_is_volatile(name))
+    return name;
+
+  if (type_name_is_const(name)) {
+    name.remove_prefix(5);  // {...}
+    const std::size_t length = lengthof("const volatile") + name.size();
+    char* buffer = alloc.allocate(length);
+    std::memcpy(buffer, "const volatile", lengthof("const volatile"));
+    std::memcpy(buffer + lengthof("const volatile"), name.data(), name.size());
+    return {buffer, length};
+  } else {
+    const std::size_t length =
+        lengthof("volatile{") + name.size() + lengthof("}");
+    char* buffer = alloc.allocate(length);
+    std::memcpy(buffer, "volatile{", lengthof("volatile{"));
+    std::memcpy(buffer + lengthof("volatile{"), name.data(), name.size());
+    buffer[length - 1] = '}';
+    return {buffer, length};
+  }
+}
+
+template <typename Alloc>
+constexpr std::string_view My::type_name_add_cv(std::string_view name,
+                                                Alloc alloc) {
+  if (type_name_is_reference(name) || type_name_is_cv(name))
+    return name;
+
+  if (type_name_is_const(name)) {
+    name.remove_prefix(5);  // {...}
+    const std::size_t length = lengthof("const volatile") + name.size();
+    char* buffer = alloc.allocate(length);
+    std::memcpy(buffer, "const volatile", lengthof("const volatile"));
+    std::memcpy(buffer + lengthof("const volatile"), name.data(), name.size());
+    return {buffer, length};
+  } else if (type_name_is_volatile(name)) {
+    const std::size_t length = lengthof("const ") + name.size();
+    char* buffer = alloc.allocate(length);
+    std::memcpy(buffer, "const ", lengthof("const "));
+    std::memcpy(buffer + lengthof("const "), name.data(), name.size());
+    return {buffer, length};
+  } else {
+    const std::size_t length =
+        lengthof("const volatile{") + name.size() + lengthof("}");
+    char* buffer = alloc.allocate(length);
+    std::memcpy(buffer, "const volatile{", lengthof("const volatile{"));
+    std::memcpy(buffer + lengthof("const volatile{"), name.data(), name.size());
+    buffer[length - 1] = '}';
+    return {buffer, length};
+  }
+}
+
+template <typename Alloc>
+constexpr std::string_view My::type_name_add_lvalue_reference(
+    std::string_view name, Alloc alloc) {
+  if (type_name_is_lvalue_reference(name))
+    return name;
+
+  if (type_name_is_rvalue_reference(name)) {
+    name.remove_prefix(1);
+    const std::size_t length = name.size();
+    char* buffer = alloc.allocate(length);
+    std::memcpy(buffer, name.data(), name.size());
+    return {buffer, length};
+  } else {
+    const std::size_t length = lengthof("&{") + name.size() + lengthof("}");
+    char* buffer = alloc.allocate(length);
+    std::memcpy(buffer, "&{", lengthof("&{"));
+    std::memcpy(buffer + lengthof("&{"), name.data(), name.size());
+    buffer[length - 1] = '}';
+    return {buffer, length};
+  }
+}
+
+template <typename Alloc>
+constexpr std::string_view My::type_name_add_rvalue_reference(
+    std::string_view name, Alloc alloc) {
+  if (type_name_is_reference(name))
+    return name;
+
+  const std::size_t length = lengthof("&&{") + name.size() + lengthof("}");
+  char* buffer = alloc.allocate(length);
+  std::memcpy(buffer, "&&{", lengthof("&&{"));
+  std::memcpy(buffer + lengthof("&&{"), name.data(), name.size());
+  buffer[length - 1] = '}';
+  return {buffer, length};
+}
+
+template <typename Alloc>
+constexpr std::string_view My::type_name_add_pointer(std::string_view name,
+                                                     Alloc alloc) {
+  if (type_name_is_reference(name))
+    name = type_name_remove_reference(name);
+
+  const std::size_t length = lengthof("*{") + name.size() + lengthof("}");
+  char* buffer = alloc.allocate(length);
+  std::memcpy(buffer, "*{", lengthof("*{"));
+  std::memcpy(buffer + lengthof("*{"), name.data(), name.size());
+  buffer[length - 1] = '}';
+  return {buffer, length};
+}
+
+template <typename Alloc>
+constexpr std::string_view My::type_name_add_const_lvalue_reference(
+    std::string_view name, Alloc alloc) {
+  if (type_name_is_reference(name) || type_name_is_const(name))
+    return type_name_add_lvalue_reference(name, alloc);
+
+  if (type_name_is_volatile(name)) {
+    const std::size_t length =
+        lengthof("&{const ") + name.size() + lengthof("}");
+    char* buffer = alloc.allocate(length);
+    std::memcpy(buffer, "&{const ", lengthof("&{const "));
+    std::memcpy(buffer + lengthof("&{const "), name.data(), name.size());
+    buffer[length - 1] = '}';
+    return {buffer, length};
+  } else {
+    const std::size_t length =
+        lengthof("&{const{") + name.size() + lengthof("}}");
+    char* buffer = alloc.allocate(length);
+    std::memcpy(buffer, "&{const{", lengthof("&{const{"));
+    std::memcpy(buffer + lengthof("&{const{"), name.data(), name.size());
+    buffer[length - 2] = '}';
+    buffer[length - 1] = '}';
+    return {buffer, length};
+  }
 }
 
 // composite

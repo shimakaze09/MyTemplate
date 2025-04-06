@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <cassert>
 #include <cstdint>
 
 namespace My::details {
@@ -119,6 +120,13 @@ struct My::IsIValue : std::false_type {};
 
 template <typename T, T v>
 struct My::IsIValue<My::IValue<T, v>> : std::true_type {};
+
+template <size_t N>
+constexpr std::size_t My::lengthof(const char (&str)[N]) noexcept {
+  static_assert(N > 0);
+  assert(str[N - 1] == 0);  // c-style string
+  return N - 1;
+}
 
 constexpr std::size_t My::string_hash_seed(std::size_t seed, const char* str,
                                            std::size_t N) noexcept {
