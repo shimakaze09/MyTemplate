@@ -8,6 +8,7 @@
 #include "../TStr.h"
 
 #include <cassert>
+#include <cstring>
 
 // Checks MY_NAME_type compiler compatibility.
 #if defined(__clang__) && __clang_major__ >= 5 || \
