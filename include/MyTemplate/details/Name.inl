@@ -299,105 +299,105 @@ constexpr auto My::type_name() noexcept {
         concat_seq(TStr_of<'{'>{}, type_name<Return>(), TStr_of<'}'>{});
     // const, volatile, &/&&, noexcept : 24
     if constexpr (!Traits::is_const && !Traits::is_volatile &&
-                  Traits::ref == ReferenceMode::NONE &&
+                  Traits::ref == ReferenceMode::None &&
                   !Traits::is_noexcept)  // 0000
       return concat_seq(ArgsName, TStrC_of<'-', '-', '>', '{', '}'>{}, RetName);
     else if constexpr (Traits::is_const && !Traits::is_volatile &&
-                       Traits::ref == ReferenceMode::NONE &&
+                       Traits::ref == ReferenceMode::None &&
                        !Traits::is_noexcept)  // 1000
       return concat_seq(ArgsName, TSTR("-{const}->"), RetName);
     else if constexpr (!Traits::is_const && Traits::is_volatile &&
-                       Traits::ref == ReferenceMode::NONE &&
+                       Traits::ref == ReferenceMode::None &&
                        !Traits::is_noexcept)  // 0100
       return concat_seq(ArgsName, TSTR("-{volatile}->"), RetName);
     else if constexpr (Traits::is_const && Traits::is_volatile &&
-                       Traits::ref == ReferenceMode::NONE &&
+                       Traits::ref == ReferenceMode::None &&
                        !Traits::is_noexcept)  // 1100
       return concat_seq(ArgsName, TSTR("-{const volatile}->"), RetName);
     else if constexpr (!Traits::is_const && !Traits::is_volatile &&
-                       Traits::ref == ReferenceMode::LEFT &&
+                       Traits::ref == ReferenceMode::Left &&
                        !Traits::is_noexcept)  // 0010
       return concat_seq(ArgsName,
                         TStrC_of<'-', '{', '&', '}', '-', '>', '{', '}'>{},
                         RetName);
     else if constexpr (Traits::is_const && !Traits::is_volatile &&
-                       Traits::ref == ReferenceMode::LEFT &&
+                       Traits::ref == ReferenceMode::Left &&
                        !Traits::is_noexcept)  // 1010
       return concat_seq(ArgsName, TSTR("-{const &}->"), RetName);
     else if constexpr (!Traits::is_const && Traits::is_volatile &&
-                       Traits::ref == ReferenceMode::LEFT &&
+                       Traits::ref == ReferenceMode::Left &&
                        !Traits::is_noexcept)  // 0110
       return concat_seq(ArgsName, TSTR("-{volatile &}->"), RetName);
     else if constexpr (Traits::is_const && Traits::is_volatile &&
-                       Traits::ref == ReferenceMode::RIGHT &&
+                       Traits::ref == ReferenceMode::Right &&
                        !Traits::is_noexcept)  // 1110
       return concat_seq(ArgsName, TSTR("-{const volatile &}->"), RetName);
     else if constexpr (!Traits::is_const && !Traits::is_volatile &&
-                       Traits::ref == ReferenceMode::RIGHT &&
+                       Traits::ref == ReferenceMode::Right &&
                        !Traits::is_noexcept)  // 0020
       return concat_seq(ArgsName,
                         TStrC_of<'-', '{', '&', '&', '}', '-', '>', '{', '}'>{},
                         RetName);
     else if constexpr (Traits::is_const && !Traits::is_volatile &&
-                       Traits::ref == ReferenceMode::RIGHT &&
+                       Traits::ref == ReferenceMode::Right &&
                        !Traits::is_noexcept)  // 1020
       return concat_seq(ArgsName, TSTR("-{const &&}->"), RetName);
     else if constexpr (!Traits::is_const && Traits::is_volatile &&
-                       Traits::ref == ReferenceMode::RIGHT &&
+                       Traits::ref == ReferenceMode::Right &&
                        !Traits::is_noexcept)  // 0120
       return concat_seq(ArgsName, TSTR("-{volatile &&}->"), RetName);
     else if constexpr (Traits::is_const && Traits::is_volatile &&
-                       Traits::ref == ReferenceMode::RIGHT &&
+                       Traits::ref == ReferenceMode::Right &&
                        !Traits::is_noexcept)  // 1120
       return concat_seq(ArgsName, TSTR("-{const volatile &&}->"), RetName);
     else if constexpr (!Traits::is_const && !Traits::is_volatile &&
-                       Traits::ref == ReferenceMode::NONE &&
+                       Traits::ref == ReferenceMode::None &&
                        Traits::is_noexcept)  // 0001
       return concat_seq(ArgsName, TSTR("-{noexcept}->"), RetName);
     else if constexpr (Traits::is_const && !Traits::is_volatile &&
-                       Traits::ref == ReferenceMode::NONE &&
+                       Traits::ref == ReferenceMode::None &&
                        Traits::is_noexcept)  // 1001
       return concat_seq(ArgsName, TSTR("-{const noexcept}->"), RetName);
     else if constexpr (!Traits::is_const && Traits::is_volatile &&
-                       Traits::ref == ReferenceMode::NONE &&
+                       Traits::ref == ReferenceMode::None &&
                        Traits::is_noexcept)  // 0101
       return concat_seq(ArgsName, TSTR("-{volatile noexcept}->"), RetName);
     else if constexpr (Traits::is_const && Traits::is_volatile &&
-                       Traits::ref == ReferenceMode::NONE &&
+                       Traits::ref == ReferenceMode::None &&
                        Traits::is_noexcept)  // 1101
       return concat_seq(ArgsName, TSTR("-{const volatile noexcept}->"),
                         RetName);
     else if constexpr (!Traits::is_const && !Traits::is_volatile &&
-                       Traits::ref == ReferenceMode::LEFT &&
+                       Traits::ref == ReferenceMode::Left &&
                        Traits::is_noexcept)  // 0011
       return concat_seq(ArgsName, TSTR("-{& noexcept}->"), RetName);
     else if constexpr (Traits::is_const && !Traits::is_volatile &&
-                       Traits::ref == ReferenceMode::LEFT &&
+                       Traits::ref == ReferenceMode::Left &&
                        Traits::is_noexcept)  // 1011
       return concat_seq(ArgsName, TSTR("-{const & noexcept}->"), RetName);
     else if constexpr (!Traits::is_const && Traits::is_volatile &&
-                       Traits::ref == ReferenceMode::LEFT &&
+                       Traits::ref == ReferenceMode::Left &&
                        Traits::is_noexcept)  // 0111
       return concat_seq(ArgsName, TSTR("-{volatile & noexcept}->"), RetName);
     else if constexpr (Traits::is_const && Traits::is_volatile &&
-                       Traits::ref == ReferenceMode::RIGHT &&
+                       Traits::ref == ReferenceMode::Right &&
                        Traits::is_noexcept)  // 1111
       return concat_seq(ArgsName, TSTR("-{const volatile & noexcept}->"),
                         RetName);
     else if constexpr (!Traits::is_const && !Traits::is_volatile &&
-                       Traits::ref == ReferenceMode::RIGHT &&
+                       Traits::ref == ReferenceMode::Right &&
                        Traits::is_noexcept)  // 0021
       return concat_seq(ArgsName, TSTR("-{&& noexcept}->"), RetName);
     else if constexpr (Traits::is_const && !Traits::is_volatile &&
-                       Traits::ref == ReferenceMode::RIGHT &&
+                       Traits::ref == ReferenceMode::Right &&
                        Traits::is_noexcept)  // 1021
       return concat_seq(ArgsName, TSTR("-{const && noexcept}->"), RetName);
     else if constexpr (!Traits::is_const && Traits::is_volatile &&
-                       Traits::ref == ReferenceMode::RIGHT &&
+                       Traits::ref == ReferenceMode::Right &&
                        Traits::is_noexcept)  // 0121
       return concat_seq(ArgsName, TSTR("-{volatile && noexcept}->"), RetName);
     else if constexpr (Traits::is_const && Traits::is_volatile &&
-                       Traits::ref == ReferenceMode::RIGHT &&
+                       Traits::ref == ReferenceMode::Right &&
                        Traits::is_noexcept)  // 1121
       return concat_seq(ArgsName, TSTR("-{const volatile && noexcept}->"),
                         RetName);

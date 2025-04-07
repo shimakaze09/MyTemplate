@@ -19,11 +19,8 @@
 #endif
 #endif
 
-#include <cassert>
 #include <string_view>
 #include <utility>
-
-#include <iostream>
 
 namespace My {
 template <typename C, std::size_t N>
@@ -118,15 +115,6 @@ constexpr auto TSTRHelper(T) {
 }
 }  // namespace My::details
 
-#if (defined(__GNUC__) || defined(__GNUG__)) && !defined(__clang__)
-// 2^8 == 256
-#define USE_DECODE_TSTR 8
-#include "details/DecodeTStr.inl"
-// [C-style string type (value)]
-// use irqus's type_string for GCC
-#define TSTR(s) \
-  DECODE_TSTR(s) {}
-#else
 // [C-style string type (value)]
 // in C++20, we can easily put a string into template parameter list
 // but in C++17, we just can use this disgusting trick
@@ -139,7 +127,6 @@ constexpr auto TSTRHelper(T) {
     };                                     \
     return My::details::TSTRHelper(tmp{}); \
   }())
-#endif
 
 namespace My {
 template <typename C, C... chars>
