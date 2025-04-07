@@ -27,7 +27,7 @@ class IDBase {
   constexpr bool Valid() const noexcept { return value != InvalidValue(); }
 
   constexpr bool Is(std::string_view str) const noexcept {
-    return value == IDBase{str}.value;
+    return value == IDBase{str}.GetValue();
   }
 
   constexpr void Reset() noexcept { value = InvalidValue(); }
@@ -74,7 +74,7 @@ class TypeID : public IDBase {
 
   template <typename T>
   constexpr bool Is() const noexcept {
-    return IDBase::Is(type_name<T>().value);
+    return IDBase::Is(type_name<T>().View());
   }
 
   constexpr bool operator<(const TypeID& rhs) const noexcept {
@@ -103,7 +103,7 @@ class TypeID : public IDBase {
 };
 
 template <typename T>
-constexpr TypeID TypeID_of = TypeID{type_name<T>().value};
+constexpr TypeID TypeID_of = TypeID{type_name<T>().View()};
 
 template <typename X, typename Y>
     struct TypeID_Less : IValue < bool,
