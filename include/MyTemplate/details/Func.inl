@@ -101,122 +101,122 @@ struct FuncTraitsDispatch<true, T> : FuncTraits<T> {
 // 2*2*3*2 = 24
 template <typename Ret, typename... Args>  // 0000
 struct My::FuncTraits<Ret(Args...)>
-    : details::FuncTraitsBase<false, false, ReferenceMode::NONE, false,
+    : details::FuncTraitsBase<false, false, ReferenceMode::None, false,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 1000
 struct My::FuncTraits<Ret(Args...) const>
-    : details::FuncTraitsBase<true, false, ReferenceMode::NONE, false,
+    : details::FuncTraitsBase<true, false, ReferenceMode::None, false,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 0100
 struct My::FuncTraits<Ret(Args...) volatile>
-    : details::FuncTraitsBase<false, true, ReferenceMode::NONE, false,
+    : details::FuncTraitsBase<false, true, ReferenceMode::None, false,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 1100
 struct My::FuncTraits<Ret(Args...) const volatile>
-    : details::FuncTraitsBase<true, true, ReferenceMode::NONE, false,
+    : details::FuncTraitsBase<true, true, ReferenceMode::None, false,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 0010
 struct My::FuncTraits<Ret(Args...)&>
-    : details::FuncTraitsBase<false, false, ReferenceMode::LEFT, false,
+    : details::FuncTraitsBase<false, false, ReferenceMode::Left, false,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 1010
 struct My::FuncTraits<Ret(Args...) const&>
-    : details::FuncTraitsBase<true, false, ReferenceMode::LEFT, false,
+    : details::FuncTraitsBase<true, false, ReferenceMode::Left, false,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 0110
 struct My::FuncTraits<Ret(Args...) volatile&>
-    : details::FuncTraitsBase<false, true, ReferenceMode::LEFT, false,
+    : details::FuncTraitsBase<false, true, ReferenceMode::Left, false,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 1110
 struct My::FuncTraits<Ret(Args...) const volatile&>
-    : details::FuncTraitsBase<true, true, ReferenceMode::LEFT, false,
+    : details::FuncTraitsBase<true, true, ReferenceMode::Left, false,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 0020
 struct My::FuncTraits<Ret(Args...) &&>
-    : details::FuncTraitsBase<false, false, ReferenceMode::RIGHT, false,
+    : details::FuncTraitsBase<false, false, ReferenceMode::Right, false,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 1020
 struct My::FuncTraits<Ret(Args...) const&&>
-    : details::FuncTraitsBase<true, false, ReferenceMode::RIGHT, false,
+    : details::FuncTraitsBase<true, false, ReferenceMode::Right, false,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 0120
 struct My::FuncTraits<Ret(Args...) volatile&&>
-    : details::FuncTraitsBase<false, true, ReferenceMode::RIGHT, false,
+    : details::FuncTraitsBase<false, true, ReferenceMode::Right, false,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 1120
 struct My::FuncTraits<Ret(Args...) const volatile&&>
-    : details::FuncTraitsBase<true, true, ReferenceMode::RIGHT, false,
+    : details::FuncTraitsBase<true, true, ReferenceMode::Right, false,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 0001
 struct My::FuncTraits<Ret(Args...) noexcept>
-    : details::FuncTraitsBase<false, false, ReferenceMode::NONE, true,
+    : details::FuncTraitsBase<false, false, ReferenceMode::None, true,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 1001
 struct My::FuncTraits<Ret(Args...) const noexcept>
-    : details::FuncTraitsBase<true, false, ReferenceMode::NONE, true,
+    : details::FuncTraitsBase<true, false, ReferenceMode::None, true,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 0101
 struct My::FuncTraits<Ret(Args...) volatile noexcept>
-    : details::FuncTraitsBase<false, true, ReferenceMode::NONE, true,
+    : details::FuncTraitsBase<false, true, ReferenceMode::None, true,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 1101
 struct My::FuncTraits<Ret(Args...) const volatile noexcept>
-    : details::FuncTraitsBase<true, true, ReferenceMode::NONE, true,
+    : details::FuncTraitsBase<true, true, ReferenceMode::None, true,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 0011
 struct My::FuncTraits<Ret(Args...) & noexcept>
-    : details::FuncTraitsBase<false, false, ReferenceMode::LEFT, true,
+    : details::FuncTraitsBase<false, false, ReferenceMode::Left, true,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 1011
 struct My::FuncTraits<Ret(Args...) const & noexcept>
-    : details::FuncTraitsBase<true, false, ReferenceMode::LEFT, true,
+    : details::FuncTraitsBase<true, false, ReferenceMode::Left, true,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 0111
 struct My::FuncTraits<Ret(Args...) volatile & noexcept>
-    : details::FuncTraitsBase<false, true, ReferenceMode::LEFT, true,
+    : details::FuncTraitsBase<false, true, ReferenceMode::Left, true,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 1111
 struct My::FuncTraits<Ret(Args...) const volatile & noexcept>
-    : details::FuncTraitsBase<true, true, ReferenceMode::LEFT, true,
+    : details::FuncTraitsBase<true, true, ReferenceMode::Left, true,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 0021
 struct My::FuncTraits<Ret(Args...) && noexcept>
-    : details::FuncTraitsBase<false, false, ReferenceMode::RIGHT, true,
+    : details::FuncTraitsBase<false, false, ReferenceMode::Right, true,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 1021
 struct My::FuncTraits<Ret(Args...) const && noexcept>
-    : details::FuncTraitsBase<true, false, ReferenceMode::RIGHT, true,
+    : details::FuncTraitsBase<true, false, ReferenceMode::Right, true,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 0121
 struct My::FuncTraits<Ret(Args...) volatile && noexcept>
-    : details::FuncTraitsBase<false, true, ReferenceMode::RIGHT, true,
+    : details::FuncTraitsBase<false, true, ReferenceMode::Right, true,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 1121
 struct My::FuncTraits<Ret(Args...) const volatile && noexcept>
-    : details::FuncTraitsBase<true, true, ReferenceMode::RIGHT, true,
+    : details::FuncTraitsBase<true, true, ReferenceMode::Right, true,
                               Ret(Args...)> {};
 
 // dispatch
