@@ -194,7 +194,7 @@ int main() {
               << type_name<B8<std::array<decltype(&BH::f), 3>, &BH::f>>().View()
               << "|" << std::endl;  // 1 0 0
   }
-  {  // UBPA_NAME_X_INT
+  {  // MY_NAME_X_INT
     std::cout << "|" << type_name<int8_t>().View() << "|" << std::endl;
     std::cout << "|" << type_name<int16_t>().View() << "|" << std::endl;
     std::cout << "|" << type_name<int32_t>().View() << "|" << std::endl;
@@ -204,10 +204,14 @@ int main() {
     std::cout << "|" << type_name<uint32_t>().View() << "|" << std::endl;
     std::cout << "|" << type_name<uint64_t>().View() << "|" << std::endl;
   }
-  {  // UBPA_NAME_X_FLOAT
+  {  // MY_NAME_X_FLOAT
     std::cout << "|" << type_name<float>().View() << "|" << std::endl;
     std::cout << "|" << type_name<double>().View() << "|" << std::endl;
     std::cout << "|" << type_name<long double>().View() << "|" << std::endl;
+  }
+  {  // TSTR
+    static constexpr auto str = TSTR("hello");
+    std::cout << "|" << type_name<decltype(str)>().View() << "|" << std::endl;
   }
 
   return 0;

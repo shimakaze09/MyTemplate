@@ -422,6 +422,8 @@ constexpr auto My::type_name() noexcept {
     return concat(TStrC_of<'f', 'l', 'o', 'a', 't'>{},
                   constexpr_value_name<8 * sizeof(T)>());
 #endif  // MY_NAME_X_FLOAT
+  else if constexpr (TStrLike<T>)
+    return concat_seq(TSTR("TSTR<\""), TSTR(T::View()), TSTR("\">"));
   else {
     using U = to_typename_template_type_t<T>;
     if constexpr (is_typename_template_type_v<U>)

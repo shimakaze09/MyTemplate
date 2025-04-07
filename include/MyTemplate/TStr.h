@@ -164,6 +164,11 @@ using TStr_of = TStr<decltype(c), c>;
 #define MY_TSTR_UTIL
 
 namespace My {
+template <typename T>
+concept TStrLike = requires {
+  { T::View() } -> std::same_as<std::basic_string_view<typename T::Char>>;
+};
+
 #ifdef MY_TSTR_NTTPC
 template <typename Str>
 constexpr auto empty_of(Str = {}) noexcept {
