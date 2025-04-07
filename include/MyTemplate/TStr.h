@@ -151,9 +151,9 @@ struct TStr {
     return std::is_same_v<T, TStr>;
   }
 
-  static constexpr const Char* Data() noexcept { data; }
+  static constexpr const Char* Data() noexcept { return data; }
 
-  static constexpr std::size_t Size() noexcept { sizeof...(chars); }
+  static constexpr std::size_t Size() noexcept { return sizeof...(chars); }
 
   static constexpr std::basic_string_view<Char> View() noexcept { return data; }
 
@@ -423,7 +423,7 @@ constexpr auto int_to_TSTR() {
         return int_to_TSTR<static_cast<std::make_unsigned_t<T>>(V)>();
     } else {  // unsigned
       if constexpr (V < 10) {
-        return TStr_of<'0' + static_cast<char>(V)>{};
+        return TStr_of<static_cast<char>('0' + V)>{};
       } else
         return concat(int_to_TSTR<V / 10>(), int_to_TSTR<V % 10>());
     }
