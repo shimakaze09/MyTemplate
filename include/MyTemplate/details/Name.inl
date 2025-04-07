@@ -10,28 +10,10 @@
 #include <cassert>
 #include <cstring>
 
-// Checks MY_NAME_type compiler compatibility.
-#if defined(__clang__) && __clang_major__ >= 5 || \
-    defined(__GNUC__) && __GNUC__ >= 7 ||         \
-    defined(_MSC_VER) && _MSC_VER >= 1910
-#undef MY_NAME_TYPE_SUPPORTED
-#define MY_NAME_TYPE_SUPPORTED 1
-#endif
-
 namespace My::details {
 //
 // core
 /////////
-
-#if defined(_MSC_VER)
-template <typename T>
-struct identity {
-  using type = T;
-};
-#else
-template <typename T>
-using identity = T;
-#endif
 
 template <typename T>
 constexpr auto func_signature_impl() noexcept {
@@ -46,7 +28,7 @@ constexpr auto func_signature_impl() noexcept {
 
 template <typename T>
 constexpr auto func_signature() noexcept {
-  return TSTR(func_signature_impl<identity<T>>());
+  return TSTR(func_signature_impl<std::type_identity<T>>());
 }
 
 //
@@ -120,17 +102,13 @@ constexpr auto remove_template(Str = {}) {
 template <typename T>
 constexpr auto raw_type_name() noexcept {
   constexpr auto sig = func_signature<T>();
-#if defined(MY_NAME_TYPE_SUPPORTED) && MY_NAME_TYPE_SUPPORTED
 #if defined(__clang__)
-  return remove_suffix<1>(remove_prefix<47>(sig));
+  return remove_suffix<1>(remove_prefix<42>(sig));
 #elif defined(__GNUC__)
-  return remove_suffix<1>(remove_prefix<62>(sig));
+  return remove_suffix<1>(remove_prefix<57>(sig));
 #elif defined(_MSC_VER)
-  return remove_suffix(remove_suffix<17>(remove_prefix<79>(sig)),
+  return remove_suffix(remove_suffix<17>(remove_prefix<74>(sig)),
                        TStr_of<' '>{});
-#endif
-#else
-  return TStr<char>{};  // Unsupported compiler.
 #endif
 }
 
@@ -407,7 +385,7 @@ constexpr auto My::type_name() noexcept {
       static_assert("not support");
   } else if constexpr (IsIValue_v<T>)
     return constexpr_value_name<T::value>();
-#ifdef MY_NAME_X_INT
+#ifdef UBPA_NAME_X_INT
   else if constexpr (std::is_integral_v<T>) {
     static_assert(sizeof(T) <= 8);
     constexpr auto BitName = constexpr_value_name<8 * sizeof(T)>();
@@ -416,12 +394,12 @@ constexpr auto My::type_name() noexcept {
     else
       return concat(TStrC_of<'u', 'i', 'n', 't'>{}, BitName);
   }
-#endif  // MY_NAME_X_INT
-#ifdef MY_NAME_X_FLOAT
+#endif  // UBPA_NAME_X_INT
+#ifdef UBPA_NAME_X_FLOAT
   else if constexpr (std::is_floating_point_v<T>)
     return concat(TStrC_of<'f', 'l', 'o', 'a', 't'>{},
                   constexpr_value_name<8 * sizeof(T)>());
-#endif  // MY_NAME_X_FLOAT
+#endif  // UBPA_NAME_X_FLOAT
   else if constexpr (TStrLike<T>)
     return concat_seq(TSTR("TSTR<\""), TSTR(T::View()), TSTR("\">"));
   else {

@@ -299,24 +299,28 @@ constexpr std::size_t find_last(Str = {}, X = {}) noexcept {
 
 template <typename Str, typename X>
 constexpr bool starts_with(Str = {}, X = {}) noexcept {
-  if (Str::Size() < X::Size())
+  if constexpr (Str::Size() < X::Size())
     return false;
-  for (std::size_t i = 0; i < X::Size(); i++) {
-    if (Str::View()[i] != X::View()[i])
-      return false;
+  else {
+    for (std::size_t i = 0; i < X::Size(); i++) {
+      if (Str::View()[i] != X::View()[i])
+        return false;
+    }
+    return true;
   }
-  return true;
 }
 
 template <typename Str, typename X>
 constexpr bool ends_with(Str = {}, X = {}) noexcept {
-  if (Str::Size() < X::Size())
+  if constexpr (Str::Size() < X::Size())
     return false;
-  for (std::size_t i = 0; i < X::Size(); i++) {
-    if (Str::View()[Str::Size() - X::Size() + i] != X::View()[i])
-      return false;
+  else {
+    for (std::size_t i = 0; i < X::Size(); i++) {
+      if (Str::View()[Str::Size() - X::Size() + i] != X::View()[i])
+        return false;
+    }
+    return true;
   }
-  return true;
 }
 
 template <std::size_t N, typename Str>
@@ -338,7 +342,7 @@ constexpr auto remove_prefix(Str = {}, X = {}) {
 template <std::size_t N, typename Char>
 constexpr std::basic_string_view<Char> detail_remove_suffix(
     std::basic_string_view<Char> str) {
-  str.remove_prefix(N);
+  str.remove_suffix(N);
   return str;
 }
 
@@ -358,10 +362,16 @@ constexpr auto remove_suffix(Str = {}, X = {}) {
     return Str{};
 }
 
+template <std::size_t N, typename Char>
+constexpr std::basic_string_view<Char> detail_get_prefix(
+    std::basic_string_view<Char> str) {
+  return {str.data(), N};
+}
+
 template <std::size_t N, typename Str>
 constexpr auto get_prefix(Str = {}) {
   if constexpr (Str::Size() >= N)
-    return TSTR((decltype(Str::View()){Str::Data(), N}));
+    return TSTR(detail_get_prefix<N>(Str::View()));
   else
     return Str{};
 }
