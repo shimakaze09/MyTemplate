@@ -806,6 +806,22 @@ constexpr std::size_t My::type_name_add_const_lvalue_reference_hash(
                             "}}");
 }
 
+constexpr std::size_t My::type_name_add_const_rvalue_reference_hash(
+    std::string_view name) noexcept {
+  if (type_name_is_reference(name))
+    return string_hash(name);
+
+  if (type_name_is_const(name))
+    return type_name_add_rvalue_reference_hash(name);
+
+  if (type_name_is_volatile(name))
+    return string_hash_seed(string_hash_seed(string_hash("&&{const "), name),
+                            "}");
+  else
+    return string_hash_seed(string_hash_seed(string_hash("&&{const{"), name),
+                            "}}");
+}
+
 template <typename Alloc>
 constexpr std::string_view My::type_name_add_const(std::string_view name,
                                                    Alloc alloc) {
@@ -952,6 +968,35 @@ constexpr std::string_view My::type_name_add_const_lvalue_reference(
     char* buffer = alloc.allocate(length);
     std::memcpy(buffer, "&{const{", lengthof("&{const{"));
     std::memcpy(buffer + lengthof("&{const{"), name.data(), name.size());
+    buffer[length - 2] = '}';
+    buffer[length - 1] = '}';
+    return {buffer, length};
+  }
+}
+
+template <typename Alloc>
+constexpr std::string_view My::type_name_add_const_rvalue_reference(
+    std::string_view name, Alloc alloc) {
+  if (type_name_is_reference(name))
+    return name;
+
+  if (type_name_is_const(name))
+    return type_name_add_rvalue_reference(name, alloc);
+
+  if (type_name_is_volatile(name)) {
+    const std::size_t length =
+        lengthof("&&{const ") + name.size() + lengthof("}");
+    char* buffer = alloc.allocate(length);
+    std::memcpy(buffer, "&&{const ", lengthof("&&{const "));
+    std::memcpy(buffer + lengthof("&&{const "), name.data(), name.size());
+    buffer[length - 1] = '}';
+    return {buffer, length};
+  } else {
+    const std::size_t length =
+        lengthof("&&{const{") + name.size() + lengthof("}}");
+    char* buffer = alloc.allocate(length);
+    std::memcpy(buffer, "&&{const{", lengthof("&&{const{"));
+    std::memcpy(buffer + lengthof("&&{const{"), name.data(), name.size());
     buffer[length - 2] = '}';
     buffer[length - 1] = '}';
     return {buffer, length};
