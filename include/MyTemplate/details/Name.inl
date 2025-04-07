@@ -52,6 +52,19 @@ constexpr auto custom_type_namespace_name_v =
 // decode
 ///////////
 
+template <typename T>
+constexpr auto raw_type_name() noexcept {
+  constexpr auto sig = func_signature<T>();
+#if defined(__clang__)
+  return remove_suffix<2>(remove_prefix<66>(sig));
+#elif defined(__GNUC__)
+  return remove_suffix<2>(remove_prefix<81>(sig));
+#elif defined(_MSC_VER)
+  return remove_suffix(remove_suffix<17>(remove_prefix<74>(sig)),
+                       TStr_of<' '>{});
+#endif
+}
+
 template <typename Str>
 constexpr auto remove_class_key(Str = {}) {
 #if defined(__clang__)
@@ -97,19 +110,6 @@ constexpr auto remove_template(Str = {}) {
     return substr<0, idx, Str>();
   else
     return Str{};
-}
-
-template <typename T>
-constexpr auto raw_type_name() noexcept {
-  constexpr auto sig = func_signature<T>();
-#if defined(__clang__)
-  return remove_suffix<1>(remove_prefix<42>(sig));
-#elif defined(__GNUC__)
-  return remove_suffix<1>(remove_prefix<57>(sig));
-#elif defined(_MSC_VER)
-  return remove_suffix(remove_suffix<17>(remove_prefix<74>(sig)),
-                       TStr_of<' '>{});
-#endif
 }
 
 template <typename T>
@@ -385,7 +385,7 @@ constexpr auto My::type_name() noexcept {
       static_assert("not support");
   } else if constexpr (IsIValue_v<T>)
     return constexpr_value_name<T::value>();
-#ifdef UBPA_NAME_X_INT
+#ifdef MY_NAME_X_INT
   else if constexpr (std::is_integral_v<T>) {
     static_assert(sizeof(T) <= 8);
     constexpr auto BitName = constexpr_value_name<8 * sizeof(T)>();
@@ -394,12 +394,12 @@ constexpr auto My::type_name() noexcept {
     else
       return concat(TStrC_of<'u', 'i', 'n', 't'>{}, BitName);
   }
-#endif  // UBPA_NAME_X_INT
-#ifdef UBPA_NAME_X_FLOAT
+#endif  // MY_NAME_X_INT
+#ifdef MY_NAME_X_FLOAT
   else if constexpr (std::is_floating_point_v<T>)
     return concat(TStrC_of<'f', 'l', 'o', 'a', 't'>{},
                   constexpr_value_name<8 * sizeof(T)>());
-#endif  // UBPA_NAME_X_FLOAT
+#endif  // MY_NAME_X_FLOAT
   else if constexpr (TStrLike<T>)
     return concat_seq(TSTR("TSTR<\""), TSTR(T::View()), TSTR("\">"));
   else {
