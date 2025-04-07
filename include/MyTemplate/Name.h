@@ -14,7 +14,7 @@
 
 namespace My {
 template <auto V>
-constexpr auto constexpr_name() noexcept;
+constexpr auto constexpr_value_name() noexcept;
 
 // [rule]
 // - reference : &/&&{...}
@@ -25,9 +25,9 @@ constexpr auto constexpr_name() noexcept;
 // - float : float{32|64}
 // - template : name<{arg_1_type_name}, ..., {arg_n_type_name}>
 // - basic : namespace_name::kernel_name
-// [custom]
-// - member_pointer_name
-// - type_namespace_name
+// [custom] you need to impl get()
+// - custom_constexpr_value_name
+// - custom_type_namespace_name
 template <typename T>
 constexpr auto type_name() noexcept;
 

@@ -23,21 +23,19 @@
 #include <utility>
 
 namespace My {
-template <typename C, std::size_t N>
+template <typename Char, std::size_t N>
 struct fixed_cstring {
-  using Char = C;
+  using value_type = Char;
 
-  constexpr fixed_cstring(const Char (&str)[N + 1]) noexcept {
-    for (std::size_t i{0}; i < size; ++i) {
+  constexpr fixed_cstring(const value_type (&str)[N + 1]) noexcept {
+    for (std::size_t i{0}; i < size; ++i)
       data[i] = str[i];
-    }
     data[size] = 0;
   }
 
-  constexpr fixed_cstring(std::basic_string_view<Char> str) noexcept {
-    for (std::size_t i{0}; i < size; ++i) {
+  constexpr fixed_cstring(std::basic_string_view<value_type> str) noexcept {
+    for (std::size_t i{0}; i < size; ++i)
       data[i] = str[i];
-    }
     data[size] = 0;
   }
 
@@ -45,17 +43,20 @@ struct fixed_cstring {
   constexpr fixed_cstring() noexcept : data{0} {}
 
   template <std::size_t N_ = N, std::enable_if_t<N_ == 1, int> = 0>
-  constexpr fixed_cstring(Char c) noexcept : data{c, 0} {}
+  constexpr fixed_cstring(value_type c) noexcept : data{c, 0} {}
 
   template <typename... Chars>
   constexpr fixed_cstring(std::in_place_t, Chars... chars) noexcept
-      : data{chars..., 0} {
+      : data{static_cast<value_type>(chars)..., 0} {
     static_assert(sizeof...(chars) == size);
   }
 
-  Char data[N + 1]{};
+  value_type data[N + 1]{};
   static constexpr std::size_t size = N;
 };
+
+template <typename Char, std::size_t N>
+fixed_cstring(const Char (&)[N]) -> fixed_cstring<Char, N - 1>;
 }  // namespace My
 
 #ifdef MY_TSTR_NTTPC
@@ -63,7 +64,7 @@ struct fixed_cstring {
 namespace My {
 template <fixed_cstring str>
 struct TStr {
-  using Char = typename decltype(str)::Char;
+  using Char = typename decltype(str)::value_type;
 
   template <typename T>
   static constexpr bool Is(T = {}) noexcept {

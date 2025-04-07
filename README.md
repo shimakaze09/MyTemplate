@@ -1,5 +1,5 @@
 # MyTemplate
 
-- GCC >= 9.2
-- MSVC >= 1923
+- GCC >= 10
+- MSVC >= 1926
 - Clang >= 10

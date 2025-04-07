@@ -21,14 +21,17 @@ struct TIsEmpty : IValue<bool, TLength_v<TList> == 0> {};
 	*/
 
 template <template <typename...> class T, template <typename...> class... Ts>
-struct TPushFront<TemplateList<Ts...>, T> : IType<TemplateList<T, Ts...>> {};
+struct TPushFront<TemplateList<Ts...>, T>
+    : std::type_identity<TemplateList<T, Ts...>> {};
 
 template <template <typename...> class T, template <typename...> class... Ts>
-struct TPushBack<TemplateList<Ts...>, T> : IType<TemplateList<Ts..., T>> {};
+struct TPushBack<TemplateList<Ts...>, T>
+    : std::type_identity<TemplateList<Ts..., T>> {};
 
 template <template <typename...> class Head,
           template <typename...> class... Tail>
-struct TPopFront<TemplateList<Head, Tail...>> : IType<TemplateList<Tail...>> {};
+struct TPopFront<TemplateList<Head, Tail...>>
+    : std::type_identity<TemplateList<Tail...>> {};
 
 /*
 	// TAt will introduce new template
@@ -44,7 +47,7 @@ struct TPopFront<TemplateList<Head, Tail...>> : IType<TemplateList<Tail...>> {};
 
 template <template <typename I, template <typename...> class X> class Op,
           typename I>
-struct TAccumulate<TemplateList<>, Op, I> : IType<I> {};
+struct TAccumulate<TemplateList<>, Op, I> : std::type_identity<I> {};
 
 template <template <typename I, template <typename...> class X> class Op,
           typename I, template <typename...> class THead,
@@ -61,11 +64,11 @@ struct TConcat : TAccumulate<TList1, TPushBack, TList0> {};
 template <template <template <typename...> class T> class Op,
           template <typename...> class... Ts>
 struct TTransform<TemplateList<Ts...>, Op>
-    : IType<TemplateList<Op<Ts>::template Ttype...>> {};
+    : std::type_identity<TemplateList<Op<Ts>::template Ttype...>> {};
 
 // TSelect
 // template<typename TList, std::size_t... Indices>
-// struct TSelect : IType<TemplateList<TAt<TList, Indices>::template Ttype...>> {};
+// struct TSelect : std::type_identity<TemplateList<TAt<TList, Indices>::template Ttype...>> {};
 
 template <template <typename...> class... Ts, typename Instance>
 struct TExistGenericity<TemplateList<Ts...>, Instance>
@@ -73,7 +76,7 @@ struct TExistGenericity<TemplateList<Ts...>, Instance>
 
 template <typename ArgList, template <typename...> class... Ts>
 struct TInstance<TemplateList<Ts...>, ArgList>
-    : IType<TypeList<Instantiate_t<ArgList, Ts>...>> {};
+    : std::type_identity<TypeList<Instantiate_t<ArgList, Ts>...>> {};
 
 template <typename TList, typename... Instances>
 struct TExistGenericities<TList, TypeList<Instances...>>

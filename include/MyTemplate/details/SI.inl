@@ -10,12 +10,12 @@ namespace My::details {
 ////////////////////////
 
 template <typename Enabler, typename Impl>
-struct SI_ImplTraits_IList_Helper : IType<TemplateList<>> {};
+struct SI_ImplTraits_IList_Helper : std::type_identity<TemplateList<>> {};
 
 template <typename Impl>
 struct SI_ImplTraits_IList_Helper<
     std::void_t<typename SI_ImplTraits<Impl>::IList>, Impl>
-    : IType<typename SI_ImplTraits<Impl>::IList> {};
+    : std::type_identity<typename SI_ImplTraits<Impl>::IList> {};
 
 template <typename Impl>
 struct SI_ImplTraits_IList : SI_ImplTraits_IList_Helper<void, Impl> {};
@@ -29,12 +29,12 @@ using SI_ImplTraits_IList_t = typename SI_ImplTraits_IList<Impl>::type;
 
 template <typename Void,
           template <typename Base, typename Impl> class Interface>
-struct SI_InterfaceTraits_IList_Helper : IType<TemplateList<>> {};
+struct SI_InterfaceTraits_IList_Helper : std::type_identity<TemplateList<>> {};
 
 template <template <typename Base, typename Impl> class Interface>
 struct SI_InterfaceTraits_IList_Helper<
     std::void_t<typename SI_InterfaceTraits<Interface>::IList>, Interface>
-    : IType<typename SI_InterfaceTraits<Interface>::IList> {};
+    : std::type_identity<typename SI_InterfaceTraits<Interface>::IList> {};
 
 template <template <typename Base, typename Impl> class Interface>
 struct SI_InterfaceTraits_IList
@@ -53,7 +53,8 @@ template <typename IList, typename SortedIList>
 using ITopoSort_Helper_t = typename ITopoSort_Helper<IList, SortedIList>::type;
 
 template <typename SortedIList>
-struct ITopoSort_Helper<TemplateList<>, SortedIList> : IType<SortedIList> {};
+struct ITopoSort_Helper<TemplateList<>, SortedIList>
+    : std::type_identity<SortedIList> {};
 
 template <bool NeedRecuresion, typename SortedIList,
           template <typename Base, typename Impl> class IHead>
@@ -61,12 +62,13 @@ struct ITopoSort_Recursion;
 
 template <typename SortedIList,
           template <typename Base, typename Impl> class IHead>
-struct ITopoSort_Recursion<true, SortedIList, IHead> : IType<SortedIList> {};
+struct ITopoSort_Recursion<true, SortedIList, IHead>
+    : std::type_identity<SortedIList> {};
 
 template <typename SortedIList,
           template <typename Base, typename Impl> class IHead>
 struct ITopoSort_Recursion<false, SortedIList, IHead>
-    : IType<TPushFront_t<
+    : std::type_identity<TPushFront_t<
           ITopoSort_Helper_t<SI_InterfaceTraits_IList_t<IHead>, SortedIList>,
           IHead>> {};
 
@@ -180,12 +182,13 @@ template <typename IList, typename Impl>
 using SI_Helper_t = typename SI_Helper<IList, Impl>::type;
 
 template <typename Impl>
-struct SI_Helper<TemplateList<>, Impl> : IType<Nil<Impl>> {};
+struct SI_Helper<TemplateList<>, Impl> : std::type_identity<Nil<Impl>> {};
 
 template <template <typename Base, typename Impl> class IHead,
           template <typename Base, typename Impl> class... ITail, typename Impl>
 struct SI_Helper<TemplateList<IHead, ITail...>, Impl>
-    : IType<IHead<SI_Helper_t<TemplateList<ITail...>, Impl>, Impl>> {};
+    : std::type_identity<
+          IHead<SI_Helper_t<TemplateList<ITail...>, Impl>, Impl>> {};
 
 //
 // SI_Contains

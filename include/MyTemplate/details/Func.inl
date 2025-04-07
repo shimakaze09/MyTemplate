@@ -8,16 +8,16 @@ namespace My::details {
 // ref: qobjectdefs_impl.h
 
 template <typename T>
-struct RmvLValueRef : IType<T> {};
+struct RmvLValueRef : std::type_identity<T> {};
 
 template <typename T>
-struct RmvLValueRef<T&> : IType<T> {};
+struct RmvLValueRef<T&> : std::type_identity<T> {};
 
 template <typename T>
-struct RmvConstRef : IType<T> {};
+struct RmvConstRef : std::type_identity<T> {};
 
 template <typename T>
-struct RmvConstRef<const T&> : IType<T> {};
+struct RmvConstRef<const T&> : std::type_identity<T> {};
 
 template <typename A1, typename A2>
 struct AreArgumentsCompatible
