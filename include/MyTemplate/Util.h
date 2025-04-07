@@ -134,6 +134,12 @@ constexpr bool is_valid_v = is_valid<Op, Args...>::value;
 
 template <typename V1, typename Obj1, typename V2, typename Obj2>
 constexpr bool member_pointer_equal(V1 Obj1::* p1, V2 Obj2::* p2) noexcept;
+
+template <typename Y>
+struct is_same_with {
+  template <typename X>
+  struct Ttype : std::is_same<X, Y> {};
+};
 }  // namespace My
 
 #include "details/ToTTType.inl"

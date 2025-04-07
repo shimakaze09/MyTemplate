@@ -50,11 +50,17 @@ struct Select;
 template <typename List, std::size_t... Indices>
 using Select_t = typename Select<List, Indices...>::type;
 
+constexpr std::size_t Find_fail = static_cast<std::size_t>(-1);
+
 template <typename List, typename T>
 struct Find;
 template <typename List, typename T>
 constexpr std::size_t Find_v = Find<List, T>::value;
-constexpr std::size_t Find_fail = static_cast<std::size_t>(-1);
+
+template <typename List, template <typename> class Op>
+struct FindIf;
+template <typename List, template <typename> class Op>
+constexpr std::size_t FindIf_v = FindIf<List, Op>::value;
 
 template <typename List, typename T>
 struct Contain;
