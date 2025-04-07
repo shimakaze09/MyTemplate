@@ -89,11 +89,11 @@ template <auto c>
 using TStr_of = TStr<fixed_cstring<decltype(c), 1>{c}>;
 }  // namespace My
 
-#define TSTR(s)                                                                \
-  ([] {                                                                        \
-    constexpr std::basic_string_view str{s};                                   \
-    return My::TStr<                                                           \
-        fixed_cstring<typename decltype(str)::value_type, str.size()>{str}>{}; \
+#define TSTR(s)                                                           \
+  ([] {                                                                   \
+    constexpr std::basic_string_view str{s};                              \
+    return My::TStr<My::fixed_cstring<typename decltype(str)::value_type, \
+                                      str.size()>{str}>{};                \
   }())
 
 #else
