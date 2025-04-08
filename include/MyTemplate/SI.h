@@ -17,11 +17,11 @@
   struct My::SI_InterfaceTraits<Interface>              \
       : My::details::IListBase<__VA_ARGS__>
 
-#define CombineInterface(Interface, ...)  \
-  template <typename Base, typename Impl> \
-  struct Interface : Base {               \
-    using Base::Base;                     \
-  };                                      \
+#define SI_CombineInterface(Interface, ...) \
+  template <typename Base, typename Impl>   \
+  struct Interface : Base {                 \
+    using Base::Base;                       \
+  };                                        \
   SI_InterfaceTraits_Register(Interface, __VA_ARGS__)
 
 #define SI_ImplTraits_Register(Impl, ...)    \

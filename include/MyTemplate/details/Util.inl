@@ -92,7 +92,7 @@ struct My::is_instance_of<T<Args...>, T> : std::true_type {};
 
 template <typename T, typename... Args>
 struct My::is_list_initializable
-    : details::is_list_initializable<T, void, Args...> {};
+    : details::is_list_initializable<void, T, Args...> {};
 
 template <template <typename...> class TA, template <typename...> class TB>
 struct My::is_same_typename_template : std::false_type {};

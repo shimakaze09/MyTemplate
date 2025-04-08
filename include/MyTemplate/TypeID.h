@@ -52,8 +52,9 @@ class StrID : public IDBase {
     return IDBase::operator<=> (rhs);
   }
 
-  constexpr bool operator==(const StrID& rhs) const {
-    return operator<=> (rhs) == std::strong_ordering::equal;
+  friend constexpr bool operator==(const StrID& lhs,
+                                   const StrID& rhs) noexcept {
+    return lhs.operator<=> (rhs) == std::strong_ordering::equal;
   }
 };
 
