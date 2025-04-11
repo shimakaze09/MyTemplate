@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-#include <MyTemplate/TypeID.h>
+#include <MyTemplate/Type.h>
 #include <MyTemplate/TypeList.h>
 
 using namespace std;
