@@ -7,7 +7,6 @@
 #include "../Func.h"
 #include "../TStr.h"
 
-
 #include <cassert>
 #include <cstring>
 
@@ -366,7 +365,7 @@ constexpr auto My::type_name() noexcept {
       static_assert("not support");
   } else if constexpr (IsIValue_v<T>)
     return constexpr_value_name<T::value>();
-#ifdef UBPA_NAME_X_INT
+#ifdef MY_NAME_X_INT
   else if constexpr (std::is_integral_v<T>) {
     static_assert(sizeof(T) <= 8);
     constexpr auto BitName = constexpr_value_name<8 * sizeof(T)>();
@@ -375,12 +374,12 @@ constexpr auto My::type_name() noexcept {
     else
       return concat(TStrC_of<'u', 'i', 'n', 't'>{}, BitName);
   }
-#endif  // UBPA_NAME_X_INT
-#ifdef UBPA_NAME_X_FLOAT
+#endif  // MY_NAME_X_INT
+#ifdef MY_NAME_X_FLOAT
   else if constexpr (std::is_floating_point_v<T>)
     return concat(TStrC_of<'f', 'l', 'o', 'a', 't'>{},
                   constexpr_value_name<8 * sizeof(T)>());
-#endif  // UBPA_NAME_X_FLOAT
+#endif  // MY_NAME_X_FLOAT
   else if constexpr (std::is_same_v<T, void>)
     return TStrC_of<'v', 'o', 'i', 'd'>{};
   else if constexpr (std::is_same_v<T, std::nullptr_t>)
@@ -567,6 +566,10 @@ constexpr bool My::type_name_is_const(std::string_view name) noexcept {
          (name[5] == '{' || name[5] == ' ');
 }
 
+constexpr bool My::type_name_is_read_only(std::string_view name) noexcept {
+  return type_name_is_const(type_name_remove_reference(name));
+}
+
 constexpr bool My::type_name_is_volatile(std::string_view name) noexcept {
   return name.starts_with(std::string_view{"volatile{"}) ||
          name.starts_with(std::string_view{"const volatile"});
@@ -651,6 +654,60 @@ constexpr std::size_t My::type_name_extent(std::string_view name,
   return extent;
 }
 
+constexpr My::CVRefMode My::type_name_cvref_mode(
+    std::string_view name) noexcept {
+  if (name.empty())
+    return CVRefMode::None;
+
+  if (name[0] == '&') {
+    assert(name.size() >= 4);
+    if (name[1] == '&') {
+      assert(name[2] == '{' && name.back() == '}');
+      std::string_view unref_name{name.data() + 3, name.size() - 4};
+      if (unref_name.starts_with("const")) {
+        assert(unref_name.size() >= 6);
+        if (unref_name[5] == '{')
+          return CVRefMode::ConstRight;
+        else if (unref_name[5] == ' ')
+          return CVRefMode::CVRight;
+        else
+          return CVRefMode::Right;
+      } else if (unref_name.starts_with("volatile{"))
+        return CVRefMode::VolatileRight;
+      else
+        return CVRefMode::Right;
+    } else {
+      assert(name[1] == '{' && name.back() == '}');
+      std::string_view unref_name{name.data() + 2, name.size() - 3};
+      if (unref_name.starts_with("const")) {
+        assert(unref_name.size() >= 6);
+        if (unref_name[5] == '{')
+          return CVRefMode::ConstLeft;
+        else if (unref_name[5] == ' ')
+          return CVRefMode::CVLeft;
+        else
+          return CVRefMode::Left;
+      } else if (unref_name.starts_with("volatile{"))
+        return CVRefMode::VolatileLeft;
+      else
+        return CVRefMode::Left;
+    }
+  } else {
+    if (name.starts_with("const")) {
+      assert(name.size() >= 6);
+      if (name[5] == '{')
+        return CVRefMode::Const;
+      else if (name[5] == ' ')
+        return CVRefMode::CV;
+      else
+        return CVRefMode::None;
+    } else if (name.starts_with("volatile{"))
+      return CVRefMode::Volatile;
+    else
+      return CVRefMode::None;
+  }
+}
+
 // modification (clip)
 
 constexpr std::string_view My::type_name_remove_cv(
@@ -658,16 +715,16 @@ constexpr std::string_view My::type_name_remove_cv(
   if (name.starts_with(std::string_view{"const"})) {
     assert(name.size() >= 6);
     if (name[5] == '{') {
-      assert(*name.rbegin() == '}');
+      assert(name.back() == '}');
       return {name.data() + 6, name.size() - 7};
     } else if (name[5] == ' ') {
       assert(name.starts_with(std::string_view{"const volatile{"}) &&
-             *name.rbegin() == '}');
+             name.back() == '}');
       return {name.data() + 15, name.size() - 16};
     } else
       return name;
   } else if (name.starts_with(std::string_view{"volatile{"})) {
-    assert(*name.rbegin() == '}');
+    assert(name.back() == '}');
     return {name.data() + 9, name.size() - 10};
   } else
     return name;
@@ -681,7 +738,7 @@ constexpr std::string_view My::type_name_remove_const(
   assert(name.size() >= 6);
 
   if (name[5] == '{') {
-    assert(*name.rbegin() == '}');
+    assert(name.back() == '}');
     return {name.data() + 6, name.size() - 7};
   } else if (name[5] == ' ')
     return {name.data() + 6};
@@ -694,23 +751,40 @@ constexpr std::string_view My::type_name_remove_topmost_volatile(
   if (!name.starts_with(std::string_view{"volatile{"}))
     return name;
 
-  assert(*name.rbegin() == '}');
+  assert(name.back() == '}');
 
   return {name.data() + 9, name.size() - 10};
 }
 
-constexpr std::string_view My::type_name_remove_reference(
+constexpr std::string_view My::type_name_remove_lvalue_reference(
     std::string_view name) noexcept {
-  if (!name.starts_with(std::string_view{"&"}))
+  if (name.size() <= 2 || name[0] != '&' || name[1] != '{')
     return name;
 
-  assert(name.size() >= 2);
+  assert(name.size() >= 3 && name.back() == '}');
+  return {name.data() + 2, name.size() - 3};
+}
+
+constexpr std::string_view My::type_name_remove_rvalue_reference(
+    std::string_view name) noexcept {
+  if (name.size() <= 2 || name[0] != '&' || name[1] != '&')
+    return name;
+
+  assert(name.size() >= 4 && name[2] == '{' && name.back() == '}');
+  return {name.data() + 3, name.size() - 4};
+}
+
+constexpr std::string_view My::type_name_remove_reference(
+    std::string_view name) noexcept {
+  if (name.size() <= 2 || name[0] != '&')
+    return name;
+
   if (name[1] == '{') {
-    assert(*name.rbegin() == '}');
+    assert(name.size() >= 3 && name.back() == '}');
     return {name.data() + 2, name.size() - 3};
   } else {
-    assert(name.size() >= 3 && name[1] == '&' && name[2] == '{' &&
-           *name.rbegin() == '}');
+    assert(name.size() >= 4 && name[1] == '&' && name[2] == '{' &&
+           name.back() == '}');
     return {name.data() + 3, name.size() - 4};
   }
 }
@@ -721,7 +795,7 @@ constexpr std::string_view My::type_name_remove_pointer(
   if (!name.starts_with(std::string_view{"*"}))
     return name;
 
-  assert(name.size() >= 3 && name[1] == '{' && *name.rbegin() == '}');
+  assert(name.size() >= 3 && name[1] == '{' && name.back() == '}');
   return {name.data() + 2, name.size() - 3};
 }
 
@@ -749,7 +823,7 @@ constexpr std::string_view My::type_name_remove_extent(
   if (name[idx] == '[')
     return {name.data() + idx, name.size() - idx};
   else {
-    assert(name[idx] == '{' && *name.rbegin() == '}');
+    assert(name[idx] == '{' && name.back() == '}');
     return {name.data() + idx + 1, name.size() - idx - 2};
   }
 }

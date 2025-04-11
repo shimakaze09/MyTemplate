@@ -9,8 +9,6 @@
 #include <tuple>
 
 namespace My {
-enum class ReferenceMode { None, Left, Right };
-
 // type Object : if not member function, it is void
 // type ArgList : TypeList<Args...>
 // type Return
