@@ -16,7 +16,7 @@ namespace My {
 template <auto V>
 constexpr auto constexpr_value_name() noexcept;
 
-// [rule]
+// [rull]
 // - reference : &/&&{...}
 // - cv : const? volatile?{...}
 // - member pointer : {object_type_name}::*{value_type_name}
@@ -24,7 +24,9 @@ constexpr auto constexpr_value_name() noexcept;
 // - int : u?int{8|16|32|64}
 // - float : float{32|64}
 // - template : name<{arg_1_type_name}, ..., {arg_n_type_name}>
-// - basic : namespace_name::kernel_name
+// - enum : enum{...}
+// - union : union{...}
+// - basic : namspace_name::kernal_name
 // [custom] you need to impl get()
 // - custom_constexpr_value_name
 // - custom_type_namespace_name
@@ -49,11 +51,18 @@ constexpr bool type_name_is_null_pointer(std::string_view name) noexcept;
 constexpr bool type_name_is_integral(std::string_view name) noexcept;
 constexpr bool type_name_is_floating_point(std::string_view name) noexcept;
 constexpr bool type_name_is_array(std::string_view name) noexcept;
+constexpr bool type_name_is_enum(std::string_view name) noexcept;
+constexpr bool type_name_is_union(std::string_view name) noexcept;
 constexpr bool type_name_is_function(std::string_view name) noexcept;
 constexpr bool type_name_is_pointer(std::string_view name) noexcept;
 constexpr bool type_name_is_lvalue_reference(std::string_view name) noexcept;
 constexpr bool type_name_is_rvalue_reference(std::string_view name) noexcept;
 constexpr bool type_name_is_member_pointer(std::string_view name) noexcept;
+
+// composite
+
+constexpr bool type_name_is_arithmetic(std::string_view name) noexcept;
+constexpr bool type_name_is_fundamental(std::string_view name) noexcept;
 
 // properties
 
@@ -101,6 +110,9 @@ constexpr std::size_t type_name_add_volatile_hash(
 constexpr std::size_t type_name_add_cv_hash(std::string_view name) noexcept;
 constexpr std::size_t type_name_add_lvalue_reference_hash(
     std::string_view name) noexcept;
+// same with type_name_add_lvalue_reference_hash, but it won't change &&{T}
+constexpr std::size_t type_name_add_lvalue_reference_weak_hash(
+    std::string_view name) noexcept;
 constexpr std::size_t type_name_add_rvalue_reference_hash(
     std::string_view name) noexcept;
 constexpr std::size_t type_name_add_pointer_hash(
@@ -129,6 +141,9 @@ template <typename Alloc>
 constexpr std::string_view type_name_add_lvalue_reference(std::string_view name,
                                                           Alloc alloc);
 template <typename Alloc>
+constexpr std::string_view type_name_add_lvalue_reference_weak(
+    std::string_view name, Alloc alloc);
+template <typename Alloc>
 constexpr std::string_view type_name_add_rvalue_reference(std::string_view name,
                                                           Alloc alloc);
 template <typename Alloc>
@@ -140,11 +155,6 @@ constexpr std::string_view type_name_add_const_lvalue_reference(
 template <typename Alloc>
 constexpr std::string_view type_name_add_const_rvalue_reference(
     std::string_view name, Alloc alloc);
-
-// composite
-
-constexpr bool type_name_is_arithmetic(std::string_view name) noexcept;
-constexpr bool type_name_is_fundamental(std::string_view name) noexcept;
 }  // namespace My
 
 #include "details/Name.inl"
