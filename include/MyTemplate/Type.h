@@ -1,7 +1,3 @@
-//
-// Created by Admin on 26/12/2024.
-//
-
 #pragma once
 
 #include "Name.h"
@@ -290,7 +286,7 @@ class Type {
     return type_name_extent(name.GetView());
   }
 
-  constexpr CVRefMode CVRefMode() const noexcept {
+  constexpr CVRefMode GetCVRefMode() const noexcept {
     return type_name_cvref_mode(name.GetView());
   }
 

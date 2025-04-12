@@ -1,7 +1,3 @@
-//
-// Created by Admin on 12/04/2025.
-//
-
 #include <MyTemplate/Type.h>
 
 #include <iostream>

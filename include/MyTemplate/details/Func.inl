@@ -1,7 +1,3 @@
-//
-// Created by Admin on 2/04/2025.
-//
-
 #pragma once
 
 namespace My::details {
@@ -120,7 +116,7 @@ struct My::FuncTraits<Ret(Args...) const volatile>
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 0010
-struct My::FuncTraits<Ret(Args...)&>
+struct My::FuncTraits<Ret(Args...) &>
     : details::FuncTraitsBase<false, false, ReferenceMode::Left, false,
                               Ret(Args...)> {};
 
