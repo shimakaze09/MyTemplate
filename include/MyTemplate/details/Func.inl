@@ -268,14 +268,11 @@ constexpr auto My::DecayLambda(Lambda&& lambda) noexcept {
       std::forward<Lambda>(lambda));
 }
 
-template <typename Func>
+template <typename Obj, typename Func>
 struct My::MemFuncOf {
   static_assert(std::is_function_v<Func>);
 
-  template <typename Obj>
-  static constexpr auto get(Func Obj::* func) noexcept {
-    return func;
-  }
+  static constexpr auto get(Func Obj::* func) noexcept { return func; }
 };
 
 template <typename Func>

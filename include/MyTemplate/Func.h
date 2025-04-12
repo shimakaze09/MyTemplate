@@ -37,7 +37,7 @@ template <typename T>
 constexpr bool FuncTraits_is_noexcept = FuncTraits<T>::is_noexcept;
 
 // overload
-template <typename Func>
+template <typename Obj, typename Func>
 struct MemFuncOf;
 template <typename Func>
 struct FuncOf;
