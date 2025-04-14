@@ -24,7 +24,7 @@ constexpr auto func_signature_impl() noexcept {
 
 template <typename T>
 constexpr auto func_signature() noexcept {
-  return TSTR(func_signature_impl<std::type_identity<T>>());
+  return TSTR(func_signature_impl<T>());
 }
 
 //
@@ -55,11 +55,11 @@ template <typename T>
 constexpr auto raw_type_name() noexcept {
   constexpr auto sig = func_signature<T>();
 #if defined(__clang__)
-  return remove_suffix<2>(remove_prefix<66>(sig));
+  return remove_suffix<1>(remove_prefix<47>(sig));
 #elif defined(__GNUC__)
-  return remove_suffix<2>(remove_prefix<81>(sig));
+  return remove_suffix<1>(remove_prefix<62>(sig));
 #elif defined(_MSC_VER)
-  return remove_suffix(remove_suffix<17>(remove_prefix<74>(sig)),
+  return remove_suffix(remove_suffix<16>(remove_prefix<55>(sig)),
                        TStr_of_a<' '>{});
 #endif
 }
