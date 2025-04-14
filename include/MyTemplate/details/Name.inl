@@ -31,6 +31,9 @@ constexpr auto func_signature() noexcept {
 // custom
 ///////////
 
+template <typename T>
+struct custom_type_name;
+
 template <auto Value>
 struct custom_constexpr_value_name;
 
@@ -197,7 +200,9 @@ constexpr auto My::constexpr_value_name() noexcept {
 
 template <typename T>
 constexpr auto My::type_name() noexcept {
-  if constexpr (std::is_lvalue_reference_v<T>)
+  if constexpr (is_defined_v<details::custom_type_name<T>>)
+    return details::custom_type_name<T>::get();
+  else if constexpr (std::is_lvalue_reference_v<T>)
     return concat_seq(TStrC_of<'&', '{'>{},
                       type_name<std::remove_reference_t<T>>(),
                       TStr_of_a<'}'>{});
@@ -362,6 +367,10 @@ constexpr auto My::type_name() noexcept {
   } else if constexpr (IsIValue_v<T>)
     return constexpr_value_name<T::value>();
 #ifdef MY_NAME_X_INT
+#ifdef MY_NAME_BOOL
+  else if constexpr (std::is_same_v<T, bool>)
+    return TStrC_of<'b', 'o', 'o', 'l'>{};
+#endif  // MY_NAME_BOOL
   else if constexpr (std::is_integral_v<T>) {
     static_assert(sizeof(T) <= 8);
     constexpr auto BitName = constexpr_value_name<8 * sizeof(T)>();
