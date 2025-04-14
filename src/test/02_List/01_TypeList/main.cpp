@@ -58,8 +58,8 @@ int main() {
   static_assert(is_same_v<Transform_t<list, add_const>,
                           TypeList<const int, const float, const bool>>);
 
-  static_assert(IsSet_v<list>);
-  static_assert(!IsSet_v<PushFront_t<list, float>>);
+  static_assert(IsUnique_v<list>);
+  static_assert(!IsUnique_v<PushFront_t<list, float>>);
 
   return 0;
 }

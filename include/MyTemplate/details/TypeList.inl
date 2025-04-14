@@ -23,7 +23,7 @@ template <typename List, typename LastT, template <typename...> class T,
 struct SearchInstance;
 
 template <typename List, bool haveSame = false>
-struct IsSet;
+struct IsUnique;
 }  // namespace My::details
 
 namespace My {
@@ -206,7 +206,7 @@ struct QuickSort<TypeList<Head, Tail...>, Less> {
 // =================================================
 
 template <typename List>
-struct IsSet : details::IsSet<List> {};
+struct IsUnique : details::IsUnique<List> {};
 }  // namespace My
 
 namespace My::details {
@@ -279,12 +279,12 @@ struct SearchInstance<List, LastT, T, false, false>
 // =================================================
 
 template <typename List>
-struct IsSet<List, true> : std::false_type {};
+struct IsUnique<List, true> : std::false_type {};
 
 template <>
-struct IsSet<TypeList<>, false> : std::true_type {};
+struct IsUnique<TypeList<>, false> : std::true_type {};
 
 template <typename Head, typename... Tail>
-struct IsSet<TypeList<Head, Tail...>, false>
-    : IsSet<TypeList<Tail...>, Contain_v<TypeList<Tail...>, Head>> {};
+struct IsUnique<TypeList<Head, Tail...>, false>
+    : IsUnique<TypeList<Tail...>, Contain_v<TypeList<Tail...>, Head>> {};
 }  // namespace My::details
