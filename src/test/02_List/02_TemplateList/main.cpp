@@ -1,6 +1,5 @@
+#include <MyTemplate/TemplateList.hpp>
 #include <type_traits>
-
-#include <MyTemplate/TemplateList.h>
 
 using namespace std;
 using namespace My;

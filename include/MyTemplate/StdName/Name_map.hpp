@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../Name.h"
-
 #include <map>
+
+#include "../Name.hpp"
 
 template <typename Key, typename T>
 struct My::details::custom_type_name<std::map<Key, T>> {

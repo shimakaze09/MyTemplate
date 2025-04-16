@@ -9,13 +9,13 @@ template <typename TList>
 struct TIsEmpty : std::bool_constant<TLength_v<TList> == 0> {};
 
 /*
-	// TFront will introduce new template
-	template<template<typename...> class Head, template<typename...> class... Tail>
-	struct TFront<TemplateList<Head, Tail...>> {
-		template<typename... Ts>
-		using Ttype = Head<Ts...>;
-	};
-	*/
+// TFront will introduce new template
+template<template<typename...> class Head, template<typename...> class... Tail>
+struct TFront<TemplateList<Head, Tail...>> {
+        template<typename... Ts>
+        using Ttype = Head<Ts...>;
+};
+*/
 
 template <template <typename...> class T, template <typename...> class... Ts>
 struct TPushFront<TemplateList<Ts...>, T>
@@ -31,16 +31,16 @@ struct TPopFront<TemplateList<Head, Tail...>>
     : std::type_identity<TemplateList<Tail...>> {};
 
 /*
-	// TAt will introduce new template
-	template<typename TList>
-	struct TAt<TList, 0> {
-		template<typename... Ts>
-		using Ttype = typename TFront<TList>::template Ttype<Ts...>;
-	};
+// TAt will introduce new template
+template<typename TList>
+struct TAt<TList, 0> {
+        template<typename... Ts>
+        using Ttype = typename TFront<TList>::template Ttype<Ts...>;
+};
 
-	template<typename TList, std::size_t N>
-	struct TAt : TAt<TPopFront_t<TList>, N - 1> { };
-	*/
+template<typename TList, std::size_t N>
+struct TAt : TAt<TPopFront_t<TList>, N - 1> { };
+*/
 
 template <template <typename I, template <typename...> class X> class Op,
           typename I>
@@ -65,7 +65,8 @@ struct TTransform<TemplateList<Ts...>, Op>
 
 // TSelect
 // template<typename TList, std::size_t... Indices>
-// struct TSelect : std::type_identity<TemplateList<TAt<TList, Indices>::template Ttype...>> {};
+// struct TSelect : std::type_identity<TemplateList<TAt<TList,
+// Indices>::template Ttype...>> {};
 
 template <template <typename...> class... Ts, typename Instance>
 struct TExistGenericity<TemplateList<Ts...>, Instance>

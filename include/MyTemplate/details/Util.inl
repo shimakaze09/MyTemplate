@@ -6,7 +6,6 @@
 namespace My::details {
 template <typename Void, template <typename...> typename T, typename... Ts>
 struct is_instantiable : std::false_type {};
-
 template <template <typename...> typename T, typename... Ts>
 struct is_instantiable<std::void_t<T<Ts...>>, T, Ts...> : std::true_type {};
 
@@ -51,10 +50,8 @@ struct is_function_pointer<
     T> : std::true_type {};
 
 struct has_virtual_base_void {};
-
 template <typename Void, typename Obj>
 struct has_virtual_base_helper : std::true_type {};
-
 template <typename Obj>
 struct has_virtual_base_helper<
     std::void_t<decltype(reinterpret_cast<
@@ -64,7 +61,6 @@ struct has_virtual_base_helper<
 
 template <typename Void, typename Base, typename Derived>
 struct is_virtual_base_of_helper : std::is_base_of<Base, Derived> {};
-
 template <typename Base, typename Derived>
 struct is_virtual_base_of_helper<
     std::void_t<decltype(static_cast<Derived*>(std::declval<Base*>()))>, Base,
@@ -72,7 +68,6 @@ struct is_virtual_base_of_helper<
 
 template <class Void, template <class...> class Op, class... Args>
 struct is_valid : std::false_type {};
-
 template <template <class...> class Op, class... Args>
 struct is_valid<std::void_t<Op<Args...>>, Op, Args...> : std::true_type {};
 }  // namespace My::details
@@ -113,7 +108,6 @@ struct My::is_typename_template_type<T<Ts...>> : std::true_type {};
 
 template <typename T>
 struct My::IsIValue : std::false_type {};
-
 template <typename T, T v>
 struct My::IsIValue<My::IValue<T, v>> : std::true_type {};
 

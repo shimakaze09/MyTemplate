@@ -15,6 +15,7 @@
 #endif
 #endif
 
+#include <concepts>
 #include <string_view>
 #include <utility>
 
@@ -24,14 +25,12 @@ struct fixed_cstring {
   using value_type = Char;
 
   constexpr fixed_cstring(const value_type (&str)[N + 1]) noexcept {
-    for (std::size_t i{0}; i < size; ++i)
-      data[i] = str[i];
+    for (std::size_t i{0}; i < size; ++i) data[i] = str[i];
     data[size] = 0;
   }
 
   constexpr fixed_cstring(std::basic_string_view<value_type> str) noexcept {
-    for (std::size_t i{0}; i < size; ++i)
-      data[i] = str[i];
+    for (std::size_t i{0}; i < size; ++i) data[i] = str[i];
     data[size] = 0;
   }
 
@@ -66,15 +65,11 @@ struct TStr {
   static constexpr bool Is(T = {}) noexcept {
     return std::is_same_v<T, TStr>;
   }
-
   static constexpr const Char* Data() noexcept { return str.data; }
-
   static constexpr std::size_t Size() noexcept { return str.size; }
-
   static constexpr std::basic_string_view<Char> View() noexcept {
     return str.data;
   }
-
   constexpr operator std::basic_string_view<Char>() { return View(); }
 };
 
@@ -115,32 +110,25 @@ constexpr auto TSTRHelper(T) {
 // [C-style string type (value)]
 // in C++20, we can easily put a string into template parameter list
 // but in C++17, we just can use this disgusting trick
-#define TSTR(s)                            \
-  ([] {                                    \
-    struct tmp {                           \
-      static constexpr auto get() {        \
-        return std::basic_string_view{s};  \
-      }                                    \
-    };                                     \
-    return My::details::TSTRHelper(tmp{}); \
+#define TSTR(s)                                                         \
+  ([] {                                                                 \
+    struct tmp {                                                        \
+      static constexpr auto get() { return std::basic_string_view{s}; } \
+    };                                                                  \
+    return My::details::TSTRHelper(tmp{});                              \
   }())
 
 namespace My {
 template <typename C, C... chars>
 struct TStr {
   using Char = C;
-
   template <typename T>
   static constexpr bool Is(T = {}) noexcept {
     return std::is_same_v<T, TStr>;
   }
-
   static constexpr const Char* Data() noexcept { return data; }
-
   static constexpr std::size_t Size() noexcept { return sizeof...(chars); }
-
   static constexpr std::basic_string_view<Char> View() noexcept { return data; }
-
   constexpr operator std::basic_string_view<Char>() { return View(); }
 
  private:
@@ -162,7 +150,7 @@ using TStr_of_a = TStr<decltype(c), c>;
 namespace My {
 template <typename T>
 concept TStrLike = requires {
-  {T::View()}->std::same_as<std::basic_string_view<typename T::Char>>;
+  { T::View() } -> std::same_as<std::basic_string_view<typename T::Char>>;
 };
 
 #ifdef MY_TSTR_NTTPC
@@ -212,17 +200,14 @@ template <typename... Strs>
 struct concat_seq_helper;
 template <typename... Strs>
 using concat_seq_helper_t = typename concat_seq_helper<Strs...>::type;
-
 template <typename Str>
 struct concat_seq_helper<Str> {
   using type = Str;
 };
-
 template <typename Str, typename... Strs>
 struct concat_seq_helper<Str, Strs...> {
   using type = concat_helper_t<Str, concat_seq_helper_t<Strs...>>;
 };
-
 template <typename... Strs>
 constexpr auto concat_seq(Strs...) noexcept {
   return concat_seq_helper_t<Strs...>{};
@@ -233,24 +218,20 @@ struct concat_seq_seperator_helper;
 template <typename Seperator, typename... Strs>
 using concat_seq_seperator_helper_t =
     typename concat_seq_seperator_helper<Seperator, Strs...>::type;
-
 template <typename Seperator>
 struct concat_seq_seperator_helper<Seperator> {
   using type = decltype(empty_of<Seperator>());
 };
-
 template <typename Seperator, typename Str>
 struct concat_seq_seperator_helper<Seperator, Str> {
   using type = Str;
 };
-
 template <typename Seperator, typename Str, typename... Strs>
 struct concat_seq_seperator_helper<Seperator, Str, Strs...> {
   using type =
       concat_helper_t<concat_helper_t<Str, Seperator>,
                       concat_seq_seperator_helper_t<Seperator, Strs...>>;
 };
-
 template <typename Seperator, typename... Strs>
 constexpr auto concat_seq_seperator(Seperator, Strs...) noexcept {
   return concat_seq_seperator_helper_t<Seperator, Strs...>{};
@@ -267,8 +248,7 @@ constexpr std::size_t find(Str = {}, X = {}) noexcept {
           break;
         }
       }
-      if (flag)
-        return i;
+      if (flag) return i;
     }
   }
   return static_cast<std::size_t>(-1);
@@ -286,8 +266,7 @@ constexpr std::size_t find_last(Str = {}, X = {}) noexcept {
           break;
         }
       }
-      if (flag)
-        return idx;
+      if (flag) return idx;
     }
   }
   return static_cast<std::size_t>(-1);
@@ -299,8 +278,7 @@ constexpr bool starts_with(Str = {}, X = {}) noexcept {
     return false;
   else {
     for (std::size_t i = 0; i < X::Size(); i++) {
-      if (Str::View()[i] != X::View()[i])
-        return false;
+      if (Str::View()[i] != X::View()[i]) return false;
     }
     return true;
   }

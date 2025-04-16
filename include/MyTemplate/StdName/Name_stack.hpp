@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Name_deque.h"
-
 #include <stack>
+
+#include "Name_deque.h"
 
 template <typename T>
 struct My::details::custom_type_name<std::stack<T>> {

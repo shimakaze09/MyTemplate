@@ -1,6 +1,5 @@
+#include <MyTemplate/TStr.hpp>
 #include <iostream>
-
-#include <MyTemplate/TStr.h>
 
 using namespace std;
 using namespace My;

@@ -1,12 +1,10 @@
-#include <MyTemplate/Type.h>
-
+#include <MyTemplate/Type.hpp>
 #include <iostream>
 
 using namespace My;
 using namespace std;
 
 struct A {};
-
 struct AA {};
 
 int main() {

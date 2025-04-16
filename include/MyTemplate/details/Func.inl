@@ -5,13 +5,10 @@ namespace My::details {
 
 template <typename T>
 struct RmvLValueRef : std::type_identity<T> {};
-
 template <typename T>
 struct RmvLValueRef<T&> : std::type_identity<T> {};
-
 template <typename T>
 struct RmvConstRef : std::type_identity<T> {};
-
 template <typename T>
 struct RmvConstRef<const T&> : std::type_identity<T> {};
 
@@ -19,20 +16,15 @@ template <typename A1, typename A2>
 struct AreArgumentsCompatible
     : std::is_same<const typename RmvLValueRef<A1>::type&,
                    const typename RmvLValueRef<A2>::type&> {};
-
 template <typename A1, typename A2>
 struct AreArgumentsCompatible<A1, A2&> : std::false_type {};
-
 template <typename A>
 struct AreArgumentsCompatible<A&, A&> : std::true_type {};
-
 // void as a return value
 template <typename A>
 struct AreArgumentsCompatible<void, A> : std::true_type {};
-
 template <typename A>
 struct AreArgumentsCompatible<A, void> : std::true_type {};
-
 template <>
 struct AreArgumentsCompatible<void, void> : std::true_type {};
 
@@ -83,11 +75,9 @@ struct FuncTraitsBase<IsConst, IsVolatile, Ref, IsNoexcept, Ret(Args...)> {
 
 template <bool IsFunc, typename T>
 struct FuncTraitsDispatch;
-
 template <typename T>
 struct FuncTraitsDispatch<false, T>
     : FuncTraits<decltype(&std::decay_t<T>::operator())> {};
-
 template <typename T>
 struct FuncTraitsDispatch<true, T> : FuncTraits<T> {
   using Function = T;
@@ -271,13 +261,11 @@ constexpr auto My::DecayLambda(Lambda&& lambda) noexcept {
 template <typename Obj, typename Func>
 struct My::MemFuncOf {
   static_assert(std::is_function_v<Func>);
-
   static constexpr auto get(Func Obj::* func) noexcept { return func; }
 };
 
 template <typename Func>
 struct My::FuncOf {
   static_assert(std::is_function_v<Func>);
-
   static constexpr auto get(Func* func) noexcept { return func; }
 };

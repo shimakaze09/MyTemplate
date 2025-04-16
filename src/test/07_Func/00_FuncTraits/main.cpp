@@ -1,5 +1,4 @@
-#include <MyTemplate/Func.h>
-
+#include <MyTemplate/Func.hpp>
 #include <iostream>
 
 using namespace My;
@@ -7,17 +6,11 @@ using namespace std;
 
 struct A {
   void Foo(int&) { cout << "void(A::*)(int&)" << endl; }
-
   void Foo(int&&) { cout << "void(A::*)(int&&)" << endl; }
-
   void Foo(const int&) { cout << "void(A::*)(const int&)" << endl; }
-
   void Foo(const int&&) { cout << "void(A::*)(const int&&)" << endl; }
-
   static void Bar() { cout << "void(*)()" << endl; }
-
   static void Bar(int) { cout << "void(*)(int)" << endl; }
-
   static void Cat() {}
 };
 

@@ -1,9 +1,8 @@
+#include <MyTemplate/SI.hpp>
 #include <array>
 #include <iostream>
 #include <string>
 #include <type_traits>
-
-#include <MyTemplate/SI.h>
 
 using namespace std;
 using namespace My;
@@ -12,22 +11,18 @@ template <typename Base, typename Impl>
 struct IA : Base {
   IA(float) {}
 };
-
 template <typename Base, typename Impl>
 struct IB : Base {
   using Base::Base;
 };
-
 template <typename Base, typename Impl>
 struct IC : Base {
   using Base::Base;
 };
-
 template <typename Base, typename Impl>
 struct ID : Base {
   using Base::Base;
 };
-
 template <typename Base, typename Impl>
 struct IE : Base {
   using Base::Base;
@@ -43,13 +38,11 @@ SI_CombineInterface(IF, IC, ID);
 
 struct G;
 SI_ImplTraits_Register(G, IE, IF);
-
 struct G : SI<G> {
   using SI<G>::SI;
 };
 
 struct A {};
-
 int main() {
   static_assert(SI_Contains_v<G, IA>);
   static_assert(SI_Contains_v<G, IB>);

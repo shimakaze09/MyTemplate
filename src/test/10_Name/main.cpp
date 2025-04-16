@@ -1,5 +1,4 @@
-#include <MyTemplate/Name.h>
-
+#include <MyTemplate/Name.hpp>
 #include <iostream>
 #include <vector>
 
@@ -26,9 +25,7 @@ void f(A<2, int>) {}
 template <typename T>
 struct C {
   struct D {};
-
   void f(A<2, int>, A<4, double>) {}
-
   void g(std::vector<int>) const volatile&& noexcept {}
 };
 
@@ -57,62 +54,44 @@ struct My::details::custom_type_namespace_name<C<decltype(&C<float>::f)>::D> {
 struct BH {
   void f() {};
 };
-
 template <>
 struct My::details::custom_constexpr_value_name<&BH::f> {
   static constexpr auto get() noexcept { return TSTR("f"); }
 };
-
 template <auto>
 struct B1 {};
-
 template <auto...>
 struct B2 {};
-
 template <auto, auto>
 struct B3 {};
-
 template <auto, auto, auto>
 struct B3_1 {};
-
 template <decltype(&BH::f), decltype(&BH::f)>
 struct B4 {};
-
 template <int, decltype(&BH::f), decltype(&BH::f)>
 struct B4_1 {};
-
 template <decltype(&BH::f)...>
 struct B4_2 {};
-
 template <int, decltype(&BH::f)...>
 struct B4_3 {};
-
 template <decltype(&BH::f)>
 struct B5 {};
-
 template <decltype(&BH::f), typename T>
 struct B6 {};
-
 template <decltype(&BH::f), typename... T>
 struct B7 {};
-
 template <typename T, decltype(&BH::f)>
 struct B8 {};
-
 template <typename T, decltype(&BH::f), decltype(&BH::f)>
 struct B9 {};
-
 template <typename T, decltype(&BH::f), decltype(&BH::f)...>
 struct B9_1 {};
-
 template <typename T, decltype(&BH::f)...>
 struct B10 {};
-
 template <decltype(&BH::f), typename, typename>
 struct B11 {};
 
 enum Enum {};
-
 union Union {};
 
 int main() {
@@ -121,8 +100,7 @@ int main() {
               << "// basic" << std::endl
               << "//////////" << std::endl;
 
-    auto f = []() {
-    };
+    auto f = []() {};
     std::cout << "|" << type_name<E<&C<int>::g>>().View() << "|" << std::endl;
     std::cout << "|" << type_name<decltype(f)>().View() << "|" << std::endl;
     std::cout << "|" << type_name<A2<int, 2>>().View() << "|" << std::endl;

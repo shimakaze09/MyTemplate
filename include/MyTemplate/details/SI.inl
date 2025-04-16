@@ -15,7 +15,6 @@ struct SI_ImplTraits_IList_Helper<
 
 template <typename Impl>
 struct SI_ImplTraits_IList : SI_ImplTraits_IList_Helper<void, Impl> {};
-
 template <typename Impl>
 using SI_ImplTraits_IList_t = typename SI_ImplTraits_IList<Impl>::type;
 
@@ -55,12 +54,10 @@ struct ITopoSort_Helper<TemplateList<>, SortedIList>
 template <bool NeedRecuresion, typename SortedIList,
           template <typename Base, typename Impl> class IHead>
 struct ITopoSort_Recursion;
-
 template <typename SortedIList,
           template <typename Base, typename Impl> class IHead>
 struct ITopoSort_Recursion<true, SortedIList, IHead>
     : std::type_identity<SortedIList> {};
-
 template <typename SortedIList,
           template <typename Base, typename Impl> class IHead>
 struct ITopoSort_Recursion<false, SortedIList, IHead>
@@ -80,7 +77,6 @@ struct ITopoSort_Helper<TemplateList<IHead, ITail...>, SortedIList> {
 
 template <typename IList>
 struct ITopoSort : ITopoSort_Helper<IList, TemplateList<>> {};
-
 template <typename IList>
 using ITopoSort_t = typename ITopoSort<IList>::type;
 
@@ -107,9 +103,9 @@ struct Nil {
   template <typename SI_ERROR, typename = typename SI_ERROR::SI_ERROR>
   void operator|(SI_ERROR) = delete;
   /*template<typename SI_ERROR, typename = typename SI_ERROR::SI_ERROR>
-		void operator~() = delete;
-		template<typename SI_ERROR, typename = typename SI_ERROR::SI_ERROR>
-		void operator!() = delete;*/
+  void operator~() = delete;
+  template<typename SI_ERROR, typename = typename SI_ERROR::SI_ERROR>
+  void operator!() = delete;*/
   template <typename SI_ERROR, typename = typename SI_ERROR::SI_ERROR>
   void operator=(SI_ERROR) = delete;
   template <typename SI_ERROR, typename = typename SI_ERROR::SI_ERROR>
@@ -161,7 +157,7 @@ struct Nil {
   template <typename SI_ERROR, typename = typename SI_ERROR::SI_ERROR>
   void operator->*(SI_ERROR) = delete;
   /*template<typename SI_ERROR, typename = typename SI_ERROR::SI_ERROR>
-		void operator->() = delete;*/
+  void operator->() = delete;*/
   template <typename SI_ERROR, typename = typename SI_ERROR::SI_ERROR>
   void operator()(SI_ERROR) = delete;
   template <typename SI_ERROR, typename = typename SI_ERROR::SI_ERROR>
@@ -193,7 +189,6 @@ struct SI_Helper<TemplateList<IHead, ITail...>, Impl>
 template <typename Void, typename T,
           template <typename Base, typename Impl> class Interface>
 struct SI_Contains_Helper : std::false_type {};
-
 template <typename T, template <typename Base, typename Impl> class Interface>
 struct SI_Contains_Helper<std::void_t<ITopoSort_t<SI_ImplTraits_IList_t<T>>>, T,
                           Interface>

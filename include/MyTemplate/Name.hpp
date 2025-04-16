@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Util.h"
-
 #include <string_view>
+
+#include "Util.hpp"
 
 // u?int{8|16|32|64}
 #define MY_NAME_X_INT
@@ -23,7 +23,8 @@ constexpr auto constexpr_value_name() noexcept;
 // - reference : &/&&{...}
 // - cv : const? volatile?{...}
 // - member pointer : {object_type_name}::*{value_type_name}
-// - function : ({arg_1_type_name}, ..., {arg_n_type_name})-{const? volatile? &/&&? noexcept?}->{result_type_name}
+// - function : ({arg_1_type_name}, ..., {arg_n_type_name})-{const? volatile?
+// &/&&? noexcept?}->{result_type_name}
 // - int : u?int{8|16|32|64}
 // - bool : bool
 // - float : float{32|64}

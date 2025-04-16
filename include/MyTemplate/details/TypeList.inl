@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Util.h"
+#include "../Util.hpp"
 
 namespace My::details {
 template <typename List, typename T, std::size_t N = 0, bool found = false>
@@ -213,11 +213,9 @@ namespace My::details {
 template <typename T, std::size_t N, typename... Ts>
 struct Find<TypeList<Ts...>, T, N, true>
     : std::integral_constant<std::size_t, N - 1> {};
-
 template <typename T, std::size_t N>
 struct Find<TypeList<>, T, N, false>
     : std::integral_constant<std::size_t, Find_fail> {};
-
 template <typename T, typename Head, std::size_t N, typename... Tail>
 struct Find<TypeList<Head, Tail...>, T, N, false>
     : Find<TypeList<Tail...>, T, N + 1, std::is_same_v<T, Head>> {};
@@ -227,11 +225,9 @@ struct Find<TypeList<Head, Tail...>, T, N, false>
 template <template <typename> class Op, std::size_t N, typename... Ts>
 struct FindIf<TypeList<Ts...>, Op, N, true>
     : std::integral_constant<std::size_t, N - 1> {};
-
 template <template <typename> class Op, std::size_t N>
 struct FindIf<TypeList<>, Op, N, false>
     : std::integral_constant<std::size_t, Find_fail> {};
-
 template <template <typename> class Op, typename Head, std::size_t N,
           typename... Tail>
 struct FindIf<TypeList<Head, Tail...>, Op, N, false>
@@ -280,10 +276,8 @@ struct SearchInstance<List, LastT, T, false, false>
 
 template <typename List>
 struct IsUnique<List, true> : std::false_type {};
-
 template <>
 struct IsUnique<TypeList<>, false> : std::true_type {};
-
 template <typename Head, typename... Tail>
 struct IsUnique<TypeList<Head, Tail...>, false>
     : IsUnique<TypeList<Tail...>, Contain_v<TypeList<Tail...>, Head>> {};

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Name_string_view.h"
-
 #include <string>
+
+#include "Name_string_view.h"
 
 template <typename Elem>
 struct My::details::custom_type_name<std::basic_string<Elem>> {

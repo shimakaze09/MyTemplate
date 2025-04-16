@@ -8,8 +8,8 @@ struct My::to_typename_template_type<T<Int>>
     : std::type_identity<typename_template_type<IValue_of<Int>>> {};
 
 // 1...
-//template<template<auto...>class T, auto... Ints>
-//struct My::to_typename_template_type<T<Ints...>>
+// template<template<auto...>class T, auto... Ints>
+// struct My::to_typename_template_type<T<Ints...>>
 //	: std::type_identity<typename_template_type<IValue_of<Ints>...>> {};
 
 // 1 0
@@ -18,8 +18,8 @@ struct My::to_typename_template_type<T<Int, U>>
     : std::type_identity<typename_template_type<IValue_of<Int>, U>> {};
 
 // 1 0...
-//template<template<auto, typename...>class T, auto Int, typename... Us>
-//struct My::to_typename_template_type<T<Int, Us...>>
+// template<template<auto, typename...>class T, auto Int, typename... Us>
+// struct My::to_typename_template_type<T<Int, Us...>>
 //	: std::type_identity<typename_template_type<IValue_of<Int>, Us...>> {};
 
 // 0 1
@@ -28,8 +28,8 @@ struct My::to_typename_template_type<T<U, Int>>
     : std::type_identity<typename_template_type<U, IValue_of<Int>>> {};
 
 // 0 1...
-//template<template<typename, auto...>class T, typename U, auto... Ints>
-//struct My::to_typename_template_type<T<U, Ints...>>
+// template<template<typename, auto...>class T, typename U, auto... Ints>
+// struct My::to_typename_template_type<T<U, Ints...>>
 //	: std::type_identity<typename_template_type<U, IValue_of<Ints>...>> {};
 
 // 1 1
@@ -39,9 +39,10 @@ struct My::to_typename_template_type<T<Int0, Int1>>
           typename_template_type<IValue_of<Int0>, IValue_of<Int1>>> {};
 
 // 1 1...
-//template<template<auto, auto, typename...>class T, auto Int, auto... Ints>
-//struct My::to_typename_template_type<T<Int, Ints...>>
-//	: std::type_identity<typename_template_type<IValue_of<Int>, IValue_of<Ints>...>> {};
+// template<template<auto, auto, typename...>class T, auto Int, auto... Ints>
+// struct My::to_typename_template_type<T<Int, Ints...>>
+//	: std::type_identity<typename_template_type<IValue_of<Int>,
+//IValue_of<Ints>...>> {};
 
 // 1 0 0
 template <template <auto, typename, typename> class T, auto Int, typename U0,

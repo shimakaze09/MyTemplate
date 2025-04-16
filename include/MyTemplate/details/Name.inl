@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../Func.h"
-#include "../TStr.h"
-
 #include <cassert>
 #include <cstring>
+
+#include "../Func.hpp"
+#include "../TStr.hpp"
 
 namespace My::details {
 //
@@ -95,8 +95,7 @@ constexpr std::size_t get_template_idx(Str = {}) {
       --i;
       if (Str::View()[i] == '<') {
         k--;
-        if (k == 0)
-          return i;
+        if (k == 0) return i;
       } else if (Str::View()[i] == '>')
         k++;
     }
@@ -129,7 +128,6 @@ constexpr auto no_template_type_name() noexcept {
 
 template <typename T>
 struct template_args_name_impl;
-
 template <template <typename...> class T, typename... Ts>
 struct template_args_name_impl<T<Ts...>> {
   constexpr static auto get() noexcept {
@@ -146,7 +144,6 @@ constexpr auto template_args_name() noexcept {
 
 template <typename T>
 struct function_args_name_impl;
-
 template <typename... Ts>
 struct function_args_name_impl<TypeList<Ts...>> {
   constexpr static auto get() noexcept {
@@ -426,12 +423,10 @@ constexpr bool My::constexpr_name_is_null_pointer(
 }
 
 constexpr bool My::constexpr_name_is_integral(std::string_view name) noexcept {
-  if (name.empty())
-    return false;
+  if (name.empty()) return false;
 
   for (std::size_t i = name.front() == '-' ? 1 : 0; i < name.size(); i++) {
-    if (name[i] < '0' || name[i] > '9')
-      return false;
+    if (name[i] < '0' || name[i] > '9') return false;
   }
 
   return true;
@@ -625,8 +620,7 @@ constexpr std::size_t My::type_name_rank(std::string_view name) noexcept {
         return rank;
       flag = true;
     } else {
-      if (name[idx] == ']')
-        flag = false;
+      if (name[idx] == ']') flag = false;
     }
     ++idx;
   }
@@ -637,18 +631,15 @@ constexpr std::size_t My::type_name_extent(std::string_view name,
                                            std::size_t N) noexcept {
   std::size_t idx = 0;
   while (N != 0) {
-    if (name[idx] != '[')
-      return false;
+    if (name[idx] != '[') return false;
     ++idx;
-    while (name[idx++] != ']')
-      assert(idx < name.size());
+    while (name[idx++] != ']') assert(idx < name.size());
     --N;
   }
 
   assert(idx < name.size());
 
-  if (name[idx] != '[')
-    return 0;
+  if (name[idx] != '[') return 0;
 
   std::size_t extent = 0;
   while (name[++idx] != ']') {
@@ -661,8 +652,7 @@ constexpr std::size_t My::type_name_extent(std::string_view name,
 
 constexpr My::CVRefMode My::type_name_cvref_mode(
     std::string_view name) noexcept {
-  if (name.empty())
-    return CVRefMode::None;
+  if (name.empty()) return CVRefMode::None;
 
   if (name[0] == '&') {
     assert(name.size() >= 4);
@@ -737,8 +727,7 @@ constexpr std::string_view My::type_name_remove_cv(
 
 constexpr std::string_view My::type_name_remove_const(
     std::string_view name) noexcept {
-  if (!name.starts_with(std::string_view{"const"}))
-    return name;
+  if (!name.starts_with(std::string_view{"const"})) return name;
 
   assert(name.size() >= 6);
 
@@ -753,8 +742,7 @@ constexpr std::string_view My::type_name_remove_const(
 
 constexpr std::string_view My::type_name_remove_topmost_volatile(
     std::string_view name) noexcept {
-  if (!name.starts_with(std::string_view{"volatile{"}))
-    return name;
+  if (!name.starts_with(std::string_view{"volatile{"})) return name;
 
   assert(name.back() == '}');
 
@@ -763,8 +751,7 @@ constexpr std::string_view My::type_name_remove_topmost_volatile(
 
 constexpr std::string_view My::type_name_remove_lvalue_reference(
     std::string_view name) noexcept {
-  if (name.size() <= 2 || name[0] != '&' || name[1] != '{')
-    return name;
+  if (name.size() <= 2 || name[0] != '&' || name[1] != '{') return name;
 
   assert(name.size() >= 3 && name.back() == '}');
   return {name.data() + 2, name.size() - 3};
@@ -772,8 +759,7 @@ constexpr std::string_view My::type_name_remove_lvalue_reference(
 
 constexpr std::string_view My::type_name_remove_rvalue_reference(
     std::string_view name) noexcept {
-  if (name.size() <= 2 || name[0] != '&' || name[1] != '&')
-    return name;
+  if (name.size() <= 2 || name[0] != '&' || name[1] != '&') return name;
 
   assert(name.size() >= 4 && name[2] == '{' && name.back() == '}');
   return {name.data() + 3, name.size() - 4};
@@ -781,8 +767,7 @@ constexpr std::string_view My::type_name_remove_rvalue_reference(
 
 constexpr std::string_view My::type_name_remove_reference(
     std::string_view name) noexcept {
-  if (name.size() <= 2 || name[0] != '&')
-    return name;
+  if (name.size() <= 2 || name[0] != '&') return name;
 
   if (name[1] == '{') {
     assert(name.size() >= 3 && name.back() == '}');
@@ -797,8 +782,7 @@ constexpr std::string_view My::type_name_remove_reference(
 constexpr std::string_view My::type_name_remove_pointer(
     std::string_view name) noexcept {
   name = type_name_remove_cvref(name);
-  if (!name.starts_with(std::string_view{"*"}))
-    return name;
+  if (!name.starts_with(std::string_view{"*"})) return name;
 
   assert(name.size() >= 3 && name[1] == '{' && name.back() == '}');
   return {name.data() + 2, name.size() - 3};
@@ -813,15 +797,12 @@ constexpr std::string_view My::type_name_remove_extent(
     std::string_view name) noexcept {
   std::size_t idx = 0;
 
-  if (name.empty())
-    return name;
+  if (name.empty()) return name;
 
-  if (name[idx] != '[')
-    return name;
+  if (name[idx] != '[') return name;
 
   ++idx;
-  while (name[idx++] != ']')
-    assert(idx < name.size());
+  while (name[idx++] != ']') assert(idx < name.size());
 
   assert(name.size() > idx);
 
@@ -835,8 +816,7 @@ constexpr std::string_view My::type_name_remove_extent(
 
 constexpr std::string_view My::type_name_remove_all_extents(
     std::string_view name) noexcept {
-  if (!type_name_is_array(name))
-    return name;
+  if (!type_name_is_array(name)) return name;
 
   return type_name_remove_all_extents(type_name_remove_extent(name));
 }
@@ -867,11 +847,9 @@ constexpr std::size_t My::type_name_add_volatile_hash(
 
 constexpr std::size_t My::type_name_add_cv_hash(
     std::string_view name) noexcept {
-  if (type_name_is_reference(name))
-    return string_hash(name);
+  if (type_name_is_reference(name)) return string_hash(name);
 
-  if (type_name_is_cv(name))
-    return string_hash(name);
+  if (type_name_is_cv(name)) return string_hash(name);
 
   if (type_name_is_const(name)) {
     name.remove_prefix(5);  // {...}
@@ -885,8 +863,7 @@ constexpr std::size_t My::type_name_add_cv_hash(
 
 constexpr std::size_t My::type_name_add_lvalue_reference_hash(
     std::string_view name) noexcept {
-  if (type_name_is_lvalue_reference(name))
-    return string_hash(name);
+  if (type_name_is_lvalue_reference(name)) return string_hash(name);
 
   if (type_name_is_rvalue_reference(name)) {
     name.remove_prefix(1);
@@ -897,24 +874,21 @@ constexpr std::size_t My::type_name_add_lvalue_reference_hash(
 
 constexpr std::size_t My::type_name_add_lvalue_reference_weak_hash(
     std::string_view name) noexcept {
-  if (type_name_is_reference(name))
-    return string_hash(name);
+  if (type_name_is_reference(name)) return string_hash(name);
 
   return string_hash_seed(string_hash_seed(string_hash("&{"), name), "}");
 }
 
 constexpr std::size_t My::type_name_add_rvalue_reference_hash(
     std::string_view name) noexcept {
-  if (type_name_is_reference(name))
-    return string_hash(name);
+  if (type_name_is_reference(name)) return string_hash(name);
 
   return string_hash_seed(string_hash_seed(string_hash("&&{"), name), "}");
 }
 
 constexpr std::size_t My::type_name_add_pointer_hash(
     std::string_view name) noexcept {
-  if (type_name_is_reference(name))
-    name = type_name_remove_reference(name);
+  if (type_name_is_reference(name)) name = type_name_remove_reference(name);
 
   return string_hash_seed(string_hash_seed(string_hash("*{"), name), "}");
 }
@@ -934,8 +908,7 @@ constexpr std::size_t My::type_name_add_const_lvalue_reference_hash(
 
 constexpr std::size_t My::type_name_add_const_rvalue_reference_hash(
     std::string_view name) noexcept {
-  if (type_name_is_reference(name))
-    return string_hash(name);
+  if (type_name_is_reference(name)) return string_hash(name);
 
   if (type_name_is_const(name))
     return type_name_add_rvalue_reference_hash(name);
@@ -951,8 +924,7 @@ constexpr std::size_t My::type_name_add_const_rvalue_reference_hash(
 template <typename Alloc>
 constexpr std::string_view My::type_name_add_const(std::string_view name,
                                                    Alloc alloc) {
-  if (type_name_is_reference(name) || type_name_is_const(name))
-    return name;
+  if (type_name_is_reference(name) || type_name_is_const(name)) return name;
 
   if (type_name_is_volatile(name)) {
     const std::size_t length = lengthof("const ") + name.size();
@@ -975,8 +947,7 @@ constexpr std::string_view My::type_name_add_const(std::string_view name,
 template <typename Alloc>
 constexpr std::string_view My::type_name_add_volatile(std::string_view name,
                                                       Alloc alloc) {
-  if (type_name_is_reference(name) || type_name_is_volatile(name))
-    return name;
+  if (type_name_is_reference(name) || type_name_is_volatile(name)) return name;
 
   if (type_name_is_const(name)) {
     name.remove_prefix(5);  // {...}
@@ -1001,8 +972,7 @@ constexpr std::string_view My::type_name_add_volatile(std::string_view name,
 template <typename Alloc>
 constexpr std::string_view My::type_name_add_cv(std::string_view name,
                                                 Alloc alloc) {
-  if (type_name_is_reference(name) || type_name_is_cv(name))
-    return name;
+  if (type_name_is_reference(name) || type_name_is_cv(name)) return name;
 
   if (type_name_is_const(name)) {
     name.remove_prefix(5);  // {...}
@@ -1034,8 +1004,7 @@ constexpr std::string_view My::type_name_add_cv(std::string_view name,
 template <typename Alloc>
 constexpr std::string_view My::type_name_add_lvalue_reference(
     std::string_view name, Alloc alloc) {
-  if (type_name_is_lvalue_reference(name))
-    return name;
+  if (type_name_is_lvalue_reference(name)) return name;
 
   if (type_name_is_rvalue_reference(name)) {
     name.remove_prefix(1);
@@ -1058,8 +1027,7 @@ constexpr std::string_view My::type_name_add_lvalue_reference(
 template <typename Alloc>
 constexpr std::string_view My::type_name_add_lvalue_reference_weak(
     std::string_view name, Alloc alloc) {
-  if (type_name_is_reference(name))
-    return name;
+  if (type_name_is_reference(name)) return name;
 
   const std::size_t length = lengthof("&{") + name.size() + lengthof("}");
   char* buffer = alloc.allocate(length + 1);
@@ -1073,8 +1041,7 @@ constexpr std::string_view My::type_name_add_lvalue_reference_weak(
 template <typename Alloc>
 constexpr std::string_view My::type_name_add_rvalue_reference(
     std::string_view name, Alloc alloc) {
-  if (type_name_is_reference(name))
-    return name;
+  if (type_name_is_reference(name)) return name;
 
   const std::size_t length = lengthof("&&{") + name.size() + lengthof("}");
   char* buffer = alloc.allocate(length + 1);
@@ -1088,8 +1055,7 @@ constexpr std::string_view My::type_name_add_rvalue_reference(
 template <typename Alloc>
 constexpr std::string_view My::type_name_add_pointer(std::string_view name,
                                                      Alloc alloc) {
-  if (type_name_is_reference(name))
-    name = type_name_remove_reference(name);
+  if (type_name_is_reference(name)) name = type_name_remove_reference(name);
 
   const std::size_t length = lengthof("*{") + name.size() + lengthof("}");
   char* buffer = alloc.allocate(length + 1);
@@ -1131,8 +1097,7 @@ constexpr std::string_view My::type_name_add_const_lvalue_reference(
 template <typename Alloc>
 constexpr std::string_view My::type_name_add_const_rvalue_reference(
     std::string_view name, Alloc alloc) {
-  if (type_name_is_reference(name))
-    return name;
+  if (type_name_is_reference(name)) return name;
 
   if (type_name_is_const(name))
     return type_name_add_rvalue_reference(name, alloc);

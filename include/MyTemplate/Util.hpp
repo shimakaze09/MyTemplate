@@ -1,5 +1,6 @@
 #pragma once
 
+#include <span>
 #include <string_view>
 #include <type_traits>
 
@@ -28,14 +29,12 @@ static constexpr bool is_typename_template_type_v =
     is_typename_template_type<T>::value;
 
 // use IValue to replace integral value in template arguments
-// we provide some partial template specializations (see details/ToTTType.inl for more details)
-// [example]
-// template<typename T, std::size_t N>
-// struct Array;
-// to_typename_template_type_t<Array<T, N>> == typename_template_type<T, IValue<std::size_t, N>>
+// we provide some partial template specializations (see details/ToTTType.inl
+// for more details) [example] template<typename T, std::size_t N> struct Array;
+// to_typename_template_type_t<Array<T, N>> == typename_template_type<T,
+// IValue<std::size_t, N>>
 template <typename T>
 struct to_typename_template_type : std::type_identity<T> {};
-
 template <typename T>
 using to_typename_template_type_t = typename to_typename_template_type<T>::type;
 
@@ -90,32 +89,26 @@ constexpr std::size_t lengthof(const char (&str)[N]) noexcept;
 
 constexpr std::size_t string_hash_seed(std::size_t seed, const char* str,
                                        std::size_t N) noexcept;
-
 constexpr std::size_t string_hash_seed(std::size_t seed,
                                        std::string_view str) noexcept {
   return string_hash_seed(seed, str.data(), str.size());
 }
-
 template <std::size_t N>
 constexpr std::size_t string_hash_seed(std::size_t seed,
                                        const char (&str)[N]) noexcept {
   return string_hash_seed(seed, str, N - 1);
 }
-
 constexpr std::size_t string_hash_seed(std::size_t seed,
                                        const char* str) noexcept;
 
 constexpr std::size_t string_hash(const char* str, std::size_t N) noexcept;
-
 constexpr std::size_t string_hash(std::string_view str) noexcept {
   return string_hash(str.data(), str.size());
 }
-
 template <std::size_t N>
 constexpr std::size_t string_hash(const char (&str)[N]) noexcept {
   return string_hash(str, N - 1);
 }
-
 constexpr std::size_t string_hash(const char* str) noexcept;
 
 template <typename T>
@@ -157,18 +150,44 @@ enum class CVRefMode : std::uint8_t {
 constexpr bool CVRefMode_IsLeft(CVRefMode mode) noexcept {
   return static_cast<std::uint8_t>(mode) & 0b0001;
 }
-
 constexpr bool CVRefMode_IsRight(CVRefMode mode) noexcept {
   return static_cast<std::uint8_t>(mode) & 0b0010;
 }
-
 constexpr bool CVRefMode_IsConst(CVRefMode mode) noexcept {
   return static_cast<std::uint8_t>(mode) & 0b0100;
 }
-
 constexpr bool CVRefMode_IsVolatile(CVRefMode mode) noexcept {
   return static_cast<std::uint8_t>(mode) & 0b1000;
 }
+
+template <typename T, std::size_t N>
+class TempArray {
+ public:
+  template <typename... Elems>
+  constexpr TempArray(Elems&&... elems) : data{static_cast<T>(elems)...} {}
+
+  constexpr operator std::add_lvalue_reference_t<T[N]>() & { return data; }
+  constexpr operator std::add_lvalue_reference_t<const T[N]>() const& {
+    return data;
+  }
+  constexpr operator std::add_rvalue_reference_t<T[N]>() && {
+    return std::move(data);
+  }
+  constexpr operator std::add_rvalue_reference_t<const T[N]>() const&& {
+    return std::move(data);
+  }
+
+  constexpr operator std::span<T>() { return data; }
+  constexpr operator std::span<const T>() const { return data; }
+  constexpr operator std::span<T, N>() { return data; }
+  constexpr operator std::span<const T, N>() const { return data; }
+
+ private:
+  T data[N];
+};
+
+template <typename T, typename... Ts>
+TempArray(T, Ts...) -> TempArray<T, sizeof...(Ts) + 1>;
 }  // namespace My
 
 #include "details/ToTTType.inl"

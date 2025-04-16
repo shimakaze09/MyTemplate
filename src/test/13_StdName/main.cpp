@@ -1,6 +1,5 @@
-#include <MyTemplate/StdName/Name_memory.h>
-#include <MyTemplate/StdName/Name_vector.h>
-
+#include <MyTemplate/StdName/Name_memory.hpp>
+#include <MyTemplate/StdName/Name_vector.hpp>
 #include <iostream>
 
 using namespace My;

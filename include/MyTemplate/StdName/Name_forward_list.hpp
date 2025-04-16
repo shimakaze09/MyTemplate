@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../Name.h"
-
 #include <forward_list>
+
+#include "../Name.hpp"
 
 template <typename T>
 struct My::details::custom_type_name<std::forward_list<T>> {

@@ -1,5 +1,4 @@
-#include <MyTemplate/Func.h>
-
+#include <MyTemplate/Func.hpp>
 #include <iostream>
 
 using namespace My;
