@@ -1,17 +1,17 @@
 #pragma once
 
 // marco
-// - MY_TSTR
-// - MY_TSTR_UTIL
+// - SMKZ_TSTR
+// - SMKZ_TSTR_UTIL
 
-#ifndef MY_TSTR
-#define MY_TSTR
+#ifndef SMKZ_TSTR
+#define SMKZ_TSTR
 
 #ifdef __cpp_nontype_template_parameter_class
-#define MY_TSTR_NTTPC 1
+#define SMKZ_TSTR_NTTPC 1
 #else
 #if defined(_MSC_VER) && _MSC_VER >= 1926
-#define MY_TSTR_NTTPC 1
+#define SMKZ_TSTR_NTTPC 1
 #endif
 #endif
 
@@ -54,7 +54,7 @@ template <typename Char, std::size_t N>
 fixed_cstring(const Char (&)[N]) -> fixed_cstring<Char, N - 1>;
 }  // namespace Smkz
 
-#ifdef MY_TSTR_NTTPC
+#ifdef SMKZ_TSTR_NTTPC
 
 namespace Smkz {
 template <fixed_cstring str>
@@ -141,11 +141,11 @@ template <auto c>
 using TStr_of_a = TStr<decltype(c), c>;
 }  // namespace Smkz
 
-#endif  // MY_TSTR_NTTPC
-#endif  // MY_TSTR
+#endif  // SMKZ_TSTR_NTTPC
+#endif  // SMKZ_TSTR
 
-#ifndef MY_TSTR_UTIL
-#define MY_TSTR_UTIL
+#ifndef SMKZ_TSTR_UTIL
+#define SMKZ_TSTR_UTIL
 
 namespace Smkz {
 template <typename T>
@@ -153,7 +153,7 @@ concept TStrLike = requires {
   { T::View() } -> std::same_as<std::basic_string_view<typename T::Char>>;
 };
 
-#ifdef MY_TSTR_NTTPC
+#ifdef SMKZ_TSTR_NTTPC
 template <typename Str>
 constexpr auto empty_of(Str = {}) noexcept {
   return TStr<fixed_cstring<typename Str::Char, 0>{}>{};
@@ -170,7 +170,7 @@ struct concat_helper;
 template <typename Str0, typename Str1>
 using concat_helper_t = typename concat_helper<Str0, Str1>::type;
 
-#ifdef MY_TSTR_NTTPC
+#ifdef SMKZ_TSTR_NTTPC
 template <typename Str0, typename Str1>
 struct concat_helper {
  private:
@@ -189,7 +189,7 @@ template <typename Char, Char... c0, Char... c1>
 struct concat_helper<TStr<Char, c0...>, TStr<Char, c1...>> {
   using type = TStr<Char, c0..., c1...>;
 };
-#endif  // MY_TSTR_NTTPC
+#endif  // SMKZ_TSTR_NTTPC
 
 template <typename Str0, typename Str1>
 constexpr auto concat(Str0 = {}, Str1 = {}) noexcept {
@@ -408,4 +408,4 @@ constexpr auto int_to_TSTR() {
 }
 }  // namespace Smkz
 
-#endif  // !MY_TSTR_UTIL
+#endif  // !SMKZ_TSTR_UTIL

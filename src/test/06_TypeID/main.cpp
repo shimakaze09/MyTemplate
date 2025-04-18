@@ -11,14 +11,14 @@ int main() {
   cout << details::raw_type_name<float>().View() << endl;
 
   cout << TypeID_of<int>.GetValue() << endl;
-#ifdef MY_NAME_X_INT
+#ifdef SMKZ_NAME_X_INT
   cout << TypeID("int32").GetValue() << endl;
 #else
   cout << TypeID("int").GetValue() << endl;
-#endif  // MY_NAME_X_INT
+#endif  // SMKZ_NAME_X_INT
 
   cout << TypeID_of<float>.GetValue() << endl;
-#ifdef MY_NAME_X_FLOAT
+#ifdef SMKZ_NAME_X_FLOAT
   cout << TypeID("float32").GetValue() << endl;
 #else
   cout << TypeID("float").GetValue() << endl;
