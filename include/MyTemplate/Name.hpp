@@ -4,17 +4,6 @@
 
 #include "Util.hpp"
 
-// u?int{8|16|32|64}
-#define MY_NAME_X_INT
-
-#ifdef MY_NAME_X_INT
-// bool
-#define MY_NAME_BOOL
-#endif  // MY_NAME_X_INT
-
-// float{32|64} (maybe float80 for long double)
-#define MY_NAME_X_FLOAT
-
 namespace My {
 template <auto V>
 constexpr auto constexpr_value_name() noexcept;

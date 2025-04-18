@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "Name_string_view.h"
+#include "Name_string_view.hpp"
 
 template <typename Elem>
 struct My::details::custom_type_name<std::basic_string<Elem>> {

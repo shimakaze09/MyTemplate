@@ -2,7 +2,7 @@
 
 #include <deque>
 
-#include "Name_deque.h"
+#include "Name_deque.hpp"
 
 template <typename T>
 struct My::details::custom_type_name<std::deque<T>> {
