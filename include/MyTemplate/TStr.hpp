@@ -19,7 +19,7 @@
 #include <string_view>
 #include <utility>
 
-namespace My {
+namespace Smkz {
 template <typename Char, std::size_t N>
 struct fixed_cstring {
   using value_type = Char;
@@ -52,11 +52,11 @@ struct fixed_cstring {
 
 template <typename Char, std::size_t N>
 fixed_cstring(const Char (&)[N]) -> fixed_cstring<Char, N - 1>;
-}  // namespace My
+}  // namespace Smkz
 
 #ifdef MY_TSTR_NTTPC
 
-namespace My {
+namespace Smkz {
 template <fixed_cstring str>
 struct TStr {
   using Char = typename decltype(str)::value_type;
@@ -78,22 +78,22 @@ using TStrC_of =
     TStr<fixed_cstring<char, sizeof...(chars)>{std::in_place, chars...}>;
 template <auto c>
 using TStr_of_a = TStr<fixed_cstring<decltype(c), 1>{c}>;
-}  // namespace My
+}  // namespace Smkz
 
-#define TSTR(s)                                                           \
-  ([] {                                                                   \
-    constexpr std::basic_string_view str{s};                              \
-    return My::TStr<My::fixed_cstring<typename decltype(str)::value_type, \
-                                      str.size()>{str}>{};                \
+#define TSTR(s)                                                               \
+  ([] {                                                                       \
+    constexpr std::basic_string_view str{s};                                  \
+    return Smkz::TStr<Smkz::fixed_cstring<typename decltype(str)::value_type, \
+                                          str.size()>{str}>{};                \
   }())
 
 #else
-namespace My {
+namespace Smkz {
 template <typename Char, Char... chars>
 struct TStr;
 }
 
-namespace My::details {
+namespace Smkz::details {
 template <typename Char, typename T, std::size_t... N>
 constexpr auto TSTRHelperImpl(std::index_sequence<N...>) {
   return TStr<Char, T::get()[N]...>{};
@@ -105,7 +105,7 @@ constexpr auto TSTRHelper(T) {
   using Char = typename SV::value_type;
   return TSTRHelperImpl<Char, T>(std::make_index_sequence<T::get().size()>{});
 }
-}  // namespace My::details
+}  // namespace Smkz::details
 
 // [C-style string type (value)]
 // in C++20, we can easily put a string into template parameter list
@@ -115,10 +115,10 @@ constexpr auto TSTRHelper(T) {
     struct tmp {                                                        \
       static constexpr auto get() { return std::basic_string_view{s}; } \
     };                                                                  \
-    return My::details::TSTRHelper(tmp{});                              \
+    return Smkz::details::TSTRHelper(tmp{});                            \
   }())
 
-namespace My {
+namespace Smkz {
 template <typename C, C... chars>
 struct TStr {
   using Char = C;
@@ -139,7 +139,7 @@ template <char... chars>
 using TStrC_of = TStr<char, chars...>;
 template <auto c>
 using TStr_of_a = TStr<decltype(c), c>;
-}  // namespace My
+}  // namespace Smkz
 
 #endif  // MY_TSTR_NTTPC
 #endif  // MY_TSTR
@@ -147,7 +147,7 @@ using TStr_of_a = TStr<decltype(c), c>;
 #ifndef MY_TSTR_UTIL
 #define MY_TSTR_UTIL
 
-namespace My {
+namespace Smkz {
 template <typename T>
 concept TStrLike = requires {
   { T::View() } -> std::same_as<std::basic_string_view<typename T::Char>>;
@@ -406,6 +406,6 @@ constexpr auto int_to_TSTR() {
     }
   }
 }
-}  // namespace My
+}  // namespace Smkz
 
 #endif  // !MY_TSTR_UTIL

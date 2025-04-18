@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vector>
 
-using namespace My;
+using namespace Smkz;
 
 template <int, typename T>
 struct A {};
@@ -33,7 +33,7 @@ template <auto>
 struct E {};
 
 template <typename Value, typename T, Value C<T>::* ptr>
-struct My::details::custom_constexpr_value_name<ptr> {
+struct Smkz::details::custom_constexpr_value_name<ptr> {
   static constexpr auto get() noexcept {
     if constexpr (member_pointer_equal(ptr, &C<T>::f))
       return TSTR("f");
@@ -45,7 +45,7 @@ struct My::details::custom_constexpr_value_name<ptr> {
 };
 
 template <>
-struct My::details::custom_type_namespace_name<C<decltype(&C<float>::f)>::D> {
+struct Smkz::details::custom_type_namespace_name<C<decltype(&C<float>::f)>::D> {
   static constexpr auto get() noexcept {
     return type_name<C<decltype(&C<float>::f)>>();
   }
@@ -55,7 +55,7 @@ struct BH {
   void f() {};
 };
 template <>
-struct My::details::custom_constexpr_value_name<&BH::f> {
+struct Smkz::details::custom_constexpr_value_name<&BH::f> {
   static constexpr auto get() noexcept { return TSTR("f"); }
 };
 template <auto>

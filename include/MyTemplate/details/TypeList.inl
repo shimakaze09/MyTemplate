@@ -2,7 +2,7 @@
 
 #include "../Util.hpp"
 
-namespace My::details {
+namespace Smkz::details {
 template <typename List, typename T, std::size_t N = 0, bool found = false>
 struct Find;
 
@@ -24,9 +24,9 @@ struct SearchInstance;
 
 template <typename List, bool haveSame = false>
 struct IsUnique;
-}  // namespace My::details
+}  // namespace Smkz::details
 
-namespace My {
+namespace Smkz {
 template <template <typename...> class OtherListTemplate, typename... Ts>
 struct ToTypeList<OtherListTemplate, OtherListTemplate<Ts...>>
     : std::type_identity<TypeList<Ts...>> {};
@@ -207,9 +207,9 @@ struct QuickSort<TypeList<Head, Tail...>, Less> {
 
 template <typename List>
 struct IsUnique : details::IsUnique<List> {};
-}  // namespace My
+}  // namespace Smkz
 
-namespace My::details {
+namespace Smkz::details {
 template <typename T, std::size_t N, typename... Ts>
 struct Find<TypeList<Ts...>, T, N, true>
     : std::integral_constant<std::size_t, N - 1> {};
@@ -281,4 +281,4 @@ struct IsUnique<TypeList<>, false> : std::true_type {};
 template <typename Head, typename... Tail>
 struct IsUnique<TypeList<Head, Tail...>, false>
     : IsUnique<TypeList<Tail...>, Contain_v<TypeList<Tail...>, Head>> {};
-}  // namespace My::details
+}  // namespace Smkz::details

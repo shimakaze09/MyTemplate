@@ -5,7 +5,7 @@
 #include "../Name.hpp"
 
 template <typename Key>
-struct My::details::custom_type_name<std::unordered_set<Key>> {
+struct Smkz::details::custom_type_name<std::unordered_set<Key>> {
   static constexpr auto get() noexcept {
     return concat_seq(TSTR("std::unordered_set<{"), type_name<Key>(),
                       TStrC_of<'}', '>'>{});
@@ -13,7 +13,7 @@ struct My::details::custom_type_name<std::unordered_set<Key>> {
 };
 
 template <typename Key, typename Hash>
-struct My::details::custom_type_name<std::unordered_set<Key, Hash>> {
+struct Smkz::details::custom_type_name<std::unordered_set<Key, Hash>> {
   static constexpr auto get() noexcept {
     return concat_seq(TSTR("std::unordered_set<{"), type_name<Key>(),
                       TStr_of_a<','>{}, type_name<Hash>(),
@@ -22,7 +22,8 @@ struct My::details::custom_type_name<std::unordered_set<Key, Hash>> {
 };
 
 template <typename Key, typename Hash, typename KeyEqual>
-struct My::details::custom_type_name<std::unordered_set<Key, Hash, KeyEqual>> {
+struct Smkz::details::custom_type_name<
+    std::unordered_set<Key, Hash, KeyEqual>> {
   static constexpr auto get() noexcept {
     return concat_seq(TSTR("std::unordered_set<{"), type_name<Key>(),
                       TStr_of_a<','>{}, type_name<Hash>(), TStr_of_a<','>{},
@@ -31,7 +32,7 @@ struct My::details::custom_type_name<std::unordered_set<Key, Hash, KeyEqual>> {
 };
 
 template <typename Key>
-struct My::details::custom_type_name<std::unordered_multiset<Key>> {
+struct Smkz::details::custom_type_name<std::unordered_multiset<Key>> {
   static constexpr auto get() noexcept {
     return concat_seq(TSTR("std::unordered_multiset<{"), type_name<Key>(),
                       TStrC_of<'}', '>'>{});
@@ -39,7 +40,7 @@ struct My::details::custom_type_name<std::unordered_multiset<Key>> {
 };
 
 template <typename Key, typename Hash>
-struct My::details::custom_type_name<std::unordered_multiset<Key, Hash>> {
+struct Smkz::details::custom_type_name<std::unordered_multiset<Key, Hash>> {
   static constexpr auto get() noexcept {
     return concat_seq(TSTR("std::unordered_multiset<{"), type_name<Key>(),
                       TStr_of_a<','>{}, type_name<Hash>(),
@@ -48,7 +49,7 @@ struct My::details::custom_type_name<std::unordered_multiset<Key, Hash>> {
 };
 
 template <typename Key, typename Hash, typename KeyEqual>
-struct My::details::custom_type_name<
+struct Smkz::details::custom_type_name<
     std::unordered_multiset<Key, Hash, KeyEqual>> {
   static constexpr auto get() noexcept {
     return concat_seq(TSTR("std::unordered_multiset<{"), type_name<Key>(),

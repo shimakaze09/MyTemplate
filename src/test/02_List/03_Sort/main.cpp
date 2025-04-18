@@ -3,7 +3,7 @@
 #include <iostream>
 
 using namespace std;
-using namespace My;
+using namespace Smkz;
 
 int main() {
   using list = TypeList<int, float, double, TypeList<>>;

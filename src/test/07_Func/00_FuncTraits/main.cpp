@@ -1,7 +1,7 @@
 #include <MyTemplate/Func.hpp>
 #include <iostream>
 
-using namespace My;
+using namespace Smkz;
 using namespace std;
 
 struct A {

@@ -3,7 +3,7 @@
 #include <cassert>
 #include <cstdint>
 
-namespace My::details {
+namespace Smkz::details {
 template <typename Void, template <typename...> typename T, typename... Ts>
 struct is_instantiable : std::false_type {};
 template <template <typename...> typename T, typename... Ts>
@@ -70,56 +70,56 @@ template <class Void, template <class...> class Op, class... Args>
 struct is_valid : std::false_type {};
 template <template <class...> class Op, class... Args>
 struct is_valid<std::void_t<Op<Args...>>, Op, Args...> : std::true_type {};
-}  // namespace My::details
+}  // namespace Smkz::details
 
 template <template <typename...> typename T, typename... Ts>
-struct My::is_instantiable : details::is_instantiable<void, T, Ts...> {};
+struct Smkz::is_instantiable : details::is_instantiable<void, T, Ts...> {};
 
 template <typename Instance, template <typename...> class T>
-struct My::is_instance_of : std::false_type {};
+struct Smkz::is_instance_of : std::false_type {};
 
 template <typename... Args, template <typename...> class T>
-struct My::is_instance_of<T<Args...>, T> : std::true_type {};
+struct Smkz::is_instance_of<T<Args...>, T> : std::true_type {};
 
 template <typename T, typename... Args>
-struct My::is_list_initializable
+struct Smkz::is_list_initializable
     : details::is_list_initializable<void, T, Args...> {};
 
 template <template <typename...> class TA, template <typename...> class TB>
-struct My::is_same_typename_template : std::false_type {};
+struct Smkz::is_same_typename_template : std::false_type {};
 
 template <template <typename...> class T>
-struct My::is_same_typename_template<T, T> : std::true_type {};
+struct Smkz::is_same_typename_template<T, T> : std::true_type {};
 
 template <typename T>
-struct My::is_defined : details::is_defined_helper<void, T> {};
+struct Smkz::is_defined : details::is_defined_helper<void, T> {};
 
 template <typename T, typename U>
-struct My::member_pointer_traits<T U::*> {
+struct Smkz::member_pointer_traits<T U::*> {
   using object = U;
   using value = T;
 };
 
 template <typename T>
-struct My::is_typename_template_type : std::false_type {};
+struct Smkz::is_typename_template_type : std::false_type {};
 
 template <template <typename...> class T, typename... Ts>
-struct My::is_typename_template_type<T<Ts...>> : std::true_type {};
+struct Smkz::is_typename_template_type<T<Ts...>> : std::true_type {};
 
 template <typename T>
-struct My::IsIValue : std::false_type {};
+struct Smkz::IsIValue : std::false_type {};
 template <typename T, T v>
-struct My::IsIValue<My::IValue<T, v>> : std::true_type {};
+struct Smkz::IsIValue<Smkz::IValue<T, v>> : std::true_type {};
 
 template <size_t N>
-constexpr std::size_t My::lengthof(const char (&str)[N]) noexcept {
+constexpr std::size_t Smkz::lengthof(const char (&str)[N]) noexcept {
   static_assert(N > 0);
   assert(str[N - 1] == 0);  // c-style string
   return N - 1;
 }
 
-constexpr std::size_t My::string_hash_seed(std::size_t seed, const char* str,
-                                           std::size_t N) noexcept {
+constexpr std::size_t Smkz::string_hash_seed(std::size_t seed, const char* str,
+                                             std::size_t N) noexcept {
   using Traits = details::fnv1a_traits<sizeof(std::size_t)>;
   std::size_t value = seed;
 
@@ -129,8 +129,8 @@ constexpr std::size_t My::string_hash_seed(std::size_t seed, const char* str,
   return value;
 }
 
-constexpr std::size_t My::string_hash_seed(std::size_t seed,
-                                           const char* curr) noexcept {
+constexpr std::size_t Smkz::string_hash_seed(std::size_t seed,
+                                             const char* curr) noexcept {
   using Traits = details::fnv1a_traits<sizeof(std::size_t)>;
   std::size_t value = seed;
 
@@ -141,31 +141,35 @@ constexpr std::size_t My::string_hash_seed(std::size_t seed,
   return value;
 }
 
-constexpr std::size_t My::string_hash(const char* str, std::size_t N) noexcept {
+constexpr std::size_t Smkz::string_hash(const char* str,
+                                        std::size_t N) noexcept {
   using Traits = details::fnv1a_traits<sizeof(std::size_t)>;
   return string_hash_seed(Traits::offset, str, N);
 }
 
-constexpr std::size_t My::string_hash(const char* str) noexcept {
+constexpr std::size_t Smkz::string_hash(const char* str) noexcept {
   using Traits = details::fnv1a_traits<sizeof(std::size_t)>;
   return string_hash_seed(Traits::offset, str);
 }
 
 template <typename T>
-struct My::is_function_pointer : My::details::is_function_pointer<void, T> {};
+struct Smkz::is_function_pointer : Smkz::details::is_function_pointer<void, T> {
+};
 
 template <typename T>
-struct My::has_virtual_base : My::details::has_virtual_base_helper<void, T> {};
+struct Smkz::has_virtual_base
+    : Smkz::details::has_virtual_base_helper<void, T> {};
 
 template <typename Base, typename Derived>
-struct My::is_virtual_base_of
-    : My::details::is_virtual_base_of_helper<void, Base, Derived> {};
+struct Smkz::is_virtual_base_of
+    : Smkz::details::is_virtual_base_of_helper<void, Base, Derived> {};
 
 template <template <class...> class Op, class... Args>
-struct My::is_valid : My::details::is_valid<void, Op, Args...> {};
+struct Smkz::is_valid : Smkz::details::is_valid<void, Op, Args...> {};
 
 template <typename V1, typename Obj1, typename V2, typename Obj2>
-constexpr bool My::member_pointer_equal(V1 Obj1::* p1, V2 Obj2::* p2) noexcept {
+constexpr bool Smkz::member_pointer_equal(V1 Obj1::* p1,
+                                          V2 Obj2::* p2) noexcept {
   if constexpr (std::is_same_v<Obj1, Obj2> && std::is_same_v<V1, V2>)
     return p1 == p2;
   else

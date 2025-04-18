@@ -2,7 +2,7 @@
 
 #include <cstddef>
 
-namespace My {
+namespace Smkz {
 template <typename... Ts>
 struct TypeList {};
 
@@ -148,6 +148,6 @@ template <typename List>
 struct IsUnique;
 template <typename List>
 constexpr bool IsUnique_v = IsUnique<List>::value;
-}  // namespace My
+}  // namespace Smkz
 
 #include "details/TypeList.inl"

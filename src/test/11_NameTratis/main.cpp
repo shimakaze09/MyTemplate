@@ -1,7 +1,7 @@
 #include <MyTemplate/Name.hpp>
 #include <memory>
 
-using namespace My;
+using namespace Smkz;
 
 struct A {
   int data;

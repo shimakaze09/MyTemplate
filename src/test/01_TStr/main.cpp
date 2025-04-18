@@ -2,7 +2,7 @@
 #include <iostream>
 
 using namespace std;
-using namespace My;
+using namespace Smkz;
 
 static constexpr const std::string_view gs_sv = "sv";
 static constexpr const char gs_ca[] = "gs_ca";

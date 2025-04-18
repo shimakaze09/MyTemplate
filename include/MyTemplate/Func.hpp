@@ -4,7 +4,7 @@
 
 #include "TypeList.hpp"
 
-namespace My {
+namespace Smkz {
 // type Object : if not member function, it is void
 // type ArgList : TypeList<Args...>
 // type Return
@@ -51,6 +51,6 @@ struct FuncExpand;
 
 template <typename Lambda>
 constexpr auto DecayLambda(Lambda&& lambda) noexcept;
-}  // namespace My
+}  // namespace Smkz
 
 #include "details/Func.inl"

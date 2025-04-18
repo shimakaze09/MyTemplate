@@ -1,6 +1,6 @@
 #pragma once
 
-namespace My::details {
+namespace Smkz::details {
 // ref: qobjectdefs_impl.h
 
 template <typename T>
@@ -54,9 +54,9 @@ struct CheckCompatibleArguments<TypeList<ToArgHead, ToArgTail...>,
       CheckCompatibleArguments<TypeList<ToArgTail...>,
                                TypeList<FromArgTail...>>::value;
 };
-}  // namespace My::details
+}  // namespace Smkz::details
 
-namespace My::details {
+namespace Smkz::details {
 template <bool IsConst, bool IsVolatile, ReferenceMode Ref, bool IsNoexcept,
           typename Sig>
 struct FuncTraitsBase;
@@ -82,157 +82,157 @@ template <typename T>
 struct FuncTraitsDispatch<true, T> : FuncTraits<T> {
   using Function = T;
 };
-}  // namespace My::details
+}  // namespace Smkz::details
 
 // 2*2*3*2 = 24
 template <typename Ret, typename... Args>  // 0000
-struct My::FuncTraits<Ret(Args...)>
+struct Smkz::FuncTraits<Ret(Args...)>
     : details::FuncTraitsBase<false, false, ReferenceMode::None, false,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 1000
-struct My::FuncTraits<Ret(Args...) const>
+struct Smkz::FuncTraits<Ret(Args...) const>
     : details::FuncTraitsBase<true, false, ReferenceMode::None, false,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 0100
-struct My::FuncTraits<Ret(Args...) volatile>
+struct Smkz::FuncTraits<Ret(Args...) volatile>
     : details::FuncTraitsBase<false, true, ReferenceMode::None, false,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 1100
-struct My::FuncTraits<Ret(Args...) const volatile>
+struct Smkz::FuncTraits<Ret(Args...) const volatile>
     : details::FuncTraitsBase<true, true, ReferenceMode::None, false,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 0010
-struct My::FuncTraits<Ret(Args...) &>
+struct Smkz::FuncTraits<Ret(Args...) &>
     : details::FuncTraitsBase<false, false, ReferenceMode::Left, false,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 1010
-struct My::FuncTraits<Ret(Args...) const&>
+struct Smkz::FuncTraits<Ret(Args...) const&>
     : details::FuncTraitsBase<true, false, ReferenceMode::Left, false,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 0110
-struct My::FuncTraits<Ret(Args...) volatile&>
+struct Smkz::FuncTraits<Ret(Args...) volatile&>
     : details::FuncTraitsBase<false, true, ReferenceMode::Left, false,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 1110
-struct My::FuncTraits<Ret(Args...) const volatile&>
+struct Smkz::FuncTraits<Ret(Args...) const volatile&>
     : details::FuncTraitsBase<true, true, ReferenceMode::Left, false,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 0020
-struct My::FuncTraits<Ret(Args...) &&>
+struct Smkz::FuncTraits<Ret(Args...) &&>
     : details::FuncTraitsBase<false, false, ReferenceMode::Right, false,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 1020
-struct My::FuncTraits<Ret(Args...) const&&>
+struct Smkz::FuncTraits<Ret(Args...) const&&>
     : details::FuncTraitsBase<true, false, ReferenceMode::Right, false,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 0120
-struct My::FuncTraits<Ret(Args...) volatile&&>
+struct Smkz::FuncTraits<Ret(Args...) volatile&&>
     : details::FuncTraitsBase<false, true, ReferenceMode::Right, false,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 1120
-struct My::FuncTraits<Ret(Args...) const volatile&&>
+struct Smkz::FuncTraits<Ret(Args...) const volatile&&>
     : details::FuncTraitsBase<true, true, ReferenceMode::Right, false,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 0001
-struct My::FuncTraits<Ret(Args...) noexcept>
+struct Smkz::FuncTraits<Ret(Args...) noexcept>
     : details::FuncTraitsBase<false, false, ReferenceMode::None, true,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 1001
-struct My::FuncTraits<Ret(Args...) const noexcept>
+struct Smkz::FuncTraits<Ret(Args...) const noexcept>
     : details::FuncTraitsBase<true, false, ReferenceMode::None, true,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 0101
-struct My::FuncTraits<Ret(Args...) volatile noexcept>
+struct Smkz::FuncTraits<Ret(Args...) volatile noexcept>
     : details::FuncTraitsBase<false, true, ReferenceMode::None, true,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 1101
-struct My::FuncTraits<Ret(Args...) const volatile noexcept>
+struct Smkz::FuncTraits<Ret(Args...) const volatile noexcept>
     : details::FuncTraitsBase<true, true, ReferenceMode::None, true,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 0011
-struct My::FuncTraits<Ret(Args...) & noexcept>
+struct Smkz::FuncTraits<Ret(Args...) & noexcept>
     : details::FuncTraitsBase<false, false, ReferenceMode::Left, true,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 1011
-struct My::FuncTraits<Ret(Args...) const & noexcept>
+struct Smkz::FuncTraits<Ret(Args...) const & noexcept>
     : details::FuncTraitsBase<true, false, ReferenceMode::Left, true,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 0111
-struct My::FuncTraits<Ret(Args...) volatile & noexcept>
+struct Smkz::FuncTraits<Ret(Args...) volatile & noexcept>
     : details::FuncTraitsBase<false, true, ReferenceMode::Left, true,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 1111
-struct My::FuncTraits<Ret(Args...) const volatile & noexcept>
+struct Smkz::FuncTraits<Ret(Args...) const volatile & noexcept>
     : details::FuncTraitsBase<true, true, ReferenceMode::Left, true,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 0021
-struct My::FuncTraits<Ret(Args...) && noexcept>
+struct Smkz::FuncTraits<Ret(Args...) && noexcept>
     : details::FuncTraitsBase<false, false, ReferenceMode::Right, true,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 1021
-struct My::FuncTraits<Ret(Args...) const && noexcept>
+struct Smkz::FuncTraits<Ret(Args...) const && noexcept>
     : details::FuncTraitsBase<true, false, ReferenceMode::Right, true,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 0121
-struct My::FuncTraits<Ret(Args...) volatile && noexcept>
+struct Smkz::FuncTraits<Ret(Args...) volatile && noexcept>
     : details::FuncTraitsBase<false, true, ReferenceMode::Right, true,
                               Ret(Args...)> {};
 
 template <typename Ret, typename... Args>  // 1121
-struct My::FuncTraits<Ret(Args...) const volatile && noexcept>
+struct Smkz::FuncTraits<Ret(Args...) const volatile && noexcept>
     : details::FuncTraitsBase<true, true, ReferenceMode::Right, true,
                               Ret(Args...)> {};
 
 // dispatch
 template <typename Func>
-struct My::FuncTraits<Func*> : FuncTraits<Func> {
+struct Smkz::FuncTraits<Func*> : FuncTraits<Func> {
   using Object = void;
   using Function = Func;
 };
 
 template <typename T, typename Func>
-struct My::FuncTraits<Func T::*> : FuncTraits<Func> {
+struct Smkz::FuncTraits<Func T::*> : FuncTraits<Func> {
   using Object = T;
   using Function = Func;
 };
 
 template <typename Func>
-struct My::FuncTraits<Func&> : FuncTraits<Func> {};
+struct Smkz::FuncTraits<Func&> : FuncTraits<Func> {};
 template <typename Func>
-struct My::FuncTraits<Func&&> : FuncTraits<Func> {};
+struct Smkz::FuncTraits<Func&&> : FuncTraits<Func> {};
 template <typename Func>
-struct My::FuncTraits<const Func&> : FuncTraits<Func> {};
+struct Smkz::FuncTraits<const Func&> : FuncTraits<Func> {};
 template <typename Func>
-struct My::FuncTraits<const Func&&> : FuncTraits<Func> {};
+struct Smkz::FuncTraits<const Func&&> : FuncTraits<Func> {};
 
 template <typename T>
-struct My::FuncTraits : details::FuncTraitsDispatch<std::is_function_v<T>, T> {
-};
+struct Smkz::FuncTraits
+    : details::FuncTraitsDispatch<std::is_function_v<T>, T> {};
 
 template <typename Ret, typename... Args>
-struct My::FuncExpand<Ret(Args...)> {
+struct Smkz::FuncExpand<Ret(Args...)> {
   template <typename Func>
   static auto get(Func&& func) noexcept {
     static_assert(std::is_void_v<Ret> ||
@@ -263,20 +263,20 @@ struct My::FuncExpand<Ret(Args...)> {
 };
 
 template <typename Lambda>
-constexpr auto My::DecayLambda(Lambda&& lambda) noexcept {
+constexpr auto Smkz::DecayLambda(Lambda&& lambda) noexcept {
   return static_cast<std::add_pointer_t<
       FuncTraits_Signature<std::remove_reference_t<Lambda>>>>(
       std::forward<Lambda>(lambda));
 }
 
 template <typename Obj, typename Func>
-struct My::MemFuncOf {
+struct Smkz::MemFuncOf {
   static_assert(std::is_function_v<Func>);
   static constexpr auto get(Func Obj::* func) noexcept { return func; }
 };
 
 template <typename Func>
-struct My::FuncOf {
+struct Smkz::FuncOf {
   static_assert(std::is_function_v<Func>);
   static constexpr auto get(Func* func) noexcept { return func; }
 };

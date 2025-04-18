@@ -4,11 +4,11 @@
 
 #include "Util.hpp"
 
-namespace My {
+namespace Smkz {
 template <auto V>
 constexpr auto constexpr_value_name() noexcept;
 
-// [rull]
+// [rule]
 // - reference : &/&&{...}
 // - cv : const? volatile?{...}
 // - member pointer : {object_type_name}::*{value_type_name}
@@ -20,7 +20,7 @@ constexpr auto constexpr_value_name() noexcept;
 // - template : name<{arg_1_type_name}, ..., {arg_n_type_name}>
 // - enum : enum{...}
 // - union : union{...}
-// - basic : namspace_name::kernal_name
+// - basic : namespace_name::kernal_name
 // [custom] you need to impl get()
 // - custom_type_name
 // - custom_constexpr_value_name
@@ -158,6 +158,6 @@ constexpr std::string_view type_name_add_const_lvalue_reference(
 template <typename Alloc>
 constexpr std::string_view type_name_add_const_rvalue_reference(
     std::string_view name, Alloc alloc);
-}  // namespace My
+}  // namespace Smkz
 
 #include "details/Name.inl"

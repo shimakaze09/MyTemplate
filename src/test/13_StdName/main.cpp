@@ -2,7 +2,7 @@
 #include <MyTemplate/StdName/Name_vector.hpp>
 #include <iostream>
 
-using namespace My;
+using namespace Smkz;
 
 int main() {
   std::cout << type_name<std::unique_ptr<int>>().Data() << std::endl;

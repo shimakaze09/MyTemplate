@@ -5,7 +5,7 @@
 #include "../Name.hpp"
 
 template <typename Key, typename T>
-struct My::details::custom_type_name<std::unordered_map<Key, T>> {
+struct Smkz::details::custom_type_name<std::unordered_map<Key, T>> {
   static constexpr auto get() noexcept {
     return concat_seq(TSTR("std::unordered_map<{"), type_name<Key>(),
                       TStr_of_a<','>{}, type_name<T>(), TStrC_of<'}', '>'>{});
@@ -13,7 +13,7 @@ struct My::details::custom_type_name<std::unordered_map<Key, T>> {
 };
 
 template <typename Key, typename T, typename Hash>
-struct My::details::custom_type_name<std::unordered_map<Key, T, Hash>> {
+struct Smkz::details::custom_type_name<std::unordered_map<Key, T, Hash>> {
   static constexpr auto get() noexcept {
     return concat_seq(TSTR("std::unordered_map<{"), type_name<Key>(),
                       TStr_of_a<','>{}, type_name<T>(), TStr_of_a<','>{},
@@ -22,7 +22,7 @@ struct My::details::custom_type_name<std::unordered_map<Key, T, Hash>> {
 };
 
 template <typename Key, typename T, typename Hash, typename KeyEqual>
-struct My::details::custom_type_name<
+struct Smkz::details::custom_type_name<
     std::unordered_map<Key, T, Hash, KeyEqual>> {
   static constexpr auto get() noexcept {
     return concat_seq(TSTR("std::unordered_map<{"), type_name<Key>(),
@@ -33,7 +33,7 @@ struct My::details::custom_type_name<
 };
 
 template <typename Key, typename T, typename Hash>
-struct My::details::custom_type_name<std::pmr::unordered_map<Key, T, Hash>> {
+struct Smkz::details::custom_type_name<std::pmr::unordered_map<Key, T, Hash>> {
   static constexpr auto get() noexcept {
     return concat_seq(TSTR("std::pmr::unordered_map<{"), type_name<Key>(),
                       TStr_of_a<','>{}, type_name<T>(), TStr_of_a<','>{},
@@ -42,7 +42,7 @@ struct My::details::custom_type_name<std::pmr::unordered_map<Key, T, Hash>> {
 };
 
 template <typename Key, typename T>
-struct My::details::custom_type_name<std::unordered_multimap<Key, T>> {
+struct Smkz::details::custom_type_name<std::unordered_multimap<Key, T>> {
   static constexpr auto get() noexcept {
     return concat_seq(TSTR("std::unordered_multimap<{"), type_name<Key>(),
                       TStr_of_a<','>{}, type_name<T>(), TStrC_of<'}', '>'>{});
@@ -50,7 +50,7 @@ struct My::details::custom_type_name<std::unordered_multimap<Key, T>> {
 };
 
 template <typename Key, typename T, typename Hash>
-struct My::details::custom_type_name<std::unordered_multimap<Key, T, Hash>> {
+struct Smkz::details::custom_type_name<std::unordered_multimap<Key, T, Hash>> {
   static constexpr auto get() noexcept {
     return concat_seq(TSTR("std::unordered_multimap<{"), type_name<Key>(),
                       TStr_of_a<','>{}, type_name<T>(), TStr_of_a<','>{},
@@ -59,7 +59,7 @@ struct My::details::custom_type_name<std::unordered_multimap<Key, T, Hash>> {
 };
 
 template <typename Key, typename T, typename Hash, typename KeyEqual>
-struct My::details::custom_type_name<
+struct Smkz::details::custom_type_name<
     std::unordered_multimap<Key, T, Hash, KeyEqual>> {
   static constexpr auto get() noexcept {
     return concat_seq(TSTR("std::unordered_multimap<{"), type_name<Key>(),
@@ -70,7 +70,7 @@ struct My::details::custom_type_name<
 };
 
 template <typename Key, typename T>
-struct My::details::custom_type_name<std::pmr::unordered_multimap<Key, T>> {
+struct Smkz::details::custom_type_name<std::pmr::unordered_multimap<Key, T>> {
   static constexpr auto get() noexcept {
     return concat_seq(TSTR("std::pmr::unordered_multimap<{"), type_name<Key>(),
                       TStr_of_a<','>{}, type_name<T>(), TStrC_of<'}', '>'>{});

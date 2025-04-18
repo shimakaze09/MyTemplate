@@ -4,7 +4,7 @@
 
 #include "Name.hpp"
 
-namespace My {
+namespace Smkz {
 class NameID {
  public:
   static constexpr std::size_t InvalidValue() noexcept {
@@ -381,32 +381,32 @@ template <typename... Ts>
 constexpr auto TypeIDs_of = TempTypeIDs{TypeID_of<Ts>...};
 template <typename... Ts>
 constexpr auto Types_of = TempTypes{Type_of<Ts>...};
-}  // namespace My
+}  // namespace Smkz
 
 template <>
-struct std::hash<My::NameID> {
-  std::size_t operator()(const My::NameID& ID) const noexcept {
+struct std::hash<Smkz::NameID> {
+  std::size_t operator()(const Smkz::NameID& ID) const noexcept {
     return ID.GetValue();
   }
 };
 
 template <>
-struct std::hash<My::TypeID> {
-  std::size_t operator()(const My::TypeID& ID) const noexcept {
+struct std::hash<Smkz::TypeID> {
+  std::size_t operator()(const Smkz::TypeID& ID) const noexcept {
     return ID.GetValue();
   }
 };
 
 template <>
-struct std::hash<My::Name> {
-  std::size_t operator()(const My::Name& name) const noexcept {
+struct std::hash<Smkz::Name> {
+  std::size_t operator()(const Smkz::Name& name) const noexcept {
     return name.GetID().GetValue();
   }
 };
 
 template <>
-struct std::hash<My::Type> {
-  std::size_t operator()(const My::Type& type) const noexcept {
+struct std::hash<Smkz::Type> {
+  std::size_t operator()(const Smkz::Type& type) const noexcept {
     return type.GetID().GetValue();
   }
 };

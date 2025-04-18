@@ -2,7 +2,7 @@
 
 #include "TypeList.hpp"
 
-namespace My {
+namespace Smkz {
 template <template <typename...> class... Ts>
 struct TemplateList {};
 
@@ -91,6 +91,6 @@ struct TCanGeneralizeFromList;
 template <typename TList, typename InstanceList>
 constexpr bool TCanGeneralizeFromList_v =
     TCanGeneralizeFromList<TList, InstanceList>::value;
-}  // namespace My
+}  // namespace Smkz
 
 #include "details/TemplateList.inl"

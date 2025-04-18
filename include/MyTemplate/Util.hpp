@@ -4,7 +4,7 @@
 #include <string_view>
 #include <type_traits>
 
-namespace My {
+namespace Smkz {
 template <typename T>
 constexpr bool always_false = false;
 
@@ -188,7 +188,7 @@ class TempArray {
 
 template <typename T, typename... Ts>
 TempArray(T, Ts...) -> TempArray<T, sizeof...(Ts) + 1>;
-}  // namespace My
+}  // namespace Smkz
 
 #include "details/ToTTType.inl"
 #include "details/Util.inl"

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace My::details {
+namespace Smkz::details {
 //
 // SI_ImplTraits_IList
 ////////////////////////
@@ -194,11 +194,11 @@ struct SI_Contains_Helper<std::void_t<ITopoSort_t<SI_ImplTraits_IList_t<T>>>, T,
                           Interface>
     : std::bool_constant<
           TContain_v<ITopoSort_t<SI_ImplTraits_IList_t<T>>, Interface>> {};
-}  // namespace My::details
+}  // namespace Smkz::details
 
 template <typename Impl>
-struct My::details::SI
+struct Smkz::details::SI
     : SI_Helper<ITopoSort_t<SI_ImplTraits_IList_t<Impl>>, Impl> {};
 
 template <typename T, template <typename Base, typename Impl> class Interface>
-struct My::SI_Contains : details::SI_Contains_Helper<void, T, Interface> {};
+struct Smkz::SI_Contains : details::SI_Contains_Helper<void, T, Interface> {};
